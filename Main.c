@@ -1,34 +1,26 @@
-#include "Menu.h"
-#include<stdio.h>
+// Visual Studio derleyicisi için uyumluluk direktifleri
+#define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable:6031)
+
+#include <stdio.h>
 #include <Windows.h>
+#include "Menu.h"
+#include "Utils.h"
+
+extern Menu m_home;
 
 int main()
 {
+	int opt, state = 1;
+	
+	// Program ana yaþam döngüsü
+	while (state)
+	{
+		opt = getOption(m_home); // Ana sayfa menüsünü göster ve seçenek al
+		clear(); // Ekraný temizle
+		state = m_home.functions[opt](); // Seçeneðe karþýlýk gelen fonksiyonu çaðýr ve dönütü al
+		getSingleChar(); // Ekranýn kalmasý için kullanýcýdan bir karakter al
+	}
 
-}
-
-// Konsol ekranýný temizle
-void ClearScreen()
-{
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD coordScreen = { 0, 0 };
-	DWORD cCharsWritten;
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD dwConSize;
-
-	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
-		return;
-
-	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-
-	if (!FillConsoleOutputCharacter(hConsole, (TCHAR)' ', dwConSize, coordScreen, &cCharsWritten))
-		return;
-
-	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
-		return;
-
-	if (!FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten))
-		return;
-
-	SetConsoleCursorPosition(hConsole, coordScreen);
+	return 0;
 }
