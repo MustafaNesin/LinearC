@@ -1,7 +1,7 @@
 #include "Matrix.h"
 #include <stdlib.h>
 
-Matrix* matrix_addition(Matrix* matrix1, Matrix* matrix2)
+Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 {
 	if (!matrix1 || !matrix2)
 		return 0;
