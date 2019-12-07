@@ -12,7 +12,7 @@ extern Menu m_home;
 int main()
 {
 	int opt, state = 1;
-	
+
 	// Program ana yaþam döngüsü
 	while (state)
 	{

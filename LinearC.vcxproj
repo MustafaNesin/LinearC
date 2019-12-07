@@ -125,9 +125,11 @@
   <ItemGroup>
     <ClCompile Include="Home.c" />
     <ClCompile Include="Main.c" />
+    <ClCompile Include="Matrix.c" />
     <ClCompile Include="Utils.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
