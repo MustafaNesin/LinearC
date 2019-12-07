@@ -1,7 +1,3 @@
-// Visual Studio derleyicisi için uyumluluk direktifleri
-#define _CRT_SECURE_NO_WARNINGS
-#pragma warning(disable:6031)
-
 #include <stdio.h>
 #include <Windows.h>
 #include "Menu.h"
