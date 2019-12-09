@@ -88,7 +88,7 @@ Matrix* mx_sdot(float scalar, Matrix* matrix)
 	}
 
 	for (int i = 0; i < result->rowCount * result->columnCount; i++)
-		*(result->data + i) = *(matrix->data + i) *  scalar;
+		*(result->data + i) = *(matrix->data + i) * scalar;
 }
 
 Matrix* mx_t(Matrix* matrix)
