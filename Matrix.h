@@ -9,6 +9,9 @@ typedef struct
 // Verilen satýr ve sütun indisine göre matrisin oraya konumlandýrýlmýþ göstericisini döndürür.
 float* mx_get(Matrix*, int, int);
 
+// Verilen iki matris birbirine eþit deðilse NULL (0) döndürür.
+int mx_is_eq(Matrix, Matrix);
+
 // Verilen iki matrisi toplamýný döndürür.
 // Eðer matrislerin boyutu birbirine eþit deðilse NULL (0) döndürür.
 Matrix* mx_add(Matrix*, Matrix*);

@@ -110,3 +110,15 @@ Matrix* mx_t(Matrix* matrix)
 
 	// To be continued...
 }
+
+int mx_is_eq(Matrix matrix1, Matrix matrix2)
+{
+	if (matrix1.rowCount != matrix2.rowCount || matrix1.columnCount != matrix2.columnCount)
+		return 0;
+
+	for (int i = 0; i < matrix1.rowCount * matrix1.columnCount; i++)
+		if (*matrix1.data++ != *matrix2.data++)
+			return 0;
+
+	return 1;
+}
