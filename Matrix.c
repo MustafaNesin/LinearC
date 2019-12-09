@@ -26,3 +26,44 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 
 	return result;
 }
+
+Matrix* mx_sdot(float scalar, Matrix* matrix)
+{
+	Matrix* result = malloc(sizeof(Matrix));
+
+	if (!result)
+		return 0;
+
+	result->rowCount = matrix->rowCount;
+	result->columnCount = matrix->columnCount;
+	result->data = calloc(result->rowCount * result->columnCount, sizeof(float));
+
+	if (!result->data)
+	{
+		free(result);
+		return 0;
+	}
+
+	for (int i = 0; i < result->rowCount * result->columnCount; i++)
+		*(result->data + i) = *(matrix->data + i) *  scalar;
+}
+
+Matrix* mx_t(Matrix* matrix)
+{
+	Matrix* result = malloc(sizeof(Matrix));
+
+	if (!result)
+		return 0;
+
+	result->rowCount = matrix->columnCount;
+	result->columnCount = matrix->rowCount;
+	result->data = calloc(result->rowCount * result->columnCount, sizeof(float));
+
+	if (!result->data)
+	{
+		free(result);
+		return 0;
+	}
+
+	// To be continued...
+}
