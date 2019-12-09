@@ -91,7 +91,6 @@ Matrix* mx_sdot(float scalar, Matrix* matrix)
 		*(result->data + i) = *(matrix->data + i) *  scalar;
 }
 
-//test
 Matrix* mx_t(Matrix* matrix)
 {
 	Matrix* result = malloc(sizeof(Matrix));
