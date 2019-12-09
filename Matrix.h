@@ -1,10 +1,13 @@
 #pragma once
-typedef struct Matrix
+typedef struct
 {
 	int rowCount;
 	int columnCount;
 	float* data;
 } Matrix;
+
+// Verilen satýr ve sütun indisine göre matrisin oraya konumlandýrýlmýþ göstericisini döndürür.
+float* mx_get(Matrix*, int, int);
 
 // Verilen iki matrisi toplamýný döndürür.
 // Eðer matrislerin boyutu birbirine eþit deðilse NULL (0) döndürür.
