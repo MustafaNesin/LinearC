@@ -108,7 +108,9 @@ Matrix* mx_t(Matrix* matrix)
 		return 0;
 	}
 
-	// To be continued...
+	for (int j = 0, p = 0; j < result->rowCount; j++)
+		for (int i = 0; i < result->columnCount; i++, p++)
+			*(result->data + p) = *mx_get(matrix, i, j);
 }
 
 int mx_is_eq(Matrix matrix1, Matrix matrix2)
