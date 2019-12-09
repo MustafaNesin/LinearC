@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include <stdlib.h>
+#include <string.h>
 
 float* mx_get(Matrix* matrix, int row, int column)
 {
@@ -10,6 +11,19 @@ float* mx_get(Matrix* matrix, int row, int column)
 		return 0;
 
 	return matrix->data + row * matrix->columnCount + column;
+}
+
+
+int mx_is_eq(Matrix matrix1, Matrix matrix2)
+{
+	if (matrix1.rowCount != matrix2.rowCount || matrix1.columnCount != matrix2.columnCount)
+		return 0;
+
+	for (int i = 0; i < matrix1.rowCount * matrix1.columnCount; i++)
+		if (*matrix1.data++ != *matrix2.data++)
+			return 0;
+
+	return 1;
 }
 
 Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
@@ -41,6 +55,29 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 	return result;
 }
 
+Matrix* mx_sdot(float scalar, Matrix* matrix)
+{
+	Matrix* result = malloc(sizeof(Matrix));
+
+	if (!result)
+		return 0;
+
+	result->rowCount = matrix->rowCount;
+	result->columnCount = matrix->columnCount;
+	result->data = calloc(result->rowCount * result->columnCount, sizeof(float));
+
+	if (!result->data)
+	{
+		free(result);
+		return 0;
+	}
+
+	for (int i = 0; i < result->rowCount * result->columnCount; i++)
+		*(result->data + i) = *(matrix->data + i) * scalar;
+
+	return result;
+}
+
 Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
 {
 	if (!matrix1 || !matrix2)
@@ -68,27 +105,8 @@ Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
 		for (j = 0; j < result->columnCount; j++, p++)
 			for (k = 0; k < matrix1->columnCount; k++)
 				*(result->data + p) += *mx_get(matrix1, i, k) * *mx_get(matrix2, k, j);
-}
 
-Matrix* mx_sdot(float scalar, Matrix* matrix)
-{
-	Matrix* result = malloc(sizeof(Matrix));
-
-	if (!result)
-		return 0;
-
-	result->rowCount = matrix->rowCount;
-	result->columnCount = matrix->columnCount;
-	result->data = calloc(result->rowCount * result->columnCount, sizeof(float));
-
-	if (!result->data)
-	{
-		free(result);
-		return 0;
-	}
-
-	for (int i = 0; i < result->rowCount * result->columnCount; i++)
-		*(result->data + i) = *(matrix->data + i) * scalar;
+	return result;
 }
 
 Matrix* mx_t(Matrix* matrix)
@@ -111,16 +129,53 @@ Matrix* mx_t(Matrix* matrix)
 	for (int j = 0, p = 0; j < result->rowCount; j++)
 		for (int i = 0; i < result->columnCount; i++, p++)
 			*(result->data + p) = *mx_get(matrix, i, j);
+
+	return result;
 }
 
-int mx_is_eq(Matrix matrix1, Matrix matrix2)
+int mx_row_op_switch(Matrix* matrix, int row1, int row2)
 {
-	if (matrix1.rowCount != matrix2.rowCount || matrix1.columnCount != matrix2.columnCount)
+	if (!matrix)
 		return 0;
 
-	for (int i = 0; i < matrix1.rowCount * matrix1.columnCount; i++)
-		if (*matrix1.data++ != *matrix2.data++)
-			return 0;
+	if (row1 == row2 || row1 < 0 || row1 >= matrix->rowCount || row2 < 0 || row2 >= matrix->rowCount)
+		return 0;
+
+	int row_size = matrix->columnCount * sizeof(float);
+	float* temp = malloc(row_size);
+	if (!temp)
+		return 0;
+
+	float* r1 = matrix->data + row1 * matrix->columnCount;
+	float* r2 = matrix->data + row2 * matrix->columnCount;
+
+	memcpy(temp, r1, row_size);	// temp	= r1
+	memcpy(r1, r2, row_size);	// r1 = r2
+	memcpy(r2, temp, row_size);	// r2 = temp
+
+	free(temp);
 
 	return 1;
+}
+
+int mx_row_op_coeff(Matrix* matrix, int row, float coeff)
+{
+	if (!matrix)
+		return 0;
+
+	if (coeff == 0 || row < 0 || row >= matrix->rowCount)
+		return 0;
+
+	// To be continued...
+}
+
+int mx_row_op_add(Matrix* matrix, int row1, float coeff, int row2)
+{
+	if (!matrix)
+		return 0;
+
+	if (coeff == 0 || row1 == row2 || row1 < 0 || row1 >= matrix->rowCount || row2 < 0 || row2 >= matrix->rowCount)
+		return 0;
+
+	// To be continued...
 }

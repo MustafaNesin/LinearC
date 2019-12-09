@@ -25,3 +25,15 @@ Matrix* mx_dot(Matrix*, Matrix*);
 
 // Verilen matrisin transpozunu döndürür.
 Matrix* mx_t(Matrix*);
+
+// Elementer satýr iþlemleri 1: Yer deðiþtirme
+// Eðer iþlem baþarýsýz olursa NULL (0) döndürür.
+int mx_row_op_switch(Matrix*, int, int);
+
+// Elementer satýr iþlemleri 2: Bir katsayý ile çarpma
+// Eðer iþlem baþarýsýz olursa NULL (0) döndürür.
+int mx_row_op_coeff(Matrix*, int, float);
+
+// Elementer satýr iþlemleri 3: Baþka bir satýrýn katýný ekleme
+// Eðer iþlem baþarýsýz olursa NULL (0) döndürür.
+int mx_row_op_add(Matrix*, int, float, int);
