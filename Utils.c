@@ -1,8 +1,19 @@
+#include "Main.h"
 #include <stdio.h>
 #include <Windows.h>
-#include "Utils.h"
 
-int getSingleChar()
+void loop_menu(Menu* menu, MxMemory* memory)
+{
+	int opt;
+	do
+	{
+		clear();
+		opt = show_menu(menu);
+		clear();
+	} while (menu->functions[opt](memory));
+}
+
+int get_char()
 {
 	int c = -1, _ = -1;
 	while ((_ = getchar()) != -1 && _ != '\n')
@@ -11,30 +22,30 @@ int getSingleChar()
 	return c;
 }
 
-int getOption(Menu menu)
+int show_menu(Menu* menu)
 {
 	int opt, i, error = 0;
 	do
 	{
 		clear();
 
-		printf("%s", menu.title);
+		printf("%s", menu->title);
 
 		for (i = 1; i < 10; i++)
 		{
 			printf("\n");
-			if (!menu.options[i])
+			if (!menu->options[i])
 				continue;
-			printf("%d. %s", i, menu.options[i]);
+			printf("%d. %s", i, menu->options[i]);
 		}
-		if (menu.options[0])
-			printf("\n0. %s", menu.options[0]);
+		if (menu->options[0])
+			printf("\n0. %s", menu->options[0]);
 
 		printf("\n%s", error ? "Lutfen uygun bir secenek secin." : " ");
 		printf("\n>>> ");
 
-		opt = getSingleChar() - '0';
-	} while (error = (opt < 0 || opt > 10 || !menu.options[opt]));
+		opt = get_char() - '0';
+	} while (error = (opt < 0 || opt > 10 || !menu->options[opt]));
 
 	return opt;
 }

@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Menus">
+    <Filter Include="Source Files\Menu">
       <UniqueIdentifier>{2fa7d796-a819-4a03-aba7-726f1d416ffa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -22,7 +22,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Home.c">
-      <Filter>Source Files\Menus</Filter>
+      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="Utils.c">
       <Filter>Source Files</Filter>
@@ -30,12 +30,12 @@
     <ClCompile Include="Matrix.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Menu.c">
+      <Filter>Source Files\Menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Menu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
+    <ClInclude Include="Main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Matrix.h">

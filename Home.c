@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "Menu.h"
+#include "Main.h"
 
 Menu m_home = {
 	// Baþlýk
@@ -11,21 +11,14 @@ Menu m_home = {
 	},
 	// Seçeneklerin çalýþtýracaðý fonksiyonlar
 	{
-		kill,
-		matrisDefinition
+		mf_back,
+		mf_define
 	}
 };
 
-// Özel fonksiyonlar
-
-int kill()
-{
-	printf("Program sonlandirildi.");
-	return 0;
-}
-
-int matrisDefinition()
+int mf_define(MxMemory* memory)
 {
 	printf("Henuz tanimlanmadi.");
+	(void)getchar();
 	return 1;
 }

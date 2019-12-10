@@ -1,22 +1,13 @@
 #include <stdio.h>
 #include <Windows.h>
-#include "Menu.h"
-#include "Utils.h"
-
-extern Menu m_home;
+#include "Main.h"
 
 int main()
 {
-	int opt, state = 1;
+	extern Menu m_home;
+	MxMemory memory = { 0 };
 
-	// Program ana yaþam döngüsü
-	while (state)
-	{
-		opt = getOption(m_home); // Ana sayfa menüsünü göster ve seçenek al
-		clear(); // Ekraný temizle
-		state = m_home.functions[opt](); // Seçeneðe karþýlýk gelen fonksiyonu çaðýr ve dönütü al
-		getSingleChar(); // Ekranýn kalmasý için kullanýcýdan bir karakter al
-	}
+	loop_menu(&m_home, &memory);
 
 	return 0;
 }

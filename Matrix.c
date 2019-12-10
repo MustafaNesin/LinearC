@@ -1,6 +1,6 @@
-#include "Matrix.h"
 #include <stdlib.h>
 #include <string.h>
+#include "Main.h"
 
 float* mx_get(Matrix* matrix, int row, int column)
 {
@@ -14,13 +14,13 @@ float* mx_get(Matrix* matrix, int row, int column)
 }
 
 
-int mx_is_eq(Matrix matrix1, Matrix matrix2)
+int mx_is_eq(Matrix* matrix1, Matrix* matrix2)
 {
-	if (matrix1.rowCount != matrix2.rowCount || matrix1.columnCount != matrix2.columnCount)
+	if (matrix1->rowCount != matrix2->rowCount || matrix1->columnCount != matrix2->columnCount)
 		return 0;
 
-	for (int i = 0; i < matrix1.rowCount * matrix1.columnCount; i++)
-		if (*matrix1.data++ != *matrix2.data++)
+	for (int i = 0; i < matrix1->rowCount * matrix1->columnCount; i++)
+		if (*(matrix1->data + i) != *(matrix2->data + i))
 			return 0;
 
 	return 1;
@@ -57,7 +57,7 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 
 Matrix* mx_sdot(float scalar, Matrix* matrix)
 {
-	Matrix* result = malloc(sizeof(Matrix));
+	Matrix* result = malloc(sizeof(matrix));
 
 	if (!result)
 		return 0;
@@ -111,7 +111,7 @@ Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
 
 Matrix* mx_t(Matrix* matrix)
 {
-	Matrix* result = malloc(sizeof(Matrix));
+	Matrix* result = malloc(sizeof(matrix));
 
 	if (!result)
 		return 0;
