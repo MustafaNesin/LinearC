@@ -1,8 +1,8 @@
 #pragma once
 typedef struct
 {
-	int rowCount;
-	int columnCount;
+	int rows;
+	int cols;
 	float* data;
 } Matrix;
 

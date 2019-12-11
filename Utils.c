@@ -2,15 +2,40 @@
 #include <stdio.h>
 #include <Windows.h>
 
-void scanl(char* format, ...)
+Node* new_node(MxMemory* memory, char name, Matrix* matrix)
 {
-	char c;
-	va_list args;
-	va_start(args, format);
-	(void)vscanf(format, args);
-	va_end(args);
+	if (!memory)
+		return 0;
 
-	while ((c = getchar()) != '\n' && c != EOF) {}
+	Node* node = calloc(1, sizeof(Node));
+	if (!node)
+		return 0;
+
+	node->name = name;
+	node->matrix = matrix;
+
+	if (memory->tail)
+	{
+		memory->tail->next = node;
+		node->prev = memory->tail;
+	}
+
+	return memory->tail = node;
+}
+
+Node* search_node(MxMemory* memory, char name)
+{
+	if (!memory)
+		return 0;
+
+	Node* node = memory->tail;
+	while (node)
+	{
+		if (node->name == name)
+			break;
+		node = node->prev;
+	}
+	return node;
 }
 
 void free_memory(MxMemory* memory)
@@ -35,8 +60,8 @@ void free_node(MxMemory* memory, Node* node)
 	else
 		memory->tail = node->prev;
 
-	free(node->mx->data);
-	free(node->mx);
+	free(node->matrix->data);
+	free(node->matrix);
 	free(node);
 }
 
@@ -104,4 +129,24 @@ void clear()
 		return;
 
 	SetConsoleCursorPosition(hConsole, coordScreen);
+}
+
+void scanl(char* format, ...)
+{
+	char c;
+	va_list args;
+	va_start(args, format);
+	(void)vscanf(format, args);
+	va_end(args);
+
+	while ((c = getchar()) != '\n' && c != EOF) {}
+}
+
+int get_char()
+{
+	int c = -1, _ = -1;
+	while ((_ = getchar()) != -1 && _ != '\n')
+		if (c == -1)
+			c = _;
+	return c;
 }
