@@ -65,47 +65,6 @@ void free_node(MxMemory* memory, Node* node)
 	free(node);
 }
 
-void loop_menu(Menu* menu, MxMemory* memory)
-{
-	int opt;
-	do
-	{
-		clear();
-		opt = show_menu(menu);
-		clear();
-	} while (menu->functions[opt](memory));
-}
-
-int show_menu(Menu* menu)
-{
-	char opt;
-	int i, error = 0;
-	do
-	{
-		clear();
-
-		printf("%s", menu->title);
-
-		for (i = 1; i < 10; i++)
-		{
-			printf("\n");
-			if (!menu->options[i])
-				continue;
-			printf("%d. %s", i, menu->options[i]);
-		}
-		if (menu->options[0])
-			printf("\n0. %s", menu->options[0]);
-
-		printf("\n%s", error ? "Lutfen uygun bir secenek secin." : " ");
-		printf("\n>>> ");
-
-		scanl("%c", &opt); 
-		opt -= '0';
-	} while (error = (opt < 0 || opt > 9 || !menu->options[opt]));
-
-	return opt;
-}
-
 void clear()
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);

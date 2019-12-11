@@ -4,10 +4,8 @@
 
 int main()
 {
-	extern Menu m_home;
 	MxMemory memory = { 0 };
 
-	loop_menu(&m_home, &memory);
 	free_memory(&memory);
 
 	return 0;

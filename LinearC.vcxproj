@@ -127,10 +127,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Home.c" />
     <ClCompile Include="Main.c" />
     <ClCompile Include="Matrix.c" />
-    <ClCompile Include="Menu.c" />
     <ClCompile Include="Utils.c" />
   </ItemGroup>
   <ItemGroup>
