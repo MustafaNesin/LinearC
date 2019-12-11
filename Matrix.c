@@ -166,7 +166,10 @@ int mx_row_op_coeff(Matrix* matrix, int row, float coeff)
 	if (coeff == 0 || row < 0 || row >= matrix->rowCount)
 		return 0;
 
-	// To be continued...
+	 for (int j = 0; j < matrix->columnCount; j++)
+		*mx_get(matrix, row, j) *= coeff;
+
+	 return 1;
 }
 
 int mx_row_op_add(Matrix* matrix, int row1, float coeff, int row2)
@@ -177,5 +180,8 @@ int mx_row_op_add(Matrix* matrix, int row1, float coeff, int row2)
 	if (coeff == 0 || row1 == row2 || row1 < 0 || row1 >= matrix->rowCount || row2 < 0 || row2 >= matrix->rowCount)
 		return 0;
 
-	// To be continued...
+	for (int j = 0; j < matrix->columnCount; j++)
+		*mx_get(matrix, row1, j) += coeff * *mx_get(matrix, row2, j);
+
+	return 1;
 }
