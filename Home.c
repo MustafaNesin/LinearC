@@ -8,17 +8,22 @@ Menu m_home = {
 	// Seçenekler
 	{
 		"Cikis",
-		"Matris Tanimla"
+		"Yeni Matris",
+		"Matris Listesi"
 	},
 	// Seçeneklerin çalýþtýracaðý fonksiyonlar
 	{
 		mf_back,
-		mf_define
+		mf_define,
+		mf_list
 	}
 };
 
 int mf_define(MxMemory* memory)
 {
+	if (!memory)
+		return 1;
+
 	int rows, cols;
 	char c, name;
 	Node* node;
@@ -27,6 +32,8 @@ int mf_define(MxMemory* memory)
 	{
 		printf("Matris Adi (Buyuk harf): ");
 		scanl("%c", &name);
+		if (name < 'A' || name > 'Z')
+			return mf_error("\nMatris adi buyuk bir harf olmalidir. (Yalnizca Ingiliz alfabesi harfleri)");
 		if (node = search_node(memory, name))
 		{
 			printf("\nAyni adda bir matris zaten var. Uzerine yazilsin mi? (E/H): ");
@@ -75,5 +82,26 @@ int mf_define(MxMemory* memory)
 			scanl("%f", d++);
 		}
 
+	return 1;
+}
+
+int mf_list(MxMemory* memory)
+{
+	if (!memory)
+		return 1;
+
+	int count = 0;
+
+	printf("\tAd\tSat\tSut");
+
+	Node* node = memory->tail;
+	while (node)
+	{
+		printf("\n%d.\t%c\t%d\t%d", ++count, node->name, node->matrix->rows, node->matrix->cols);
+		node = node->prev;
+	}
+
+	printf("\n\n%d adet matris bulundu.", count);
+	get_char();
 	return 1;
 }

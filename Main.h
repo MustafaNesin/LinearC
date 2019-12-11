@@ -36,6 +36,8 @@ int mf_back(MxMemory*);
 // Menüden matris tanýmla
 int mf_define(MxMemory*);
 
+// Tanýmlanmýþ matrisleri listele
+int mf_list(MxMemory*);
 
 
 /* ~~~ ARAÇLAR ~~~ */
