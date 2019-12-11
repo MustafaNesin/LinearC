@@ -2,6 +2,17 @@
 #include <stdio.h>
 #include <Windows.h>
 
+void scanl(char* format, ...)
+{
+	char c;
+	va_list args;
+	va_start(args, format);
+	(void)vscanf(format, args);
+	va_end(args);
+
+	while ((c = getchar()) != '\n' && c != EOF) {}
+}
+
 void free_memory(MxMemory* memory)
 {
 	if (!memory)
@@ -40,18 +51,10 @@ void loop_menu(Menu* menu, MxMemory* memory)
 	} while (menu->functions[opt](memory));
 }
 
-int get_char()
-{
-	int c = -1, _ = -1;
-	while ((_ = getchar()) != -1 && _ != '\n')
-		if (c == -1)
-			c = _;
-	return c;
-}
-
 int show_menu(Menu* menu)
 {
-	int opt, i, error = 0;
+	char opt;
+	int i, error = 0;
 	do
 	{
 		clear();
@@ -71,8 +74,9 @@ int show_menu(Menu* menu)
 		printf("\n%s", error ? "Lutfen uygun bir secenek secin." : " ");
 		printf("\n>>> ");
 
-		opt = get_char() - '0';
-	} while (error = (opt < 0 || opt > 10 || !menu->options[opt]));
+		scanl("%c", &opt); 
+		opt -= '0';
+	} while (error = (opt < 0 || opt > 9 || !menu->options[opt]));
 
 	return opt;
 }

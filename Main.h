@@ -46,12 +46,10 @@ void free_memory(MxMemory*);
 // Menüden çýkýlana kadar fonksiyonlarýný çalýþtýrmaya ve menüyü listelemeye devam et
 void loop_menu(Menu*, MxMemory*);
 
-// Kullanýcýnýn ekrana girdiði karakterlerden ilkini döndürür, kalanýný da imha eder
-// Dönüþ deðeri -1 ise karakter girilmemiþ demektir, yoksa karakterin kendisini döndürür
-int get_char();
-
 // Seçenek menüsü gösterir ve seçilen geçerli bir seçeneðin rakamýný döndürür
 int show_menu(Menu*);
 
 // Konsol ekranýný temizler
 void clear();
+
+void scanl(char* format, ...);
