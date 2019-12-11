@@ -3,7 +3,5 @@
 
 int mf_back(MxMemory* memory)
 {
-	printf("Program sonlandirildi.");
-
 	return 0;
 }

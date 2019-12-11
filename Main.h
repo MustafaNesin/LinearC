@@ -23,17 +23,25 @@ typedef struct
 
 
 
-/* MENU FONKSÝYONLARI */
+/* ~~~ MENU FONKSÝYONLARI ~~~ */
 
+// Üst menüye geriye dön.
 int mf_back(MxMemory*);
 
-// Home.c
+// ~~~ Home.c ~~~
 
+// Menüden matris tanýmla
 int mf_define(MxMemory*);
 
 
 
-/* ARAÇLAR */
+/* ~~~ ARAÇLAR ~~~ */
+
+// Verilen düðümü listeden siler, düðümü ve içerdiði matrisin hafýzasýný serbest býrakýr.
+void free_node(Node*);
+
+// Tüm düðümleri siler ve hafýzayý serbest býrakýr.
+void free_memory(MxMemory*);
 
 // Menüden çýkýlana kadar fonksiyonlarýný çalýþtýrmaya ve menüyü listelemeye devam et
 void loop_menu(Menu*, MxMemory*);

@@ -8,6 +8,7 @@ int main()
 	MxMemory memory = { 0 };
 
 	loop_menu(&m_home, &memory);
+	free_memory(&memory);
 
 	return 0;
 }

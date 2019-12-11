@@ -2,6 +2,33 @@
 #include <stdio.h>
 #include <Windows.h>
 
+void free_memory(MxMemory* memory)
+{
+	if (!memory)
+		return;
+
+	while (memory->tail)
+		free_node(memory, memory->tail);
+}
+
+void free_node(MxMemory* memory, Node* node)
+{
+	if (!memory || !node)
+		return;
+
+	if (node->prev)
+		node->prev->next = node->next;
+
+	if (node->next)
+		node->next->prev = node->prev;
+	else
+		memory->tail = node->prev;
+
+	free(node->mx->data);
+	free(node->mx);
+	free(node);
+}
+
 void loop_menu(Menu* menu, MxMemory* memory)
 {
 	int opt;
