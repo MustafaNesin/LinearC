@@ -139,7 +139,7 @@ void scanl(char* format, ...)
 	(void)vscanf(format, args);
 	va_end(args);
 
-	while ((c = getchar()) != '\n' && c != EOF) {}
+	(void)get_char();
 }
 
 int get_char()

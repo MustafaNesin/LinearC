@@ -28,6 +28,9 @@ typedef struct
 
 /* ~~~ MENU FONKSÝYONLARI ~~~ */
 
+// Hata mesajý göster.
+int mf_error(char*, ...);
+
 // Üst menüye geriye dön.
 int mf_back(MxMemory*);
 
@@ -48,7 +51,7 @@ Node* new_node(MxMemory*, char, Matrix*);
 Node* search_node(MxMemory*, char);
 
 // Verilen düðümü listeden siler, düðümü ve içerdiði matrisin hafýzasýný serbest býrakýr.
-void free_node(Node*);
+void free_node(MxMemory*, Node*);
 
 // Tüm düðümleri siler ve hafýzayý serbest býrakýr.
 void free_memory(MxMemory*);
@@ -65,5 +68,3 @@ void clear();
 void scanl(char*, ...);
 
 int get_char();
-
-int mf_error(char*, ...);
