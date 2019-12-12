@@ -15,24 +15,22 @@ typedef struct Node
 typedef struct
 {
 	Node* tail;
-} MxMemory;
+} Memory;
 
 // Yeni bir matris düðümü oluþturur ve hafýzanýn sonuna (tail) ekler.
-Node* new_node(MxMemory*, char, Matrix*);
+Node* new_node(Memory*, char, Matrix*);
 
 // Hafýzada matris adýnda düðüm arar. Bulunan düðümü dönderir. 
 // Eðer bulunamazsa NULL (0) döndürür.
-Node* search_node(MxMemory*, char);
+Node* search_node(Memory*, char);
 
 // Verilen düðümü listeden siler, düðümü ve içerdiði matrisin hafýzasýný serbest býrakýr.
-void free_node(MxMemory*, Node*);
+void free_node(Memory*, Node*);
 
 // Tüm düðümleri siler ve hafýzayý serbest býrakýr.
-void free_memory(MxMemory*);
+void free_memory(Memory*);
 
 // Konsol ekranýný temizler
 void clear();
 
-void scanl(char*, ...);
-
-int get_char();
+int parse_line(Memory);
