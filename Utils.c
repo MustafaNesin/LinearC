@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <Windows.h>
 
-Node* new_node(MxMemory* memory, char name, Matrix* matrix)
+Node* new_node(Memory* memory, char name, Matrix* matrix)
 {
 	if (!memory)
 		return 0;
@@ -23,7 +23,7 @@ Node* new_node(MxMemory* memory, char name, Matrix* matrix)
 	return memory->tail = node;
 }
 
-Node* search_node(MxMemory* memory, char name)
+Node* search_node(Memory* memory, char name)
 {
 	if (!memory)
 		return 0;
@@ -38,7 +38,7 @@ Node* search_node(MxMemory* memory, char name)
 	return node;
 }
 
-void free_memory(MxMemory* memory)
+void free_memory(Memory* memory)
 {
 	if (!memory)
 		return;
@@ -47,7 +47,7 @@ void free_memory(MxMemory* memory)
 		free_node(memory, memory->tail);
 }
 
-void free_node(MxMemory* memory, Node* node)
+void free_node(Memory* memory, Node* node)
 {
 	if (!memory || !node)
 		return;
@@ -65,7 +65,7 @@ void free_node(MxMemory* memory, Node* node)
 	free(node);
 }
 
-void loop_menu(Menu* menu, MxMemory* memory)
+void loop_menu(Menu* menu, Memory* memory)
 {
 	int opt;
 	do
