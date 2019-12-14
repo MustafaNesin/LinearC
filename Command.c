@@ -75,6 +75,12 @@ void parse_command(char* input, ParsedCommand* parsed)
 			}
 			else if (*input == ',')
 			{
+				if (!f)
+				{
+					// Boş argümanlar kabul edilemez
+					parsed->argcount = 0;
+					return;
+				}
 				*input++ = '\0';
 				if (++parsed->argcount == MAX_ARG_COUNT)
 				{
@@ -86,6 +92,12 @@ void parse_command(char* input, ParsedCommand* parsed)
 			}
 			else if (*input == ')')
 			{
+				if (!f)
+				{
+					// Boş argümanlar kabul edilemez
+					parsed->argcount = 0;
+					return;
+				}
 				*input = '\0';
 				parsed->argcount++;
 				return;
