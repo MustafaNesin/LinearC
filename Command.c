@@ -116,7 +116,7 @@ void cmd_help(Memory* memory, ParsedCommand* parsed)
 {
 	if (parsed->argcount > 1)
 	{
-		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)", parsed->name);
+		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)\n", parsed->name);
 		return;
 	}
 
@@ -130,23 +130,24 @@ void cmd_help(Memory* memory, ParsedCommand* parsed)
 			printf(": %s", memory->commands[cmd]->help);
 		}
 
+		printf("\n");
 		return;
 	}
 
 	for (int cmd = 0; cmd < CMD_COUNT; cmd++)
 		if (!strcmp(parsed->args[0], memory->commands[cmd]->name))
 		{
-			printf("%s", memory->commands[cmd]->help);
+			printf("%s\n", memory->commands[cmd]->help);
 			return;
 		}
-	printf("Komut bulunamadi: %s", parsed->args[0]);
+	printf("Komut bulunamadi: %s\n", parsed->args[0]);
 }
 
 void cmd_clear(Memory* memory, ParsedCommand* parsed)
 {
 	if (parsed->argcount)
 	{
-		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)", parsed->name);
+		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)\n", parsed->name);
 		return;
 	}
 	clear();
@@ -156,7 +157,7 @@ void cmd_list(Memory* memory, ParsedCommand* parsed)
 {
 	if (parsed->argcount)
 	{
-		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)", parsed->name);
+		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)\n", parsed->name);
 		return;
 	}
 
@@ -168,21 +169,21 @@ void cmd_list(Memory* memory, ParsedCommand* parsed)
 		node = node->prev;
 	}
 
-	printf("%d adet matris bulundu.", count);
+	printf("%d adet matris bulundu.\n", count);
 }
 
 void cmd_print(Memory* memory, ParsedCommand* parsed)
 {
 	if (parsed->argcount != 1)
 	{
-		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)", parsed->name);
+		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)\n", parsed->name);
 		return;
 	}
 
 	Node* node = mem_search(memory, *parsed->args[0]);
 	if (!node)
 	{
-		printf("%s adinda bir matris bulunamadi.", parsed->args[0]);
+		printf("%s adinda bir matris bulunamadi.\n", parsed->args[0]);
 		return;
 	}
 
@@ -196,5 +197,5 @@ void cmd_print(Memory* memory, ParsedCommand* parsed)
 		printf("|\n");
 	}
 
-	printf("Boyut: %d satir, %d sutun", node->matrix->rows, node->matrix->cols);
+	printf("Boyut: %d satir, %d sutun\n", node->matrix->rows, node->matrix->cols);
 }

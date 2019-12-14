@@ -201,9 +201,6 @@ void menu_console(Memory* memory)
 			command->function(memory, &parsed);
 		}
 
-		if (strcmp(parsed.name, memory->commands[CMD_CLEAR]->name))
-			printf("\n");
-
 		printf("> ");
 		length = 0;
 		command = NULL;

@@ -60,9 +60,9 @@ Memory* init_mem()
 	commands[1]->help = "Komutlar hakkinda bilgi verir.\n\tKullanim: help\n\tKullanim: help(KOMUT)\n\tOrnek: help\n\tOrnek: help(list)";
 	commands[1]->function = cmd_help;
 
-	commands[CMD_CLEAR]->name = "clear";
-	commands[CMD_CLEAR]->help = "Konsolu temizler.";
-	commands[CMD_CLEAR]->function = cmd_clear;
+	commands[2]->name = "clear";
+	commands[2]->help = "Konsolu temizler.";
+	commands[2]->function = cmd_clear;
 
 	commands[3]->name = "list";
 	commands[3]->help = "Tanimli matrisleri listeler.";

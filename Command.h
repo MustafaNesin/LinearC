@@ -1,6 +1,5 @@
 #pragma once
 #include "Memory.h"
-#define CMD_CLEAR 2
 #define CMD_COUNT 5	// Dikkat! Her yeni komut eklenildiðinde bu sayý artýrýlmalýdýr.
 
 void parse_command(char* input, ParsedCommand* parsed);
