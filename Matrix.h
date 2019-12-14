@@ -1,39 +1,12 @@
 #pragma once
-typedef struct
-{
-	int rows;
-	int cols;
-	float* data;
-} Matrix;
+#include "Memory.h"
 
-// Verilen satýr ve sütun indisine göre matrisin oraya konumlandýrýlmýþ göstericisini döndürür.
-float* mx_get(Matrix*, int, int);
-
-// Verilen iki matris birbirine eþit deðilse NULL (0) döndürür.
-int mx_is_eq(Matrix*, Matrix*);
-
-// Verilen iki matrisi toplamýný döndürür.
-// Eðer matrislerin boyutu birbirine eþit deðilse NULL (0) döndürür.
-Matrix* mx_add(Matrix*, Matrix*);
-
-// Verilen sayý ile matrisin çarpýmýný döndürür.
-Matrix* mx_sdot(float, Matrix*);
-
-// Verilen iki matrisin çarpýmýný döndürür.
-// Eðer birinci matrisin sütun sayýsý ikinci matrisin satýr sayýna eþit deðilse NULL (0) döndürür.
-Matrix* mx_dot(Matrix*, Matrix*);
-
-// Verilen matrisin transpozunu döndürür.
-Matrix* mx_t(Matrix*);
-
-// Elementer satýr iþlemleri 1: Yer deðiþtirme
-// Eðer iþlem baþarýsýz olursa NULL (0) döndürür.
-int mx_row_op_switch(Matrix*, int, int);
-
-// Elementer satýr iþlemleri 2: Bir katsayý ile çarpma
-// Eðer iþlem baþarýsýz olursa NULL (0) döndürür.
-int mx_row_op_coeff(Matrix*, int, float);
-
-// Elementer satýr iþlemleri 3: Baþka bir satýrýn katýný ekleme
-// Eðer iþlem baþarýsýz olursa NULL (0) döndürür.
-int mx_row_op_add(Matrix*, int, float, int);
+float* mx_get(Matrix* matrix, int row, int col);
+int mx_iseq(Matrix* matrix1, Matrix* matrix2);
+Matrix* mx_add(Matrix* matrix1, Matrix* matrix2);
+Matrix* mx_sdot(float scalar, Matrix* matrix);
+Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2);
+Matrix* mx_t(Matrix* matrix);
+void mx_rowswitch(Matrix* matrix, int row1, int row2);
+void mx_rowcoeff(Matrix* matrix, int row, float coeff);
+void mx_rowadd(Matrix* matrix, int row1, float coeff, int row2);

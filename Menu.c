@@ -1,36 +1,60 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "Main.h"
+#include <string.h>
+#include "Command.h"
+#include "Utils.h"
 
-Menu m_home = {
-	// Baþlýk
-	"LineerC | Ana Menu",
-	// Seçenekler
-	{
-		"Cikis",
-		"Yeni Matris",
-		"Matris Listesi",
-		"Islemler"
-	},
-	// Seçeneklerin çalýþtýracaðý fonksiyonlar
-	{
-		mf_back,
-		mf_define,
-		mf_list,
-		mf_console
-	}
-};
-
-int mf_back(Memory* memory)
+void loop_menu(Menu* menu, Memory* memory)
 {
-	return 0;
+	if (!menu || !memory)
+		return;
+
+	void (*func)(void*);
+
+	while (func = menu->functions[show_menu(menu)])
+	{
+		clear();
+		func(memory);
+	}
 }
 
-int mf_define(Memory* memory)
+int show_menu(Menu* menu)
+{
+	if (!menu)
+		return 0;
+
+	int opt, i, error = 0;
+
+	do
+	{
+		clear();
+
+		printf("%s", menu->title);
+
+		for (i = 1; i < 10; i++)
+		{
+			printf("\n");
+			if (!menu->options[i])
+				continue;
+			printf("%d. %s", i, menu->options[i]);
+		}
+		if (menu->options[0])
+			printf("\n0. %s", menu->options[0]);
+
+		printf("\n%s", error ? "Lutfen uygun bir secenek secin." : " ");
+		printf("\n>>> ");
+
+		scanl("%d", &opt);
+	} while (error = (opt < 0 || opt > 9 || !menu->options[opt]));
+
+	return opt;
+}
+
+void menu_define(Memory* memory)
 {
 	if (!memory)
-		return 1;
+		return;
 
 	int rows, cols;
 	char c, name;
@@ -41,14 +65,22 @@ int mf_define(Memory* memory)
 		printf("Matris Adi (Buyuk harf): ");
 		scanl("%c", &name);
 		if (name < 'A' || name > 'Z')
-			return print_error("\nMatris adi buyuk bir harf olmalidir. (Yalnizca Ingiliz alfabesi harfleri)");
-		if (node = search_node(memory, name))
+		{
+			printf("\nMatris adi buyuk bir harf olmalidir. (Yalnizca Ingiliz alfabesi harfleri)");
+			get_char();
+			return;
+		}
+		if (node = mem_search(memory, name))
 		{
 			printf("\nAyni adda bir matris zaten var. Uzerine yazilsin mi? (E/H): ");
 			scanl("%c", &c);
 			if ((c | 0x20) != 'e')
-				return print_error("\nMatris tanimlanmadi.");
-			free_node(memory, node);
+			{
+				printf("\nMatris tanimlanamadi.");
+				get_char();
+				return;
+			}
+			mem_remove(memory, node);
 		}
 	}
 
@@ -56,29 +88,43 @@ int mf_define(Memory* memory)
 	{
 		printf("Satir Sayisi: ");
 		scanl("%d", &rows);
-		if (rows < MIN_DEF_MX_SIZE || rows > MAX_DEF_MX_SIZE)
-			return print_error("\nMatris satir sayisi %d ile %d arasinda olmalidir.", MIN_DEF_MX_SIZE, MAX_DEF_MX_SIZE);
+		if (rows < MIN_MATRIX_SIZE || rows > MAX_MATRIX_SIZE)
+		{
+			printf("\nMatris satir sayisi %d ile %d arasinda olmalidir.", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
+			get_char();
+			return;
+		}
 
 		printf("Sutun Sayisi: ");
 		scanl("%d", &cols);
-		if (cols < MIN_DEF_MX_SIZE || cols > MAX_DEF_MX_SIZE)
-			return print_error("\nMatris sutun sayisi %d ile %d arasinda olmalidir.", MIN_DEF_MX_SIZE, MAX_DEF_MX_SIZE);
+		if (cols < MIN_MATRIX_SIZE || cols > MAX_MATRIX_SIZE)
+		{
+			printf("\nMatris sutun sayisi %d ile %d arasinda olmalidir.", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
+			get_char();
+			return;
+		}
 	}
 
 	// Matris oluþtur
 	Matrix* matrix = malloc(sizeof(Matrix));
 	{
 		if (!matrix)
-			return print_error("\nYeni matris icin bellek yeri ayirilirken hata olustu.");
+		{
+			printf("\nYeni matris icin bellek yeri ayirilirken hata olustu.");
+			get_char();
+			return;
+		}
 		matrix->data = calloc(rows * cols, sizeof(float));
 		if (!matrix->data)
 		{
 			free(matrix);
-			return print_error("\nYeni matris verisi icin bellek yeri ayirilirken hata olustu.");
+			printf("\nYeni matris verisi icin bellek yeri ayirilirken hata olustu.");
+			get_char();
+			return;
 		}
 		matrix->rows = rows;
 		matrix->cols = cols;
-		node = new_node(memory, name, matrix);
+		node = mem_new(memory, name, matrix);
 	}
 
 	// Matris içeriðini al
@@ -93,10 +139,10 @@ int mf_define(Memory* memory)
 	return 1;
 }
 
-int mf_list(Memory* memory)
+void menu_list(Memory* memory)
 {
 	if (!memory)
-		return 1;
+		return;
 
 	int count = 0;
 
@@ -111,29 +157,71 @@ int mf_list(Memory* memory)
 
 	printf("\n\n%d adet matris bulundu.", count);
 	get_char();
-	return 1;
 }
 
-int mf_console(Memory* memory)
+void menu_console(Memory* memory)
 {
-	int input, cont = 1;
+	if (!memory)
+		return;
 
+	Command* command = 0;
+	int input, length = 0, cmd;
+	char buffer[CON_BUFFER_SIZE];
+
+	printf("Konsol hakkinda yardim almak icin help, geri donmek icin return yazin.\n> ");
+
+	next:
 	input = getchar();
-	if (input == EOF)
-		return 0;
-	if (input == '\n')
-		return cont;
 
-	// To be continued...
+	if (input == -1)
+		return;
+
+	if (input == '\n')
+	{
+		if (!length)
+		{
+			printf("> ");
+			goto next;
+		}
+
+		buffer[length] = 0;
+		for (cmd = 0; cmd < CMD_COUNT; cmd++)
+			if (!memcmp(buffer, memory->commands[cmd]->name, strlen(memory->commands[cmd]->name)))
+				command = memory->commands[cmd];
+
+		if (!command)
+			printf("Suna iliskin bir komut bulunamadi: %s", buffer);
+		else
+		{
+			if (!command->function)
+				return;
+			command->function(memory, buffer + strlen(command->name));
+		}
+
+		if (memcmp(buffer, memory->commands[CMD_CLEAR]->name, strlen(memory->commands[CMD_CLEAR]->name)))
+			printf("\n");
+
+		printf("> ");
+		length = 0;
+		command = NULL;
+		goto next;
+	}
+
+	buffer[length++] = (char)input;
+	if (length == CON_BUFFER_SIZE)
+	{
+		printf("\nKonsola yazilabilecek maksimum karakter sayisi (%d) asildi.", length);
+		get_char();
+		length = 0;
+		goto next;
+	}
+	goto next;
 }
 
-int print_error(char* format, ...)
+void menu_equation(Memory* memory)
 {
-	va_list args;
-	va_start(args, format);
-	vprintf(format, args);
-	va_end(args);
+	if (!memory)
+		return;
 
-	get_char();
-	return 1;
+	// ...
 }

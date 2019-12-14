@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <Windows.h>
-#include "Main.h"
+#include "Memory.h"
+#include "Menu.h"
 
 int main()
 {
-	extern Menu m_home;
-	Memory memory = { 0 };
+	Memory* memory = init_mem();
 
-	loop_menu(&m_home, &memory);
-	free_memory(&memory);
+	if (!memory)
+		return EXIT_FAILURE;
 
-	return 0;
+	loop_menu(memory->home, memory);
+	free_mem(memory);
+
+	return EXIT_SUCCESS;
 }
