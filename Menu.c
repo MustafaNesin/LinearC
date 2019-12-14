@@ -181,7 +181,7 @@ void menu_console(Memory* memory)
 		buffer[length] = '\0';
 		parse_command(buffer, &parsed);
 
-		if (!*parsed.name)
+		if (!parsed.name || !*parsed.name)
 		{
 			printf("> ");
 			length = 0;
