@@ -69,7 +69,7 @@ Memory* init_mem()
 	commands[3]->function = cmd_list;
 
 	commands[4]->name = "print";
-	commands[4]->help = "Matrisi gosterir.\n\tKullanim: print([MATRIS])\n\tOrnek: print(A)";
+	commands[4]->help = "Matrisi gosterir.\n\tKullanim: print(MATRIS)\n\tOrnek: print(A)";
 	commands[4]->function = cmd_print;
 
 	memory->tail = NULL;
