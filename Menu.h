@@ -4,9 +4,9 @@
 void loop_menu(Menu* menu, Memory* memory);
 int show_menu(Menu* menu);
 
-void menu_define(Memory* memory);
-void menu_list(Memory* memory);
-void menu_console(Memory* memory);
-void menu_equation(Memory* memory);
-void menu_save(Memory* memory);
-void menu_load(Memory* memory);
+void menu_define(MENU_FUNC_PARAMS);
+void menu_list(MENU_FUNC_PARAMS);
+void menu_console(MENU_FUNC_PARAMS);
+void menu_equation(MENU_FUNC_PARAMS);
+void menu_save(MENU_FUNC_PARAMS);
+void menu_load(MENU_FUNC_PARAMS);

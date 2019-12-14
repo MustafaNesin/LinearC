@@ -1,6 +1,8 @@
 #pragma once
 #include "Memory.h"
 
+Matrix* mx_assign(Matrix* dest, Matrix* src);
+Matrix* mx_copy(Matrix* matrix);
 float* mx_get(Matrix* matrix, int row, int col);
 int mx_iseq(Matrix* matrix1, Matrix* matrix2);
 Matrix* mx_add(Matrix* matrix1, Matrix* matrix2);

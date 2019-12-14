@@ -11,7 +11,7 @@ void loop_menu(Menu* menu, Memory* memory)
 	if (!menu || !memory)
 		return;
 
-	void (*func)(void*);
+	void (*func)(MENU_FUNC_PARAMS);
 
 	while (func = menu->functions[show_menu(menu)])
 	{
@@ -52,7 +52,7 @@ int show_menu(Menu* menu)
 	return opt;
 }
 
-void menu_define(Memory* memory)
+void menu_define(MENU_FUNC_PARAMS)
 {
 	if (!memory)
 		return;
@@ -125,7 +125,7 @@ void menu_define(Memory* memory)
 		}
 		matrix->rows = rows;
 		matrix->cols = cols;
-		node = mem_new(memory, name, matrix);
+		node = mem_add(memory, name, matrix);
 	}
 
 	// Matris içeriðini al
@@ -138,7 +138,7 @@ void menu_define(Memory* memory)
 		}
 }
 
-void menu_list(Memory* memory)
+void menu_list(MENU_FUNC_PARAMS)
 {
 	if (!memory)
 		return;
@@ -158,16 +158,18 @@ void menu_list(Memory* memory)
 	get_char();
 }
 
-void menu_console(Memory* memory)
+void menu_console(MENU_FUNC_PARAMS)
 {
 	if (!memory)
 		return;
 
+	Matrix mxreg = { 0 };
 	Command* command = 0;
-	ParsedCommand parsed = { 0 };
-	int input, length = 0, cmd;
-	char buffer[CON_BUFFER_SIZE];
+	Parsed parsed = { 0 };
+	int input;
+	char buffer[CON_BUFFER_SIZE], length = 0, cmd;
 
+	memory->matrix = &mxreg;
 	printf("Konsol hakkinda yardim almak icin help, geri donmek icin return yazin.\n> ");
 
 	next:
@@ -193,7 +195,7 @@ void menu_console(Memory* memory)
 				command = memory->commands[cmd];
 
 		if (!command)
-			printf("Suna iliskin bir komut bulunamadi: %s", parsed.name);
+			printf("Suna iliskin bir komut bulunamadi: %s\n", parsed.name);
 		else
 		{
 			if (!command->function)
@@ -218,14 +220,11 @@ void menu_console(Memory* memory)
 	goto next;
 
 	end:
-	if (memory->matrix)
-	{
-		free(memory->matrix);
-		memory->matrix = NULL;
-	}
+	if (memory->matrix->data)
+		free(memory->matrix->data);
 }
 
-void menu_equation(Memory* memory)
+void menu_equation(MENU_FUNC_PARAMS)
 {
 	if (!memory)
 		return;
@@ -233,7 +232,7 @@ void menu_equation(Memory* memory)
 	// ...
 }
 
-void menu_save(Memory* memory)
+void menu_save(MENU_FUNC_PARAMS)
 {
 	if (!memory)
 		return;
@@ -241,7 +240,7 @@ void menu_save(Memory* memory)
 	// ...
 }
 
-void menu_load(Memory* memory)
+void menu_load(MENU_FUNC_PARAMS)
 {
 	if (!memory)
 		return;

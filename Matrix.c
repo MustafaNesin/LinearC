@@ -2,6 +2,45 @@
 #include <string.h>
 #include "Matrix.h"
 
+Matrix* mx_assign(Matrix* dest, Matrix* src)
+{
+	float* data = malloc(src->rows * src->cols * sizeof(float));
+	if (!data)
+		return NULL;
+
+	dest->rows = src->rows;
+	dest->cols = src->cols;
+
+	if (dest->data)
+		free(dest->data);
+	dest->data = data;
+
+	memcpy(dest->data, src->data, src->rows * src->cols * sizeof(float));
+	return dest;
+}
+
+Matrix* mx_copy(Matrix* matrix)
+{
+	Matrix* copy = malloc(sizeof(Matrix));
+	if (!copy)
+		return NULL;
+	memcpy(copy, matrix, sizeof(Matrix));
+
+	float* data = malloc(matrix->rows * matrix->cols * sizeof(float));
+	if (!data)
+	{
+		free(copy);
+		return NULL;
+	}
+	memcpy(data, matrix->data, matrix->rows * matrix->cols * sizeof(float));
+
+	copy->rows = matrix->rows;
+	copy->cols = matrix->cols;
+	copy->data = data;
+
+	return copy;
+}
+
 float* mx_get(Matrix* matrix, int row, int col)
 {
 	return matrix->data + row * matrix->cols + col;
@@ -21,7 +60,7 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 	Matrix* result = malloc(sizeof(Matrix));
 
 	if (!result)
-		return 0;
+		return NULL;
 
 	result->rows = matrix1->rows;
 	result->cols = matrix1->cols;
@@ -30,7 +69,7 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 	if (!result->data)
 	{
 		free(result);
-		return 0;
+		return NULL;
 	}
 
 	for (int i = 0; i < result->rows * result->cols; i++)
@@ -44,7 +83,7 @@ Matrix* mx_sdot(float scalar, Matrix* matrix)
 	Matrix* result = malloc(sizeof(matrix));
 
 	if (!result)
-		return 0;
+		return NULL;
 
 	result->rows = matrix->rows;
 	result->cols = matrix->cols;
@@ -53,7 +92,7 @@ Matrix* mx_sdot(float scalar, Matrix* matrix)
 	if (!result->data)
 	{
 		free(result);
-		return 0;
+		return NULL;
 	}
 
 	for (int i = 0; i < result->rows * result->cols; i++)
@@ -76,7 +115,7 @@ Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
 	if (!result->data)
 	{
 		free(result);
-		return 0;
+		return NULL;
 	}
 
 	for (int i = 0, j, k, p = 0; i < result->rows; i++)
@@ -92,7 +131,7 @@ Matrix* mx_t(Matrix* matrix)
 	Matrix* result = malloc(sizeof(matrix));
 
 	if (!result)
-		return 0;
+		return NULL;
 
 	result->rows = matrix->cols;
 	result->cols = matrix->rows;
@@ -101,7 +140,7 @@ Matrix* mx_t(Matrix* matrix)
 	if (!result->data)
 	{
 		free(result);
-		return 0;
+		return NULL;
 	}
 
 	for (int j = 0, p = 0; j < result->rows; j++)

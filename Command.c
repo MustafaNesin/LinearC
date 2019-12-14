@@ -5,8 +5,9 @@
 #include "Command.h"
 #include "Utils.h"
 #include "Menu.h"
+#include "Matrix.h"
 
-void parse_command(char* input, ParsedCommand* parsed)
+void parse_command(char* input, Parsed* parsed)
 {
 	char* o_input = input;
 	parsed->name = NULL;
@@ -124,13 +125,10 @@ void parse_command(char* input, ParsedCommand* parsed)
 	goto loop;
 }
 
-void cmd_help(Memory* memory, ParsedCommand* parsed)
+void cmd_help(CMD_FUNC_PARAMS)
 {
 	if (parsed->argcount > 1)
-	{
-		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)\n", parsed->name);
-		return;
-	}
+		CMD_FUNC_PARAM_COUNT_FAIL
 
 	if (!parsed->argcount)
 	{
@@ -155,23 +153,18 @@ void cmd_help(Memory* memory, ParsedCommand* parsed)
 	printf("Komut bulunamadi: %s\n", parsed->args[0]);
 }
 
-void cmd_clear(Memory* memory, ParsedCommand* parsed)
+void cmd_clear(CMD_FUNC_PARAMS)
 {
 	if (parsed->argcount)
-	{
-		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)\n", parsed->name);
-		return;
-	}
+		CMD_FUNC_PARAM_COUNT_FAIL
+
 	clear();
 }
 
-void cmd_list(Memory* memory, ParsedCommand* parsed)
+void cmd_list(CMD_FUNC_PARAMS)
 {
 	if (parsed->argcount)
-	{
-		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)\n", parsed->name);
-		return;
-	}
+		CMD_FUNC_PARAM_COUNT_FAIL
 
 	int count = 0;
 	Node* node = memory->tail;
@@ -184,13 +177,10 @@ void cmd_list(Memory* memory, ParsedCommand* parsed)
 	printf("%d adet matris bulundu.\n", count);
 }
 
-void cmd_print(Memory* memory, ParsedCommand* parsed)
+void cmd_print(CMD_FUNC_PARAMS)
 {
 	if (parsed->argcount != 1)
-	{
-		printf("Parametre sayisi uyusmuyor.\nYardim: help(%s)\n", parsed->name);
-		return;
-	}
+		CMD_FUNC_PARAM_COUNT_FAIL
 
 	Node* node = mem_search(memory, *parsed->args[0]);
 	if (!node)
@@ -199,7 +189,8 @@ void cmd_print(Memory* memory, ParsedCommand* parsed)
 		return;
 	}
 
-	memory->matrix = node->matrix;
+	if (!mx_assign(memory->matrix, node->matrix))
+		printf("Matris bellege alinamadi.");
 
 	for (int i = 0, j, p = 0; i < node->matrix->rows; i++)
 	{
@@ -210,4 +201,60 @@ void cmd_print(Memory* memory, ParsedCommand* parsed)
 	}
 
 	printf("Boyut: %d satir, %d sutun\n", node->matrix->rows, node->matrix->cols);
+}
+
+void cmd_assign(CMD_FUNC_PARAMS)
+{
+	if (parsed->argcount != 1)
+		CMD_FUNC_PARAM_COUNT_FAIL
+
+	if (!memory->matrix->data)
+	{
+		printf("Konsolda bellege alinmis bir matris yok.\n");
+		return;
+	}
+
+	Node* node;
+	char name = *parsed->args[0], c;
+
+	if (*(parsed->args[0] + 1))
+	{
+		printf("Tanimlanacak olan matris degiskeninin adi tek harften olusmalidir.\n");
+		return;
+	}
+
+	if (name < 'A' || name > 'Z')
+	{
+		printf("Matris adi buyuk bir harf olmalidir. (Yalnizca Ingiliz alfabesi harfleri)\n");
+		return;
+	}
+
+	if (node = mem_search(memory, name))
+	{
+		printf("Ayni adda bir matris zaten var. Uzerine yazilsin mi? (E/H): ");
+		scanl("%c", &c);
+		if ((c | 0x20) != 'e')
+		{
+			printf("Matris tanimlanamadi.\n");
+			return;
+		}
+		mem_remove(memory, node);
+	}
+
+	Matrix* copy = mx_copy(memory->matrix);
+	if (!copy)
+	{
+		printf("Matris tanimlanamadi.\n");
+		return;
+	}
+
+	if (!mem_add(memory, name, copy))
+	{
+		free(copy->data);
+		free(copy);
+		printf("Matris tanimlanamadi.\n");
+		return;
+	}
+
+	printf("%c matrisi basariyla tanimlandi.\n", name);
 }

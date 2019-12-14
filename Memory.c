@@ -6,19 +6,19 @@ Memory* init_mem()
 {
 	Memory* memory = malloc(sizeof(Memory) + CMD_COUNT * sizeof(void*));
 	if (!memory)
-		return 0;
+		return NULL;
 	Menu* home = calloc(1, sizeof(Menu));
 	if (!home)
 	{
 		free(memory);
-		return 0;
+		return NULL;
 	}
 	Command** commands = malloc(CMD_COUNT * sizeof(Command*));
 	if (!commands)
 	{
 		free(home);
 		free(memory);
-		return 0;
+		return NULL;
 	}
 	for (int cmd = 0; cmd < CMD_COUNT; cmd++)
 	{
@@ -30,7 +30,7 @@ Memory* init_mem()
 			free(commands);
 			free(home);
 			free(memory);
-			return 0;
+			return NULL;
 		}
 	}
 
@@ -72,6 +72,10 @@ Memory* init_mem()
 	commands[4]->help = "Matrisi gosterir.\n\tKullanim: print(MATRIS)\n\tOrnek: print(A)";
 	commands[4]->function = cmd_print;
 
+	commands[5]->name = "assign";
+	commands[5]->help = "Yazdirilan son matrisi yeni bir degiskene atar.\n\tKullanim: assign(MATRIS)\n\tOrnek: assign(B)";
+	commands[5]->function = cmd_assign;
+
 	memory->tail = NULL;
 	memory->matrix = NULL;
 	memory->home = home;
@@ -88,9 +92,6 @@ void free_mem(Memory* memory)
 	while (memory->tail)
 		mem_remove(memory, memory->tail);
 
-	if (memory->matrix)
-		free(memory->matrix);
-
 	for (int cmd = 0; cmd < CMD_COUNT; cmd++)
 		free(memory->commands[cmd]);
 
@@ -99,14 +100,14 @@ void free_mem(Memory* memory)
 	free(memory);
 }
 
-Node* mem_new(Memory* memory, char name, Matrix* matrix)
+Node* mem_add(Memory* memory, char name, Matrix* matrix)
 {
 	if (!memory)
-		return 0;
+		return NULL;
 
 	Node* node = calloc(1, sizeof(Node));
 	if (!node)
-		return 0;
+		return NULL;
 
 	node->name = name;
 	node->matrix = matrix;
@@ -123,7 +124,7 @@ Node* mem_new(Memory* memory, char name, Matrix* matrix)
 Node* mem_search(Memory* memory, char name)
 {
 	if (!memory)
-		return 0;
+		return NULL;
 
 	Node* node = memory->tail;
 	while (node)

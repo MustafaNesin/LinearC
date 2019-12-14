@@ -4,53 +4,63 @@
 #define MAX_MATRIX_SIZE 10
 #define MAX_ARG_COUNT 5
 
-typedef struct
+typedef struct Memory	Memory;
+typedef struct Matrix	Matrix;
+typedef struct Menu		Menu;
+typedef struct Command	Command;
+typedef struct Parsed	Parsed;
+typedef struct Node		Node;
+
+#define MENU_FUNC_PARAMS	Memory* memory
+#define CMD_FUNC_PARAMS		Memory* memory, Parsed* parsed
+
+struct Matrix
 {
 	int rows;
 	int cols;
 	float* data;
-} Matrix;
+};
 
-typedef struct
+struct Parsed
 {
 	char* name;
 	char argcount;
 	char* args[MAX_ARG_COUNT];
-} ParsedCommand;
+};
 
-typedef struct
+struct Command
 {
 	char* name; // Küçük harflerden ve alt çizgi karakterinden oluþmalýdýr.
 	char* help;
-	void (*function)(void* memory, ParsedCommand* parsed);
-} Command;
+	void (*function)(CMD_FUNC_PARAMS);
+};
 
-typedef struct
+struct Menu
 {
 	char* title;
 	char* options[10];
-	void (*functions[10])(void* memory);
-} Menu;
+	void (*functions[10])(MENU_FUNC_PARAMS);
+};
 
-typedef struct Node
+struct Node
 {
-	struct Node* prev;
-	struct Node* next;
+	Node* prev;
+	Node* next;
 	Matrix* matrix;
 	char name;
-} Node;
+};
 
-typedef struct
+struct Memory
 {
 	Node* tail;
 	Matrix* matrix;
 	Menu* home;
 	Command** commands;
-} Memory;
+};
 
 Memory* init_mem();
 void free_mem(Memory* memory);
 
-Node* mem_new(Memory* memory, char name, Matrix* matrix);
+Node* mem_add(Memory* memory, char name, Matrix* matrix);
 Node* mem_search(Memory* memory, char name);
 void mem_remove(Memory* memory, Node* node);
