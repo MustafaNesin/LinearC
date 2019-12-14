@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Command.h"
+#include "Menu.h"
 #include "Utils.h"
 
 void loop_menu(Menu* menu, Memory* memory)
@@ -135,8 +136,6 @@ void menu_define(Memory* memory)
 			printf("%c[%d, %d] = ", name, i + 1, j + 1);
 			scanl("%f", d++);
 		}
-
-	return 1;
 }
 
 void menu_list(Memory* memory)
@@ -165,6 +164,7 @@ void menu_console(Memory* memory)
 		return;
 
 	Command* command = 0;
+	ParsedCommand parsed = { 0 };
 	int input, length = 0, cmd;
 	char buffer[CON_BUFFER_SIZE];
 
@@ -174,31 +174,34 @@ void menu_console(Memory* memory)
 	input = getchar();
 
 	if (input == -1)
-		return;
+		goto end;
 
 	if (input == '\n')
 	{
-		if (!length)
+		buffer[length] = '\0';
+		parse_command(buffer, &parsed);
+
+		if (!*parsed.name)
 		{
 			printf("> ");
+			length = 0;
 			goto next;
 		}
 
-		buffer[length] = 0;
 		for (cmd = 0; cmd < CMD_COUNT; cmd++)
-			if (!memcmp(buffer, memory->commands[cmd]->name, strlen(memory->commands[cmd]->name)))
+			if (!strcmp(parsed.name, memory->commands[cmd]->name))
 				command = memory->commands[cmd];
 
 		if (!command)
-			printf("Suna iliskin bir komut bulunamadi: %s", buffer);
+			printf("Suna iliskin bir komut bulunamadi: %s", parsed.name);
 		else
 		{
 			if (!command->function)
-				return;
-			command->function(memory, buffer + strlen(command->name));
+				goto end;
+			command->function(memory, &parsed);
 		}
 
-		if (memcmp(buffer, memory->commands[CMD_CLEAR]->name, strlen(memory->commands[CMD_CLEAR]->name)))
+		if (strcmp(parsed.name, memory->commands[CMD_CLEAR]->name))
 			printf("\n");
 
 		printf("> ");
@@ -216,9 +219,32 @@ void menu_console(Memory* memory)
 		goto next;
 	}
 	goto next;
+
+	end:
+	if (memory->matrix)
+	{
+		free(memory->matrix);
+		memory->matrix = NULL;
+	}
 }
 
 void menu_equation(Memory* memory)
+{
+	if (!memory)
+		return;
+
+	// ...
+}
+
+void menu_save(Memory* memory)
+{
+	if (!memory)
+		return;
+
+	// ...
+}
+
+void menu_load(Memory* memory)
 {
 	if (!memory)
 		return;

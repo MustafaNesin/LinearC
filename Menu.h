@@ -8,3 +8,5 @@ void menu_define(Memory* memory);
 void menu_list(Memory* memory);
 void menu_console(Memory* memory);
 void menu_equation(Memory* memory);
+void menu_save(Memory* memory);
+void menu_load(Memory* memory);

@@ -41,19 +41,23 @@ Memory* init_mem()
 	home->options[2] = "Matris Listesi";
 	home->options[3] = "Islemler";
 	home->options[4] = "Denklem Cozucu";
+	home->options[5] = "Hafizayi Kaydet";
+	home->options[6] = "Hafizayi Yukle";
 
 	home->functions[0] = NULL;
 	home->functions[1] = menu_define;
 	home->functions[2] = menu_list;
 	home->functions[3] = menu_console;
 	home->functions[4] = menu_equation;
+	home->functions[5] = menu_save;
+	home->functions[6] = menu_load;
 
 	commands[0]->name = "return";
 	commands[0]->help = "Ana menuye dondurur.";
 	commands[0]->function = NULL;
 
 	commands[1]->name = "help";
-	commands[1]->help = "Komutlar hakkinda bilgi verir.\n\tKullanim: help\n\tKullanim: help [KOMUT]\n\tOrnek: help\n\tOrnek: help list";
+	commands[1]->help = "Komutlar hakkinda bilgi verir.\n\tKullanim: help\n\tKullanim: help(KOMUT)\n\tOrnek: help\n\tOrnek: help(list)";
 	commands[1]->function = cmd_help;
 
 	commands[CMD_CLEAR]->name = "clear";
@@ -69,6 +73,7 @@ Memory* init_mem()
 	commands[4]->function = cmd_print;
 
 	memory->tail = NULL;
+	memory->matrix = NULL;
 	memory->home = home;
 	memory->commands = commands;
 
@@ -82,6 +87,9 @@ void free_mem(Memory* memory)
 
 	while (memory->tail)
 		mem_remove(memory, memory->tail);
+
+	if (memory->matrix)
+		free(memory->matrix);
 
 	for (int cmd = 0; cmd < CMD_COUNT; cmd++)
 		free(memory->commands[cmd]);
