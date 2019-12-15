@@ -239,7 +239,7 @@ void cmd_define(CMD_FUNC_PARAMS)
 
 	if (mem_search(memory, name))
 	{
-		printf("Ayni adda bir matris zaten var.\n\n");
+		printf("%c adinda bir matris zaten var.\n\n", name);
 		return;
 	}
 
@@ -368,4 +368,59 @@ void cmd_transpose(CMD_FUNC_PARAMS)
 		mx_free(memory->matrix);
 	memory->matrix = matrix;
 	mx_print(matrix);
+}
+
+void cmd_add(CMD_FUNC_PARAMS)
+{
+	if (!parsed->argcount || parsed->argcount > 2)
+		CMD_FUNC_PARAMS_FAIL;
+
+	Matrix *matrix1, *matrix2, *sum;
+	if (parsed->argcount == 1)
+	{
+		if (!memory->matrix)
+		{
+			printf("Konsolda bellege alinmis bir matris yok.\n\n");
+			return;
+		}
+		Node* node = mem_search(memory, *parsed->args[0]);
+		if (!node)
+		{
+			printf("%s adinda bir matris bulunamadi.\n\n", parsed->args[0]);
+			return;
+		}
+
+		matrix1 = memory->matrix;
+		matrix2 = node->matrix;
+	}
+	else
+	{
+		Node* node1 = mem_search(memory, *parsed->args[0]);
+		if (!node1)
+		{
+			printf("%s adinda bir matris bulunamadi.\n\n", parsed->args[0]);
+			return;
+		}
+		Node* node2 = mem_search(memory, *parsed->args[1]);
+		if (!node2)
+		{
+			printf("%s adinda bir matris bulunamadi.\n\n", parsed->args[1]);
+			return;
+		}
+
+		matrix1 = node1->matrix;
+		matrix2 = node2->matrix;
+	}
+
+	if (matrix1->rows != matrix2->rows || matrix1->cols != matrix2->cols)
+	{
+		printf("Toplama yapabilmek icin matrislerin boyutlari birbirine esit olmalidir.\n\n");
+		return;
+	}
+
+	sum = mx_add(matrix1, matrix2);
+	if (memory->matrix)
+		mx_free(memory->matrix);
+	memory->matrix = sum;
+	mx_print(sum);
 }

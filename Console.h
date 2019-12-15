@@ -1,6 +1,6 @@
 #pragma once
 #include "Memory.h"
-#define CMD_COUNT 8	// Dikkat! Her yeni komut eklenildiðinde bu sayý artýrýlmalýdýr.
+#define CMD_COUNT 9	// Dikkat! Her yeni komut eklenildiðinde bu sayý artýrýlmalýdýr.
 
 #define CMD_FUNC_PARAMS_FAIL \
 { \
@@ -40,6 +40,10 @@ delete(all)                   Tanimlanmis tum matrisleri siler."
 transpose                     Son matrisin transpozunu alir.\n\
 transpose(X)                  X matrisinin transpozunu alir."
 
+#define CMD_HELP_ADD		"\
+add(X)                        Son matris ile X matrisini toplar.\n\
+add(X, Y)                     X matrisi ile Y matrisini toplar."
+
 
 void parse_command(char* input, Parsed* parsed);
 Matrix* test_command(CMD_FUNC_PARAMS);
@@ -51,3 +55,4 @@ void cmd_print(CMD_FUNC_PARAMS);
 void cmd_define(CMD_FUNC_PARAMS);
 void cmd_delete(CMD_FUNC_PARAMS);
 void cmd_transpose(CMD_FUNC_PARAMS);
+void cmd_add(CMD_FUNC_PARAMS);

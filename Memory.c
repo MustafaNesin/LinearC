@@ -86,6 +86,10 @@ Memory* init_mem()
 	commands[7]->help = CMD_HELP_TRANSPOSE;
 	commands[7]->function = cmd_transpose;
 
+	commands[8]->name = "add";
+	commands[8]->help = CMD_HELP_ADD;
+	commands[8]->function = cmd_add;
+
 	memory->tail = NULL;
 	memory->matrix = NULL;
 	memory->home = home;
