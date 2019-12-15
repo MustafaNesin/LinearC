@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "Command.h"
 #include "Utils.h"
@@ -133,14 +134,7 @@ void cmd_help(CMD_FUNC_PARAMS)
 	if (!parsed->argcount)
 	{
 		for (int cmd = 0; cmd < CMD_COUNT; cmd++)
-		{
-			if (cmd)
-				printf("\n\n");
-			printf("%s", memory->commands[cmd]->name);
-			printf(": %s", memory->commands[cmd]->help);
-		}
-
-		printf("\n");
+			printf("%s\n", memory->commands[cmd]->help);
 		return;
 	}
 

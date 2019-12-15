@@ -106,7 +106,7 @@ Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
 	Matrix* result = malloc(sizeof(Matrix));
 
 	if (!result)
-		return 0;
+		return NULL;
 
 	result->rows = matrix1->rows;
 	result->cols = matrix2->cols;

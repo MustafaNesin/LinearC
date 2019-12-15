@@ -1,8 +1,8 @@
 #pragma once
-#define CON_BUFFER_SIZE 255
-#define MIN_MATRIX_SIZE 1
-#define MAX_MATRIX_SIZE 10
-#define MAX_ARG_COUNT 5
+#define CON_BUFFER_SIZE	255
+#define MIN_MATRIX_SIZE	1
+#define MAX_MATRIX_SIZE	10
+#define MAX_ARG_COUNT	5
 
 typedef struct Memory	Memory;
 typedef struct Matrix	Matrix;

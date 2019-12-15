@@ -34,15 +34,15 @@ Memory* init_mem()
 		}
 	}
 
-	home->title = "LineerC | Mustafa Nesin & Cem Ufuk Yilmaz";
+	home->title = HOME_TITLE;
 
-	home->options[0] = "Cikis";
-	home->options[1] = "Yeni Matris";
-	home->options[2] = "Matris Listesi";
-	home->options[3] = "Islemler";
-	home->options[4] = "Denklem Cozucu";
-	home->options[5] = "Hafizayi Kaydet";
-	home->options[6] = "Hafizayi Yukle";
+	home->options[0] = HOME_OPT0;
+	home->options[1] = HOME_OPT1;
+	home->options[2] = HOME_OPT2;
+	home->options[3] = HOME_OPT3;
+	home->options[4] = HOME_OPT4;
+	home->options[5] = HOME_OPT5;
+	home->options[6] = HOME_OPT6;
 
 	home->functions[0] = NULL;
 	home->functions[1] = menu_define;
@@ -53,27 +53,27 @@ Memory* init_mem()
 	home->functions[6] = menu_load;
 
 	commands[0]->name = "return";
-	commands[0]->help = "Ana menuye dondurur.";
+	commands[0]->help = CMD_HELP_RETURN;
 	commands[0]->function = NULL;
 
 	commands[1]->name = "help";
-	commands[1]->help = "Komutlar hakkinda bilgi verir.\n\tKullanim: help\n\tKullanim: help(KOMUT)\n\tOrnek: help\n\tOrnek: help(list)";
+	commands[1]->help = CMD_HELP_HELP;
 	commands[1]->function = cmd_help;
 
 	commands[2]->name = "clear";
-	commands[2]->help = "Konsolu temizler.";
+	commands[2]->help = CMD_HELP_CLEAR;
 	commands[2]->function = cmd_clear;
 
 	commands[3]->name = "list";
-	commands[3]->help = "Tanimli matrisleri listeler.";
+	commands[3]->help = CMD_HELP_LIST;
 	commands[3]->function = cmd_list;
 
 	commands[4]->name = "print";
-	commands[4]->help = "Matrisi gosterir.\n\tKullanim: print(MATRIS)\n\tOrnek: print(A)";
+	commands[4]->help = CMD_HELP_PRINT;
 	commands[4]->function = cmd_print;
 
 	commands[5]->name = "assign";
-	commands[5]->help = "Yazdirilan son matrisi yeni bir degiskene atar.\n\tKullanim: assign(MATRIS)\n\tOrnek: assign(B)";
+	commands[5]->help = CMD_HELP_ASSIGN;
 	commands[5]->function = cmd_assign;
 
 	memory->tail = NULL;
