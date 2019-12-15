@@ -2,7 +2,7 @@
 #define CON_BUFFER_SIZE	255
 #define MIN_MATRIX_SIZE	1
 #define MAX_MATRIX_SIZE	10
-#define MAX_ARG_COUNT	5
+#define MAX_PARAM_COUNT	5
 
 typedef struct Memory	Memory;
 typedef struct Matrix	Matrix;
@@ -25,7 +25,7 @@ struct Parsed
 {
 	char* name;
 	char argcount;
-	char* args[MAX_ARG_COUNT];
+	char* args[MAX_PARAM_COUNT];
 };
 
 struct Command
@@ -61,6 +61,7 @@ struct Memory
 Memory* init_mem();
 void free_mem(Memory* memory);
 
+Node* mem_new(Memory* memory, char name, int rows, int cols, float* data);
 Node* mem_add(Memory* memory, char name, Matrix* matrix);
 Node* mem_search(Memory* memory, char name);
 void mem_remove(Memory* memory, Node* node);

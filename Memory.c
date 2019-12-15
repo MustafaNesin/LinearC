@@ -1,5 +1,6 @@
 #include <stdlib.h>
-#include "Command.h"
+#include "Console.h"
+#include "Matrix.h"
 #include "Menu.h"
 
 Memory* init_mem()
@@ -7,6 +8,7 @@ Memory* init_mem()
 	Memory* memory = malloc(sizeof(Memory) + CMD_COUNT * sizeof(void*));
 	if (!memory)
 		return NULL;
+
 	Menu* home = calloc(1, sizeof(Menu));
 	if (!home)
 	{
@@ -72,9 +74,17 @@ Memory* init_mem()
 	commands[4]->help = CMD_HELP_PRINT;
 	commands[4]->function = cmd_print;
 
-	commands[5]->name = "assign";
-	commands[5]->help = CMD_HELP_ASSIGN;
-	commands[5]->function = cmd_assign;
+	commands[5]->name = "define";
+	commands[5]->help = CMD_HELP_DEFINE;
+	commands[5]->function = cmd_define;
+
+	commands[6]->name = "delete";
+	commands[6]->help = CMD_HELP_DELETE;
+	commands[6]->function = cmd_delete;
+
+	commands[7]->name = "transpose";
+	commands[7]->help = CMD_HELP_TRANSPOSE;
+	commands[7]->function = cmd_transpose;
 
 	memory->tail = NULL;
 	memory->matrix = NULL;
@@ -98,6 +108,22 @@ void free_mem(Memory* memory)
 	free(memory->commands);
 	free(memory->home);
 	free(memory);
+}
+
+Node* mem_new(Memory* memory, char name, int rows, int cols, float* data)
+{
+	Matrix* matrix = mx_new(rows, cols, data);
+	if (!matrix)
+		return NULL;
+
+	Node* node = mem_add(memory, name, matrix);
+	if (!node)
+	{
+		free(matrix);
+		return NULL;
+	}
+
+	return node;
 }
 
 Node* mem_add(Memory* memory, char name, Matrix* matrix)
@@ -149,7 +175,6 @@ void mem_remove(Memory* memory, Node* node)
 	else
 		memory->tail = node->prev;
 
-	free(node->matrix->data);
-	free(node->matrix);
+	mx_free(node->matrix);
 	free(node);
 }

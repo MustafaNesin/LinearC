@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Command.c" />
+    <ClCompile Include="Console.c" />
     <ClCompile Include="Main.c" />
     <ClCompile Include="Matrix.c" />
     <ClCompile Include="Memory.c" />
@@ -135,7 +135,7 @@
     <ClCompile Include="Utils.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Command.h" />
+    <ClInclude Include="Console.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Memory.h" />

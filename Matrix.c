@@ -1,44 +1,149 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "Matrix.h"
 
-Matrix* mx_assign(Matrix* dest, Matrix* src)
+Matrix* mx_new(int rows, int cols, float* data)
 {
-	float* data = malloc(src->rows * src->cols * sizeof(float));
-	if (!data)
+	Matrix* matrix = malloc(sizeof(Matrix));
+
+	if (!matrix)
 		return NULL;
 
-	dest->rows = src->rows;
-	dest->cols = src->cols;
+	matrix->rows = rows;
+	matrix->cols = cols;
+	matrix->data = data;
 
-	if (dest->data)
-		free(dest->data);
-	dest->data = data;
+	return matrix;
+}
 
-	memcpy(dest->data, src->data, src->rows * src->cols * sizeof(float));
-	return dest;
+void mx_free(Matrix* matrix)
+{
+	free(matrix->data);
+	free(matrix);
+}
+
+void mx_print(Matrix* matrix)
+{
+	for (int i = 0, j, p = 0; i < matrix->rows; i++)
+	{
+		printf("| ");
+
+		for (j = 0; j < matrix->cols; j++, p++)
+			printf("%10g ", *(matrix->data + p));
+
+		printf("|\n");
+	}
+	printf("Boyut: %d satir, %d sutun\n\n", matrix->rows, matrix->cols);
 }
 
 Matrix* mx_copy(Matrix* matrix)
 {
-	Matrix* copy = malloc(sizeof(Matrix));
-	if (!copy)
-		return NULL;
-	memcpy(copy, matrix, sizeof(Matrix));
+	int dsize = matrix->rows * matrix->cols * sizeof(float);
+	float* data = malloc(dsize);
 
-	float* data = malloc(matrix->rows * matrix->cols * sizeof(float));
 	if (!data)
+		return NULL;
+
+	(void)memcpy(data, matrix->data, dsize);
+
+	Matrix* copy = mx_new(matrix->rows, matrix->cols, data);
+	if (!copy)
 	{
-		free(copy);
+		free(data);
 		return NULL;
 	}
-	memcpy(data, matrix->data, matrix->rows * matrix->cols * sizeof(float));
-
-	copy->rows = matrix->rows;
-	copy->cols = matrix->cols;
-	copy->data = data;
-
 	return copy;
+}
+
+Matrix* mx_create_all(int rows, int cols, float value)
+{
+	float* data = malloc(rows * cols * sizeof(float));
+
+	if (!data)
+		return NULL;
+
+	Matrix* matrix = mx_new(rows, cols, data);
+	if (!matrix)
+	{
+		free(data);
+		return NULL;
+	}
+
+	for (int i = 0, j; i < rows; i++)
+		for (j = 0; j < cols; j++)
+			*data++ = value;
+
+	return matrix;
+}
+
+Matrix* mx_create_diag(int size, float value)
+{
+	float* data = calloc(size * size, sizeof(float));
+
+	if (!data)
+		return NULL;
+
+	Matrix* matrix = mx_new(size, size, data);
+
+	if (!matrix)
+	{
+		free(data);
+		return NULL;
+	}
+
+	for (int i = 0, j, p = 0; i < size; i++)
+		for (j = 0; j < size; j++, p++)
+			if (i == j)
+				*(data + p) = value;
+
+	return matrix;
+}
+
+Matrix* mx_create_low(int size, float value)
+{
+	float* data = calloc(size * size, sizeof(float));
+
+	if (!data)
+		return NULL;
+
+	Matrix* matrix = mx_new(size, size, data);
+
+	if (!matrix)
+	{
+		free(data);
+		return NULL;
+	}
+
+	for (int i = 0, j, p = 0; i < size; i++)
+		for (j = 0; j < size; j++, p++)
+			if (i >= j)
+				*(data + p) = value;
+
+	return matrix;
+}
+
+Matrix* mx_create_up(int size, float value)
+{
+	float* data = calloc(size * size, sizeof(float));
+
+	if (!data)
+		return NULL;
+
+	Matrix* matrix = mx_new(size, size, data);
+
+	if (!matrix)
+	{
+		free(data);
+		return NULL;
+	}
+
+	for (int i = 0, j, p = 0; i < size; i++)
+		for (j = 0; j < size; j++, p++)
+			if (i <= j)
+				*(data + p) = value;
+
+	return matrix;
 }
 
 float* mx_get(Matrix* matrix, int row, int col)
@@ -46,7 +151,7 @@ float* mx_get(Matrix* matrix, int row, int col)
 	return matrix->data + row * matrix->cols + col;
 }
 
-int mx_iseq(Matrix* matrix1, Matrix* matrix2)
+int mx_isequal(Matrix* matrix1, Matrix* matrix2)
 {
 	for (int i = 0; i < matrix1->rows * matrix1->cols; i++)
 		if (*(matrix1->data + i) != *(matrix2->data + i))
@@ -80,7 +185,7 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 
 Matrix* mx_sdot(float scalar, Matrix* matrix)
 {
-	Matrix* result = malloc(sizeof(matrix));
+	Matrix* result = malloc(sizeof(Matrix));
 
 	if (!result)
 		return NULL;
@@ -126,9 +231,9 @@ Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
 	return result;
 }
 
-Matrix* mx_t(Matrix* matrix)
+Matrix* mx_transpose(Matrix* matrix)
 {
-	Matrix* result = malloc(sizeof(matrix));
+	Matrix* result = malloc(sizeof(Matrix));
 
 	if (!result)
 		return NULL;
@@ -143,8 +248,8 @@ Matrix* mx_t(Matrix* matrix)
 		return NULL;
 	}
 
-	for (int j = 0, p = 0; j < result->rows; j++)
-		for (int i = 0; i < result->cols; i++, p++)
+	for (int j = 0, i, p = 0; j < result->rows; j++)
+		for (i = 0; i < result->cols; i++, p++)
 			*(result->data + p) = *mx_get(matrix, i, j);
 
 	return result;
@@ -160,9 +265,9 @@ void mx_rowswitch(Matrix* matrix, int row1, int row2)
 	float* r1 = matrix->data + row1 * matrix->cols;
 	float* r2 = matrix->data + row2 * matrix->cols;
 
-	memcpy(temp, r1, row_size);	// temp	= r1
-	memcpy(r1, r2, row_size);	// r1 = r2
-	memcpy(r2, temp, row_size);	// r2 = temp
+	(void)memcpy(temp, r1, row_size);
+	(void)memcpy(r1, r2, row_size);
+	(void)memcpy(r2, temp, row_size);
 
 	free(temp);
 }

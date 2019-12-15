@@ -2,7 +2,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Command.h"
+#include "Console.h"
+#include "Matrix.h"
 #include "Menu.h"
 #include "Utils.h"
 
@@ -59,9 +60,9 @@ void menu_define(MENU_FUNC_PARAMS)
 
 	int rows, cols;
 	char c, name;
-	Node* node;
+	float* data;
 
-	// Matris adý al, ayný adda varsa üstüne yazýlýp yazýlmayacaðýný sor
+	// Matris adý al, ayný adda varsa üzerine yazýlýp yazýlmayacaðýný sor
 	{
 		printf("Matris Adi (Buyuk harf): ");
 		scanl("%c", &name);
@@ -71,6 +72,7 @@ void menu_define(MENU_FUNC_PARAMS)
 			get_char();
 			return;
 		}
+		Node* node;
 		if (node = mem_search(memory, name))
 		{
 			printf("\nAyni adda bir matris zaten var. Uzerine yazilsin mi? (E/H): ");
@@ -107,34 +109,30 @@ void menu_define(MENU_FUNC_PARAMS)
 	}
 
 	// Matris oluþtur
-	Matrix* matrix = malloc(sizeof(Matrix));
 	{
-		if (!matrix)
+		data = calloc(rows * cols, sizeof(float));
+		if (!data)
 		{
-			printf("\nYeni matris icin bellek yeri ayirilirken hata olustu.");
-			get_char();
-			return;
-		}
-		matrix->data = calloc(rows * cols, sizeof(float));
-		if (!matrix->data)
-		{
-			free(matrix);
 			printf("\nYeni matris verisi icin bellek yeri ayirilirken hata olustu.");
 			get_char();
 			return;
 		}
-		matrix->rows = rows;
-		matrix->cols = cols;
-		node = mem_add(memory, name, matrix);
+
+		if (!mem_new(memory, name, rows, cols, data))
+		{
+			free(data);
+			printf("\nYeni matris icin bellek yeri ayirilirken hata olustu.");
+			get_char();
+			return;
+		}
 	}
 
-	// Matris içeriðini al
-	float* d = matrix->data;
-	for (int i = 0, j; i < rows; i++)
-		for (j = 0; j < cols; j++)
+	// Matris içeriðini al;
+	for (int i = 0, j, p = 0; i < rows; i++)
+		for (j = 0; j < cols; j++, p++)
 		{
 			printf("%c[%d, %d] = ", name, i + 1, j + 1);
-			scanl("%f", d++);
+			scanl("%f", data + p);
 		}
 }
 
@@ -163,13 +161,11 @@ void menu_console(MENU_FUNC_PARAMS)
 	if (!memory)
 		return;
 
-	Matrix mxreg = { 0 };
 	Command* command = 0;
 	Parsed parsed = { 0 };
 	int input;
 	char buffer[CON_BUFFER_SIZE], length = 0, cmd;
 
-	memory->matrix = &mxreg;
 	printf("Konsol hakkinda yardim almak icin help, geri donmek icin return yazin.\n> ");
 
 	next:
@@ -195,7 +191,7 @@ void menu_console(MENU_FUNC_PARAMS)
 				command = memory->commands[cmd];
 
 		if (!command)
-			printf("Suna iliskin bir komut bulunamadi: %s\n", parsed.name);
+			printf("%s adinda bir fonksiyon bulunamadi. (Fonksiyon listesi icin help yazin.)\n", parsed.name);
 		else
 		{
 			if (!command->function)
@@ -220,8 +216,9 @@ void menu_console(MENU_FUNC_PARAMS)
 	goto next;
 
 	end:
-	if (memory->matrix->data)
-		free(memory->matrix->data);
+	if (memory->matrix)
+		mx_free(memory->matrix);
+	memory->matrix = NULL;
 }
 
 void menu_equation(MENU_FUNC_PARAMS)
