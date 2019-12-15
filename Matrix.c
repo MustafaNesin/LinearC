@@ -153,6 +153,11 @@ float* mx_get(Matrix* matrix, int row, int col)
 	return matrix->data + row * matrix->cols + col;
 }
 
+void mx_set(Matrix* matrix, int row, int col, float value)
+{
+	*mx_get(matrix, row, col) = value;
+}
+
 int mx_isequal(Matrix* matrix1, Matrix* matrix2)
 {
 	for (int i = 0; i < matrix1->rows * matrix1->cols; i++)

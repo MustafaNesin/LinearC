@@ -1,6 +1,6 @@
 #pragma once
 #include "Memory.h"
-#define CMD_COUNT 10	// Dikkat! Her yeni komut eklenildiðinde bu sayý artýrýlmalýdýr.
+#define CMD_COUNT 12	// Dikkat! Her yeni komut eklenildiðinde bu sayý artýrýlmalýdýr.
 
 #define CMD_PARAMS_FAIL \
 { \
@@ -53,18 +53,26 @@ print(X)                      X matrisini yazdirir."
 
 #define CMD_HELP_DEFINE		"\
 define(X)                     Son matrisi X adiyla tanimlar.\n\t\
-define(X, all, A, R, C)       Tum elemanlari A olan, R satirli, C sutunlu bir X matrisi tanimlar.\n\t\
-define(X, diag, A, S)         Kosegen elemanlari A olan, S satirli bir X matrisi tanimlar.\n\t\
-define(X, low, A, S)          Elemanlari A olan, S satirli bir X alt ucgen matrisi tanimlar.\n\t\
-define(X, up, A, S)           Elemanlari A olan, S satirli bir X ust ucgen matrisi tanimlar."
+define(X, R, C, all, A)       Tum elemanlari A olan, R satirli, C sutunlu bir X matrisi tanimlar.\n\t\
+define(X, S, diag, A)         Kosegen elemanlari A olan, S satirli bir X matrisi tanimlar.\n\t\
+define(X, S, low, A)          Elemanlari A olan, S satirli bir X alt ucgen matrisi tanimlar.\n\t\
+define(X, S, up, A)           Elemanlari A olan, S satirli bir X ust ucgen matrisi tanimlar."
 
 #define CMD_HELP_DELETE		"\
 delete(X)                     Tanimlanmis X matrisini siler.\n\t\
 delete(all)                   Tanimlanmis tum matrisleri siler."
 
-#define CMD_HELP_EQUAL		"\
-equal(X)                      Son matris ile X matrisinin esit olup olmadigini yazar.\n\t\
-equal(X, Y)                   X matrisi ile Y matrisinin esit olup olmadigini yazar."
+#define CMD_HELP_GET		"\
+get(R, C)                     Son matrisin R'inci satir C'inci sutunundaki degeri alir.\n\t\
+get(X, R, C)                  X matrisinin R'inci satir C'inci sutunundaki degeri alir."
+
+#define CMD_HELP_SET		"\
+set(R, C, A)                  Son matrisin R'inci satir C'inci sutunundaki degerini A'ya esitler.\n\t\
+set(X, R, C, A)               X matrisinin R'inci satir C'inci sutunundaki degerini A'ya esitler."
+
+#define CMD_HELP_ISEQUAL	"\
+isequal(X)                    Son matris ile X matrisinin esit olup olmadigini yazar.\n\t\
+isequal(X, Y)                 X matrisi ile Y matrisinin esit olup olmadigini yazar."
 
 #define CMD_HELP_TRANSPOSE	"\
 transpose                     Son matrisin transpozunu alir.\n\t\
@@ -76,8 +84,8 @@ add(X, Y)                     X matrisi ile Y matrisini toplar."
 
 
 void parse_command(char* input, Parsed* parsed);
-void get_one_mx(CMD_PARAMS, Matrix** matrix);
-void get_two_mx(CMD_PARAMS, Matrix** matrix1, Matrix** matrix2);
+void get_one_mx(CMD_PARAMS, int minargs, Matrix** matrix);
+void get_two_mx(CMD_PARAMS, int minargs, Matrix** matrix1, Matrix** matrix2);
 
 void cmd_help(CMD_PARAMS);
 void cmd_clear(CMD_PARAMS);
@@ -85,6 +93,8 @@ void cmd_list(CMD_PARAMS);
 void cmd_print(CMD_PARAMS);
 void cmd_define(CMD_PARAMS);
 void cmd_delete(CMD_PARAMS);
-void cmd_equal(CMD_PARAMS);
+void cmd_get(CMD_PARAMS);
+void cmd_set(CMD_PARAMS);
+void cmd_isequal(CMD_PARAMS);
 void cmd_transpose(CMD_PARAMS);
 void cmd_add(CMD_PARAMS);

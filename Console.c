@@ -126,11 +126,11 @@ void parse_command(char* input, Parsed* parsed)
 	goto loop;
 }
 
-void get_one_mx(CMD_PARAMS, Matrix** matrix)
+void get_one_mx(CMD_PARAMS, int minargs, Matrix** matrix)
 {
 	*matrix = NULL;
 
-	if (parsed->argcount)
+	if (parsed->argcount != minargs)
 	{
 		Node* node = mem_search(memory, *parsed->args[0]);
 
@@ -147,11 +147,11 @@ void get_one_mx(CMD_PARAMS, Matrix** matrix)
 	*matrix = memory->matrix;
 }
 
-void get_two_mx(CMD_PARAMS, Matrix** matrix1, Matrix** matrix2)
+void get_two_mx(CMD_PARAMS, int minargs, Matrix** matrix1, Matrix** matrix2)
 {
 	*matrix1 = *matrix2 = NULL;
 
-	if (parsed->argcount == 1)
+	if (parsed->argcount == minargs)
 	{
 		if (!memory->matrix)
 			CMD_MATRIX_FAIL;
@@ -233,7 +233,7 @@ void cmd_print(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix* matrix;
-	get_one_mx(memory, parsed, &matrix);
+	get_one_mx(memory, parsed, 0, &matrix);
 	if (!matrix)
 		return;
 
@@ -283,15 +283,15 @@ void cmd_define(CMD_PARAMS)
 
 	else if (parsed->argcount == 5)
 	{
-		if (strcmp(parsed->args[1], "all"))
+		if (strcmp(parsed->args[3], "all"))
 			CMD_PARAMS_FAIL;
 
 		int rows, cols;
 		float value;
 
-		(void)sscanf(parsed->args[2], "%f", &value);
-		(void)sscanf(parsed->args[3], "%d", &rows);
-		(void)sscanf(parsed->args[4], "%d", &cols);
+		(void)sscanf(parsed->args[1], "%d", &rows);
+		(void)sscanf(parsed->args[2], "%d", &cols);
+		(void)sscanf(parsed->args[4], "%f", &value);
 
 		if (rows < MIN_MATRIX_SIZE || rows > MAX_MATRIX_SIZE)
 		{
@@ -313,8 +313,8 @@ void cmd_define(CMD_PARAMS)
 		int size;
 		float value;
 
-		(void)sscanf(parsed->args[2], "%f", &value);
-		(void)sscanf(parsed->args[3], "%d", &size);
+		(void)sscanf(parsed->args[1], "%d", &size);
+		(void)sscanf(parsed->args[3], "%f", &value);
 
 		if (size < MIN_MATRIX_SIZE || size > MAX_MATRIX_SIZE)
 		{
@@ -322,11 +322,11 @@ void cmd_define(CMD_PARAMS)
 			return;
 		}
 
-		if (!strcmp(parsed->args[1], "diag"))
+		if (!strcmp(parsed->args[2], "diag"))
 			matrix = mx_create_diag(size, value);
-		else if (!strcmp(parsed->args[1], "low"))
+		else if (!strcmp(parsed->args[2], "low"))
 			matrix = mx_create_low(size, value);
-		else if (!strcmp(parsed->args[1], "up"))
+		else if (!strcmp(parsed->args[2], "up"))
 			matrix = mx_create_up(size, value);
 		else
 			CMD_PARAMS_FAIL;
@@ -370,13 +370,76 @@ void cmd_delete(CMD_PARAMS)
 	printf("\t%c matrisi silindi.\n\n", *parsed->args[0]);
 }
 
-void cmd_equal(CMD_PARAMS)
+void cmd_get(CMD_PARAMS)
+{
+	if (parsed->argcount < 2 || parsed->argcount > 3)
+		CMD_PARAMS_FAIL;
+
+	Matrix* matrix;
+	get_one_mx(memory, parsed, 2, &matrix);
+	if (!matrix)
+		return;
+
+	char shift = parsed->argcount - 2;
+	int row, col;
+	(void)sscanf(parsed->args[shift++], "%d", &row);
+	(void)sscanf(parsed->args[shift++], "%d", &col);
+
+	if (row < MIN_MATRIX_SIZE || row > matrix->rows)
+	{
+		printf("\tSatir indisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, matrix->rows);
+		return;
+	}
+
+	if (col < MIN_MATRIX_SIZE || col > matrix->cols)
+	{
+		printf("\tSutun indisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, matrix->cols);
+		return;
+	}
+
+	printf("%g", *mx_get(matrix, row - 1, col - 1));
+}
+
+void cmd_set(CMD_PARAMS)
+{
+	if (parsed->argcount < 3 || parsed->argcount > 4)
+		CMD_PARAMS_FAIL;
+
+	Matrix* matrix;
+	get_one_mx(memory, parsed, 3, &matrix);
+	if (!matrix)
+		return;
+
+	char shift = parsed->argcount - 3;
+	int row, col;
+	float value;
+	(void)sscanf(parsed->args[shift++], "%d", &row);
+	(void)sscanf(parsed->args[shift++], "%d", &col);
+	(void)sscanf(parsed->args[shift++], "%f", &value);
+
+	if (row < MIN_MATRIX_SIZE || row > matrix->rows)
+	{
+		printf("\tSatir indisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, matrix->rows);
+		return;
+	}
+
+	if (col < MIN_MATRIX_SIZE || col > matrix->cols)
+	{
+		printf("\tSutun indisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, matrix->cols);
+		return;
+	}
+
+	mx_set(matrix, row - 1, col - 1, value);
+	mx_print(matrix);
+}
+
+void cmd_isequal(CMD_PARAMS)
 {
 	if (!parsed->argcount || parsed->argcount > 2)
 		CMD_PARAMS_FAIL;
 
 	Matrix *matrix, *matrix2;
-	get_two_mx(memory, parsed, &matrix, &matrix2);
+	get_two_mx(memory, parsed, 1, &matrix, &matrix2);
 	if (!matrix)
 		return;
 
@@ -401,7 +464,7 @@ void cmd_transpose(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix* matrix;
-	get_one_mx(memory, parsed, &matrix);
+	get_one_mx(memory, parsed, 0, &matrix);
 	if (!matrix)
 		return;
 
@@ -415,7 +478,7 @@ void cmd_add(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix *matrix, *matrix2;
-	get_two_mx(memory, parsed, &matrix, &matrix2);
+	get_two_mx(memory, parsed, 1, &matrix, &matrix2);
 	if (!matrix)
 		return;
 

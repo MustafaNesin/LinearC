@@ -82,17 +82,25 @@ Memory* init_mem()
 	commands[6]->help = CMD_HELP_DELETE;
 	commands[6]->function = cmd_delete;
 
-	commands[7]->name = "equal";
-	commands[7]->help = CMD_HELP_EQUAL;
-	commands[7]->function = cmd_equal;
+	commands[7]->name = "get";
+	commands[7]->help = CMD_HELP_GET;
+	commands[7]->function = cmd_get;
 
-	commands[8]->name = "transpose";
-	commands[8]->help = CMD_HELP_TRANSPOSE;
-	commands[8]->function = cmd_transpose;
+	commands[8]->name = "set";
+	commands[8]->help = CMD_HELP_SET;
+	commands[8]->function = cmd_set;
 
-	commands[9]->name = "add";
-	commands[9]->help = CMD_HELP_ADD;
-	commands[9]->function = cmd_add;
+	commands[9]->name = "isequal";
+	commands[9]->help = CMD_HELP_ISEQUAL;
+	commands[9]->function = cmd_isequal;
+
+	commands[10]->name = "transpose";
+	commands[10]->help = CMD_HELP_TRANSPOSE;
+	commands[10]->function = cmd_transpose;
+
+	commands[11]->name = "add";
+	commands[11]->help = CMD_HELP_ADD;
+	commands[11]->function = cmd_add;
 
 	memory->tail = NULL;
 	memory->matrix = NULL;
