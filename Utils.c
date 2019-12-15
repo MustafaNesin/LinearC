@@ -1,9 +1,13 @@
 #include <stdio.h>
-#include <Windows.h>
 #include "Utils.h"
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 void clear()
 {
+	#ifdef _WIN32
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD coordScreen = { 0, 0 };
 	DWORD cCharsWritten;
@@ -25,6 +29,9 @@ void clear()
 		return;
 
 	SetConsoleCursorPosition(hConsole, coordScreen);
+	#elif __linux__
+	printf("\e[1;1H\e[2J");
+	#endif
 }
 
 void scanl(char* format, ...)
