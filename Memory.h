@@ -11,8 +11,8 @@ typedef struct Command	Command;
 typedef struct Parsed	Parsed;
 typedef struct Node		Node;
 
-#define MENU_FUNC_PARAMS	Memory* memory
-#define CMD_FUNC_PARAMS		Memory* memory, Parsed* parsed
+#define MENU_PARAMS	Memory* memory
+#define CMD_PARAMS	Memory* memory, Parsed* parsed
 
 struct Matrix
 {
@@ -32,14 +32,14 @@ struct Command
 {
 	char* name; // Küçük harflerden ve alt çizgi karakterinden oluþmalýdýr.
 	char* help;
-	void (*function)(CMD_FUNC_PARAMS);
+	void (*function)(CMD_PARAMS);
 };
 
 struct Menu
 {
 	char* title;
 	char* options[10];
-	void (*functions[10])(MENU_FUNC_PARAMS);
+	void (*functions[10])(MENU_PARAMS);
 };
 
 struct Node

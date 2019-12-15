@@ -126,35 +126,70 @@ void parse_command(char* input, Parsed* parsed)
 	goto loop;
 }
 
-Matrix* test_command(CMD_FUNC_PARAMS)
+void get_one_mx(CMD_PARAMS, Matrix** matrix)
 {
-	Node* node;
+	*matrix = NULL;
+
 	if (parsed->argcount)
 	{
-		if (!(node = mem_search(memory, *parsed->args[0])))
-		{
-			printf("%s adinda bir matris bulunamadi.\n\n", parsed->args[0]);
-			return NULL;
-		}
-		return node->matrix;
+		Node* node = mem_search(memory, *parsed->args[0]);
+
+		if (!node)
+			CMD_SEARCH_FAIL(0);
+
+		*matrix = node->matrix;
+		return;
 	}
+
 	if (!memory->matrix)
-	{
-		printf("Konsolda bellege alinmis bir matris yok.\n\n");
-		return NULL;
-	}
-	return memory->matrix;
+		CMD_MATRIX_FAIL;
+
+	*matrix = memory->matrix;
 }
 
-void cmd_help(CMD_FUNC_PARAMS)
+void get_two_mx(CMD_PARAMS, Matrix** matrix1, Matrix** matrix2)
+{
+	*matrix1 = *matrix2 = NULL;
+
+	if (parsed->argcount == 1)
+	{
+		if (!memory->matrix)
+			CMD_MATRIX_FAIL;
+
+		Node* node = mem_search(memory, *parsed->args[0]);
+
+		if (!node)
+			CMD_SEARCH_FAIL(0);
+
+		*matrix1 = memory->matrix;
+		*matrix2 = node->matrix;
+	}
+	else
+	{
+		Node* node1 = mem_search(memory, *parsed->args[0]);
+
+		if (!node1)
+			CMD_SEARCH_FAIL(0);
+
+		Node* node2 = mem_search(memory, *parsed->args[1]);
+
+		if (!node2)
+			CMD_SEARCH_FAIL(1);
+
+		*matrix1 = node1->matrix;
+		*matrix2 = node2->matrix;
+	}
+}
+
+void cmd_help(CMD_PARAMS)
 {
 	if (parsed->argcount > 1)
-		CMD_FUNC_PARAMS_FAIL;
+		CMD_PARAMS_FAIL;
 
 	if (!parsed->argcount)
 	{
 		for (int cmd = 0; cmd < CMD_COUNT; cmd++)
-			printf("%s\n", memory->commands[cmd]->help);
+			printf("\t%s\n", memory->commands[cmd]->help);
 		printf("\n");
 		return;
 	}
@@ -162,84 +197,75 @@ void cmd_help(CMD_FUNC_PARAMS)
 	for (int cmd = 0; cmd < CMD_COUNT; cmd++)
 		if (!strcmp(parsed->args[0], memory->commands[cmd]->name))
 		{
-			printf("%s\n\n", memory->commands[cmd]->help);
+			printf("\t%s\n\n", memory->commands[cmd]->help);
 			return;
 		}
-	printf("Komut bulunamadi: %s\n\n", parsed->args[0]);
+	printf("\tKomut bulunamadi: %s\n\n", parsed->args[0]);
 }
 
-void cmd_clear(CMD_FUNC_PARAMS)
+void cmd_clear(CMD_PARAMS)
 {
 	if (parsed->argcount)
-		CMD_FUNC_PARAMS_FAIL;
+		CMD_PARAMS_FAIL;
 
 	clear();
 }
 
-void cmd_list(CMD_FUNC_PARAMS)
+void cmd_list(CMD_PARAMS)
 {
 	if (parsed->argcount)
-		CMD_FUNC_PARAMS_FAIL;
+		CMD_PARAMS_FAIL;
 
 	int count = 0;
 	Node* node = memory->tail;
 	while (node)
 	{
-		printf("%2d. %c %dx%d\n", ++count, node->name, node->matrix->rows, node->matrix->cols);
+		printf("\t%2d. %c %dx%d\n", ++count, node->name, node->matrix->rows, node->matrix->cols);
 		node = node->prev;
 	}
 
-	printf("%d adet matris bulundu.\n\n", count);
+	printf("\t%d adet matris bulundu.\n\n", count);
 }
 
-void cmd_print(CMD_FUNC_PARAMS)
+void cmd_print(CMD_PARAMS)
 {
 	if (parsed->argcount > 1)
-		CMD_FUNC_PARAMS_FAIL;
+		CMD_PARAMS_FAIL;
 
-	Matrix* matrix = test_command(memory, parsed);
-
+	Matrix* matrix;
+	get_one_mx(memory, parsed, &matrix);
 	if (!matrix)
 		return;
 
-	if (parsed->argcount)
-	{
-		if (memory->matrix)
-			mx_free(memory->matrix);
+	if (!parsed->argcount)
+		mx_print(matrix);
 
-		memory->matrix = mx_copy(matrix);
-
-		if (memory->matrix)
-			matrix = memory->matrix;
-		else
-			printf("%c matrisi bellege kopyalanamadi.", *parsed->args[0]);
-	}
-
-	mx_print(matrix);
+	matrix = mx_copy(matrix);
+	CMD_SET_MEMORY;
 }
 
-void cmd_define(CMD_FUNC_PARAMS)
+void cmd_define(CMD_PARAMS)
 {
 	if (!parsed->argcount || parsed->argcount > 5)
-		CMD_FUNC_PARAMS_FAIL;
+		CMD_PARAMS_FAIL;
 
 	char name = *parsed->args[0];
 
 	if (*(parsed->args[0] + 1))
 	{
-		printf("Tanimlanacak olan matris degiskeninin adi tek harften olusmalidir.\n\n");
+		printf("\tTanimlanacak olan matris degiskeninin adi tek harften olusmalidir.\n\n");
 		return;
 	}
 
 	if (name < 'A' || name > 'Z')
 	{
-		printf("Matris adi buyuk bir harf olmalidir. (Yalnizca Ingiliz alfabesi harfleri)\n\n");
+		printf("\tMatris adi buyuk bir harf olmalidir. (Yalnizca Ingiliz alfabesi harfleri)\n\n");
 		return;
 	}
 
 	if (mem_search(memory, name))
 	{
-		printf("%c adinda bir matris zaten var.\n\n", name);
+		printf("\t%c adinda bir matris zaten var.\n\n", name);
 		return;
 	}
 
@@ -248,22 +274,17 @@ void cmd_define(CMD_FUNC_PARAMS)
 	if (parsed->argcount == 1)
 	{
 		if (!memory->matrix)
-		{
-			printf("Konsolda bellege alinmis bir matris yok.\n\n");
-			return;
-		}
+			CMD_MATRIX_FAIL;
+
 		matrix = mx_copy(memory->matrix);
 		if (!matrix)
-		{
-			printf("Matris tanimlanamadi.\n\n");
-			return;
-		}
+			CMD_MEMORY_FAIL;
 	}
 
 	else if (parsed->argcount == 5)
 	{
 		if (strcmp(parsed->args[1], "all"))
-			CMD_FUNC_PARAMS_FAIL;
+			CMD_PARAMS_FAIL;
 
 		int rows, cols;
 		float value;
@@ -274,20 +295,17 @@ void cmd_define(CMD_FUNC_PARAMS)
 
 		if (rows < MIN_MATRIX_SIZE || rows > MAX_MATRIX_SIZE)
 		{
-			printf("Matris satir sayisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
+			printf("\tMatris satir sayisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
 			return;
 		}
 
 		if (cols < MIN_MATRIX_SIZE || cols > MAX_MATRIX_SIZE)
 		{
-			printf("Matris sutun sayisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
+			printf("\tMatris sutun sayisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
 			return;
 		}
 
 		matrix = mx_create_all(rows, cols, value);
-		if (memory->matrix)
-			mx_free(memory->matrix);
-		memory->matrix = mx_copy(matrix);
 	}
 
 	else
@@ -300,7 +318,7 @@ void cmd_define(CMD_FUNC_PARAMS)
 
 		if (size < MIN_MATRIX_SIZE || size > MAX_MATRIX_SIZE)
 		{
-			printf("Matris satir ve sutun sayisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
+			printf("\tMatris satir ve sutun sayisi %d ile %d arasinda olmalidir.\n\n", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
 			return;
 		}
 
@@ -311,116 +329,102 @@ void cmd_define(CMD_FUNC_PARAMS)
 		else if (!strcmp(parsed->args[1], "up"))
 			matrix = mx_create_up(size, value);
 		else
-			CMD_FUNC_PARAMS_FAIL;
-
-		if (memory->matrix)
-			mx_free(memory->matrix);
-		memory->matrix = mx_copy(matrix);
+			CMD_PARAMS_FAIL;
 	}
 
 	if (!mem_add(memory, name, matrix))
 	{
 		free(matrix->data);
 		free(matrix);
-		printf("Matris tanimlanamadi.\n\n");
+		CMD_MEMORY_FAIL;
+	}
+
+	if (parsed->argcount == 1)
+	{
+		mx_print(matrix);
 		return;
 	}
 
-	mx_print(matrix);
+	matrix = mx_copy(matrix);
+	CMD_SET_MEMORY;
 }
 
-void cmd_delete(CMD_FUNC_PARAMS)
+void cmd_delete(CMD_PARAMS)
 {
 	if (parsed->argcount != 1)
-		CMD_FUNC_PARAMS_FAIL;
+		CMD_PARAMS_FAIL;
 
 	if (!strcmp(parsed->args[0], "all"))
 	{
 		while (memory->tail)
 			mem_remove(memory, memory->tail);
-		printf("Tanimlanmis tum matrisler silindi.\n\n");
+		printf("\tTanimlanmis tum matrisler silindi.\n\n");
 		return;
 	}
 
-	Node* node;
-	if (!(node = mem_search(memory, *parsed->args[0])))
-	{
-		printf("%s adinda bir matris bulunamadi.\n\n", parsed->args[0]);
-		return;
-	}
+	Node* node = mem_search(memory, *parsed->args[0]);
+	if (!node)
+		CMD_SEARCH_FAIL(0);
 
 	mem_remove(memory, node);
-	printf("%c matrisi silindi.\n\n", *parsed->args[0]);
+	printf("\t%c matrisi silindi.\n\n", *parsed->args[0]);
 }
 
-void cmd_transpose(CMD_FUNC_PARAMS)
+void cmd_equal(CMD_PARAMS)
+{
+	if (!parsed->argcount || parsed->argcount > 2)
+		CMD_PARAMS_FAIL;
+
+	Matrix *matrix, *matrix2;
+	get_two_mx(memory, parsed, &matrix, &matrix2);
+	if (!matrix)
+		return;
+
+	if (matrix->rows != matrix2->rows || matrix->cols != matrix2->cols)
+	{
+		printf("\tBoyutlari birbirine esit olmadigi icin verilen matrisler birbirine esit degildir.\n\n");
+		return;
+	}
+
+	if (memcmp(matrix->data, matrix2->data, matrix->rows * matrix->cols * sizeof(float)))
+	{
+		printf("\tVerilen matrisler birbirine esit degildir.\n\n");
+		return;
+	}
+
+	printf("\tVerilen matrisler birbirine esit.\n\n");
+}
+
+void cmd_transpose(CMD_PARAMS)
 {
 	if (parsed->argcount > 1)
-		CMD_FUNC_PARAMS_FAIL;
+		CMD_PARAMS_FAIL;
 
-	Matrix* matrix = test_command(memory, parsed);
-
+	Matrix* matrix;
+	get_one_mx(memory, parsed, &matrix);
 	if (!matrix)
 		return;
 
 	matrix = mx_transpose(matrix);
-	if (memory->matrix)
-		mx_free(memory->matrix);
-	memory->matrix = matrix;
-	mx_print(matrix);
+	CMD_SET_MEMORY;
 }
 
-void cmd_add(CMD_FUNC_PARAMS)
+void cmd_add(CMD_PARAMS)
 {
 	if (!parsed->argcount || parsed->argcount > 2)
-		CMD_FUNC_PARAMS_FAIL;
+		CMD_PARAMS_FAIL;
 
-	Matrix *matrix1, *matrix2, *sum;
-	if (parsed->argcount == 1)
+	Matrix *matrix, *matrix2;
+	get_two_mx(memory, parsed, &matrix, &matrix2);
+	if (!matrix)
+		return;
+
+	if (matrix->rows != matrix2->rows || matrix->cols != matrix2->cols)
 	{
-		if (!memory->matrix)
-		{
-			printf("Konsolda bellege alinmis bir matris yok.\n\n");
-			return;
-		}
-		Node* node = mem_search(memory, *parsed->args[0]);
-		if (!node)
-		{
-			printf("%s adinda bir matris bulunamadi.\n\n", parsed->args[0]);
-			return;
-		}
-
-		matrix1 = memory->matrix;
-		matrix2 = node->matrix;
-	}
-	else
-	{
-		Node* node1 = mem_search(memory, *parsed->args[0]);
-		if (!node1)
-		{
-			printf("%s adinda bir matris bulunamadi.\n\n", parsed->args[0]);
-			return;
-		}
-		Node* node2 = mem_search(memory, *parsed->args[1]);
-		if (!node2)
-		{
-			printf("%s adinda bir matris bulunamadi.\n\n", parsed->args[1]);
-			return;
-		}
-
-		matrix1 = node1->matrix;
-		matrix2 = node2->matrix;
-	}
-
-	if (matrix1->rows != matrix2->rows || matrix1->cols != matrix2->cols)
-	{
-		printf("Toplama yapabilmek icin matrislerin boyutlari birbirine esit olmalidir.\n\n");
+		printf("\tToplama yapabilmek icin matrislerin boyutlari birbirine esit olmalidir.\n\n");
 		return;
 	}
 
-	sum = mx_add(matrix1, matrix2);
-	if (memory->matrix)
-		mx_free(memory->matrix);
-	memory->matrix = sum;
-	mx_print(sum);
+	matrix = mx_add(matrix, matrix2);
+	CMD_SET_MEMORY;
 }

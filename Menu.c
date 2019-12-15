@@ -12,7 +12,7 @@ void loop_menu(Menu* menu, Memory* memory)
 	if (!menu || !memory)
 		return;
 
-	void (*func)(MENU_FUNC_PARAMS);
+	void (*func)(MENU_PARAMS);
 
 	while (func = menu->functions[show_menu(menu)])
 	{
@@ -53,7 +53,7 @@ int show_menu(Menu* menu)
 	return opt;
 }
 
-void menu_define(MENU_FUNC_PARAMS)
+void menu_define(MENU_PARAMS)
 {
 	if (!memory)
 		return;
@@ -136,7 +136,7 @@ void menu_define(MENU_FUNC_PARAMS)
 		}
 }
 
-void menu_list(MENU_FUNC_PARAMS)
+void menu_list(MENU_PARAMS)
 {
 	if (!memory)
 		return;
@@ -156,7 +156,7 @@ void menu_list(MENU_FUNC_PARAMS)
 	get_char();
 }
 
-void menu_console(MENU_FUNC_PARAMS)
+void menu_console(MENU_PARAMS)
 {
 	if (!memory)
 		return;
@@ -221,7 +221,7 @@ void menu_console(MENU_FUNC_PARAMS)
 	memory->matrix = NULL;
 }
 
-void menu_equation(MENU_FUNC_PARAMS)
+void menu_equation(MENU_PARAMS)
 {
 	if (!memory)
 		return;
@@ -229,7 +229,7 @@ void menu_equation(MENU_FUNC_PARAMS)
 	// ...
 }
 
-void menu_save(MENU_FUNC_PARAMS)
+void menu_save(MENU_PARAMS)
 {
 	if (!memory)
 		return;
@@ -237,7 +237,7 @@ void menu_save(MENU_FUNC_PARAMS)
 	// ...
 }
 
-void menu_load(MENU_FUNC_PARAMS)
+void menu_load(MENU_PARAMS)
 {
 	if (!memory)
 		return;

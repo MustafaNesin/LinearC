@@ -27,14 +27,16 @@ void mx_print(Matrix* matrix)
 {
 	for (int i = 0, j, p = 0; i < matrix->rows; i++)
 	{
-		printf("| ");
+		printf("\t| ");
 
 		for (j = 0; j < matrix->cols; j++, p++)
 			printf("%10g ", *(matrix->data + p));
 
-		printf("|\n");
+		printf("  | ");
+		if (i == matrix->rows - 1)
+			printf("%dx%d", matrix->rows, matrix->cols);
+		printf("\n");
 	}
-	printf("Boyut: %d satir, %d sutun\n\n", matrix->rows, matrix->cols);
 }
 
 Matrix* mx_copy(Matrix* matrix)
