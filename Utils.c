@@ -31,6 +31,8 @@ void clear()
 	SetConsoleCursorPosition(hConsole, coordScreen);
 	#elif __linux__
 	printf("\e[1;1H\e[2J");
+	#else
+	printf("\n\n");
 	#endif
 }
 
