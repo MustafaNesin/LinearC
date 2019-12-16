@@ -79,7 +79,7 @@ void menu_define(MENU_PARAMS)
 			scanl("%c", &c);
 			if ((c | 0x20) != 'e')
 			{
-				printf("\nMatris tanimlanamadi.");
+				printf("\nIslem kullanici tarafindan iptal edildi.");
 				get_char();
 				return;
 			}
@@ -128,7 +128,8 @@ void menu_define(MENU_PARAMS)
 	}
 
 	// Matris içeriðini al;
-	for (int i = 0, j, p = 0; i < rows; i++)
+	int p = 0;
+	for (uint8_t i = 0, j; i < rows; i++)
 		for (j = 0; j < cols; j++, p++)
 		{
 			printf("%c[%d, %d] = ", name, i + 1, j + 1);
@@ -141,7 +142,7 @@ void menu_list(MENU_PARAMS)
 	if (!memory)
 		return;
 
-	int count = 0;
+	uint8_t count = 0;
 
 	printf("\tAd\tSat\tSut");
 
@@ -164,7 +165,8 @@ void menu_console(MENU_PARAMS)
 	Command* command = 0;
 	Parsed parsed = { 0 };
 	int input;
-	char buffer[CON_BUFFER_SIZE], length = 0, cmd;
+	char buffer[CON_BUFFER_SIZE];
+	uint8_t length = 0, cmd;
 
 	printf("Konsol hakkinda yardim almak icin help, geri donmek icin return yazin.\n> ");
 
@@ -234,13 +236,37 @@ void menu_save(MENU_PARAMS)
 	if (!memory)
 		return;
 
-	// ...
+	int count = mem_save(memory);
+	if (count >= 0)
+		printf("Tanimlanmis %d matris dosyaya basariyla kaydedildi.", count);
+	else
+		printf("Tanimlanmis matrisler dosyaya kaydedilemedi.");
+
+	get_char();
 }
 
-void menu_load(MENU_PARAMS)
+void menu_read(MENU_PARAMS)
 {
 	if (!memory)
 		return;
 
-	// ...
+	{
+		char c;
+		printf("Mevcut tanimli matrisler silinecektir, devam edilsin mi? (E/H): ");
+		scanl("%c", &c);
+		if ((c | 0x20) != 'e')
+		{
+			printf("Islem kullanici tarafindan iptal edildi.");
+			get_char();
+			return;
+		}
+	}
+
+	int count = mem_read(memory);
+	if (count >= 0)
+		printf("%d adet matris kayit dosyasindan basariyla yuklendi.", count);
+	else
+		printf("Kayit dosyasi bozuk, matrisler okunamadi.");
+
+	get_char();
 }

@@ -84,8 +84,8 @@ add(X, Y)                     X matrisi ile Y matrisini toplar."
 
 
 void parse_command(char* input, Parsed* parsed);
-void get_one_mx(CMD_PARAMS, int minargs, Matrix** matrix);
-void get_two_mx(CMD_PARAMS, int minargs, Matrix** matrix1, Matrix** matrix2);
+void get_one_mx(CMD_PARAMS, uint8_t minargs, Matrix** matrix);
+void get_two_mx(CMD_PARAMS, uint8_t minargs, Matrix** matrix1, Matrix** matrix2);
 
 void cmd_help(CMD_PARAMS);
 void cmd_clear(CMD_PARAMS);

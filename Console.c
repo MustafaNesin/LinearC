@@ -126,7 +126,7 @@ void parse_command(char* input, Parsed* parsed)
 	goto loop;
 }
 
-void get_one_mx(CMD_PARAMS, int minargs, Matrix** matrix)
+void get_one_mx(CMD_PARAMS, uint8_t minargs, Matrix** matrix)
 {
 	*matrix = NULL;
 
@@ -147,7 +147,7 @@ void get_one_mx(CMD_PARAMS, int minargs, Matrix** matrix)
 	*matrix = memory->matrix;
 }
 
-void get_two_mx(CMD_PARAMS, int minargs, Matrix** matrix1, Matrix** matrix2)
+void get_two_mx(CMD_PARAMS, uint8_t minargs, Matrix** matrix1, Matrix** matrix2)
 {
 	*matrix1 = *matrix2 = NULL;
 
@@ -216,7 +216,7 @@ void cmd_list(CMD_PARAMS)
 	if (parsed->argcount)
 		CMD_PARAMS_FAIL;
 
-	int count = 0;
+	uint8_t count = 0;
 	Node* node = memory->tail;
 	while (node)
 	{
@@ -356,8 +356,7 @@ void cmd_delete(CMD_PARAMS)
 
 	if (!strcmp(parsed->args[0], "all"))
 	{
-		while (memory->tail)
-			mem_remove(memory, memory->tail);
+		mem_remove_all(memory);
 		printf("\tTanimlanmis tum matrisler silindi.\n\n");
 		return;
 	}

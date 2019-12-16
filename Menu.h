@@ -18,4 +18,4 @@ void menu_list(MENU_PARAMS);
 void menu_console(MENU_PARAMS);
 void menu_equation(MENU_PARAMS);
 void menu_save(MENU_PARAMS);
-void menu_load(MENU_PARAMS);
+void menu_read(MENU_PARAMS);

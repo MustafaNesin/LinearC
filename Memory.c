@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include "Console.h"
 #include "Matrix.h"
@@ -52,7 +54,7 @@ Memory* init_mem()
 	home->functions[3] = menu_console;
 	home->functions[4] = menu_equation;
 	home->functions[5] = menu_save;
-	home->functions[6] = menu_load;
+	home->functions[6] = menu_read;
 
 	commands[0]->name = "return";
 	commands[0]->help = CMD_HELP_RETURN;
@@ -115,8 +117,7 @@ void free_mem(Memory* memory)
 	if (!memory)
 		return;
 
-	while (memory->tail)
-		mem_remove(memory, memory->tail);
+	mem_remove_all(memory);
 
 	for (int cmd = 0; cmd < CMD_COUNT; cmd++)
 		free(memory->commands[cmd]);
@@ -126,7 +127,7 @@ void free_mem(Memory* memory)
 	free(memory);
 }
 
-Node* mem_new(Memory* memory, char name, int rows, int cols, float* data)
+Node* mem_new(Memory* memory, char name, uint8_t rows, uint8_t cols, float* data)
 {
 	Matrix* matrix = mx_new(rows, cols, data);
 	if (!matrix)
@@ -193,4 +194,106 @@ void mem_remove(Memory* memory, Node* node)
 
 	mx_free(node->matrix);
 	free(node);
+}
+
+void mem_remove_all(Memory* memory)
+{
+	while (memory->tail)
+		mem_remove(memory, memory->tail);
+}
+
+int mem_save(Memory* memory)
+{
+	FILE* file = fopen(FILE_NAME, "wb");
+
+	if (!file)
+		return -1;
+
+	int p;
+	uint8_t count = 0, row, col;
+	fseek(file, sizeof(count), SEEK_SET);
+
+	Node* node = memory->tail;
+
+	while (node)
+	{
+		fwrite(&node->name, 1, 1, file);
+		fwrite(&node->matrix->rows, 1, 1, file);
+		fwrite(&node->matrix->cols, 1, 1, file);
+
+		for (row = 0, p = 0, count++; row < node->matrix->rows; row++)
+			for (col = 0; col < node->matrix->cols; col++, p++)
+				fwrite(node->matrix->data + p, sizeof(float), 1, file);
+
+		node = node->prev;
+	}
+
+	fseek(file, 0, SEEK_SET);
+	fwrite(&count, sizeof(count), 1, file);
+	fclose(file);
+
+	return count;
+}
+
+int mem_read(Memory* memory)
+{
+	FILE* file = fopen(FILE_NAME, "rb");
+
+	if (!file)
+		return -1;
+
+	mem_remove_all(memory);
+
+	uint8_t count;
+	if (fread(&count, sizeof(count), 1, file) != 1)
+		return -1;
+
+	char name;
+	int p;
+	uint8_t rows, cols, row, col;
+	float* data;
+
+	for (uint8_t c = 0; c < count; c++)
+	{
+		if (fread(&name, sizeof(name), 1, file) != 1)
+		{
+			mem_remove_all(memory);
+			return -1;
+		}
+
+		if (fread(&rows, sizeof(rows), 1, file) != 1)
+		{
+			mem_remove_all(memory);
+			return -1;
+		}
+
+		if (fread(&cols, sizeof(cols), 1, file) != 1)
+		{
+			mem_remove_all(memory);
+			return -1;
+		}
+
+		data = malloc(rows * cols * sizeof(float));
+		if (!data)
+		{
+			mem_remove_all(memory);
+			return -1;
+		}
+
+		for (row = 0, p = 0; row < rows; row++)
+			for (col = 0; col < cols; col++, p++)
+			{
+				if (fread(data + p, sizeof(float), 1, file) != 1)
+				{
+					free(data);
+					mem_remove_all(memory);
+					return -1;
+				}
+			}
+
+		mem_new(memory, name, rows, cols, data);
+	}
+
+	fclose(file);
+	return count;
 }
