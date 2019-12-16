@@ -63,5 +63,5 @@ void free_mem(Memory* memory);
 
 Node* mem_new(Memory* memory, char name, int rows, int cols, float* data);
 Node* mem_add(Memory* memory, char name, Matrix* matrix);
-Node* mem_search(Memory* memory, char name);
+Node* mem_query(Memory* memory, char name);
 void mem_remove(Memory* memory, Node* node);

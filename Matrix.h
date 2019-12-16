@@ -13,7 +13,7 @@ float* mx_get(Matrix* matrix, int row, int col);
 void mx_set(Matrix* matrix, int row, int col, float value);
 int mx_isequal(Matrix* matrix1, Matrix* matrix2);
 Matrix* mx_add(Matrix* matrix1, Matrix* matrix2);
-Matrix* mx_sdot(float scalar, Matrix* matrix);
+Matrix* mx_multiply(float scalar, Matrix* matrix);
 Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2);
 Matrix* mx_transpose(Matrix* matrix);
 void mx_rowswitch(Matrix* matrix, int row1, int row2);

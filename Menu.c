@@ -73,7 +73,7 @@ void menu_define(MENU_PARAMS)
 			return;
 		}
 		Node* node;
-		if (node = mem_search(memory, name))
+		if (node = mem_query(memory, name))
 		{
 			printf("\nAyni adda bir matris zaten var. Uzerine yazilsin mi? (E/H): ");
 			scanl("%c", &c);

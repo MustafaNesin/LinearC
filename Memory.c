@@ -163,7 +163,7 @@ Node* mem_add(Memory* memory, char name, Matrix* matrix)
 	return memory->tail = node;
 }
 
-Node* mem_search(Memory* memory, char name)
+Node* mem_query(Memory* memory, char name)
 {
 	if (!memory)
 		return NULL;

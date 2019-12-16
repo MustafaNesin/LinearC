@@ -132,7 +132,7 @@ void get_one_mx(CMD_PARAMS, int minargs, Matrix** matrix)
 
 	if (parsed->argcount != minargs)
 	{
-		Node* node = mem_search(memory, *parsed->args[0]);
+		Node* node = mem_query(memory, *parsed->args[0]);
 
 		if (!node)
 			CMD_SEARCH_FAIL(0);
@@ -156,7 +156,7 @@ void get_two_mx(CMD_PARAMS, int minargs, Matrix** matrix1, Matrix** matrix2)
 		if (!memory->matrix)
 			CMD_MATRIX_FAIL;
 
-		Node* node = mem_search(memory, *parsed->args[0]);
+		Node* node = mem_query(memory, *parsed->args[0]);
 
 		if (!node)
 			CMD_SEARCH_FAIL(0);
@@ -166,12 +166,12 @@ void get_two_mx(CMD_PARAMS, int minargs, Matrix** matrix1, Matrix** matrix2)
 	}
 	else
 	{
-		Node* node1 = mem_search(memory, *parsed->args[0]);
+		Node* node1 = mem_query(memory, *parsed->args[0]);
 
 		if (!node1)
 			CMD_SEARCH_FAIL(0);
 
-		Node* node2 = mem_search(memory, *parsed->args[1]);
+		Node* node2 = mem_query(memory, *parsed->args[1]);
 
 		if (!node2)
 			CMD_SEARCH_FAIL(1);
@@ -263,7 +263,7 @@ void cmd_define(CMD_PARAMS)
 		return;
 	}
 
-	if (mem_search(memory, name))
+	if (mem_query(memory, name))
 	{
 		printf("\t%c adinda bir matris zaten var.\n\n", name);
 		return;
@@ -362,7 +362,7 @@ void cmd_delete(CMD_PARAMS)
 		return;
 	}
 
-	Node* node = mem_search(memory, *parsed->args[0]);
+	Node* node = mem_query(memory, *parsed->args[0]);
 	if (!node)
 		CMD_SEARCH_FAIL(0);
 

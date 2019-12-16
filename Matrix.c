@@ -190,7 +190,7 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 	return result;
 }
 
-Matrix* mx_sdot(float scalar, Matrix* matrix)
+Matrix* mx_multiply(float scalar, Matrix* matrix)
 {
 	Matrix* result = malloc(sizeof(Matrix));
 
