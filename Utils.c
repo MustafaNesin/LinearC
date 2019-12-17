@@ -5,7 +5,7 @@
 #include <Windows.h>
 #endif
 
-void clear()
+void clear(void)
 {
 	#ifdef _WIN32
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -47,7 +47,7 @@ void scanl(char* format, ...)
 	(void)get_char();
 }
 
-int get_char()
+int get_char(void)
 {
 	int c = -1, _ = -1;
 	while ((_ = getchar()) != -1 && _ != '\n')

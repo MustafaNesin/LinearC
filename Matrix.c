@@ -26,12 +26,21 @@ void mx_free(Matrix* matrix)
 void mx_print(Matrix* matrix)
 {
 	int i = 0;
+	float element = 0;
 	for (uint8_t row = 0, col; row < matrix->rows; row++)
 	{
 		printf("\t| ");
 
 		for (col = 0; col < matrix->cols; col++, i++)
-			printf("%10g ", *(matrix->data + i));
+		{
+			element = *(matrix->data + i);
+
+			// -0'ı 0'a dönüştür
+			if (element == -0.0f)
+				element = 0;
+
+			printf("%10g ", element);
+		}
 
 		printf("  | ");
 		if (row == matrix->rows - 1)

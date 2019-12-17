@@ -5,7 +5,7 @@
 #include "Matrix.h"
 #include "Menu.h"
 
-Memory* init_mem()
+Memory* init_mem(void)
 {
 	Memory* memory = malloc(sizeof(Memory) + CMD_COUNT * sizeof(void*));
 	if (!memory)

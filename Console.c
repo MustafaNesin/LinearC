@@ -344,7 +344,7 @@ void cmd_print(CMD_PARAMS)
 
 void cmd_define(CMD_PARAMS)
 {
-	if (!parsed->argcount || parsed->argcount > 5)
+	if (parsed->argcount != 1 && parsed->argcount != 4 && parsed->argcount != 5)
 		CMD_PARAMS_FAIL;
 
 	char name = *parsed->args[0];

@@ -77,7 +77,7 @@ struct Memory
 	Command** commands;
 };
 
-Memory* init_mem();
+Memory* init_mem(void);
 void free_mem(Memory* memory);
 
 Node* mem_new(Memory* memory, char name, uint8_t rows, uint8_t cols, float* data);

@@ -1,5 +1,5 @@
 #pragma once
 
-void clear();
+void clear(void);
 void scanl(char* format, ...);
-int get_char();
+int get_char(void);
