@@ -17,5 +17,5 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2);
 Matrix* mx_multiply(float scalar, Matrix* matrix);
 Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2);
 Matrix* mx_transpose(Matrix* matrix);
-Operation mx_next_op(Matrix* matrix, uint8_t colmode);
+Operation mx_next_op(Matrix* matrix, uint8_t colmode, uint8_t reduce);
 void mx_apply_op(Matrix* matrix, Operation operation);

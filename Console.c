@@ -193,7 +193,7 @@ void apply_op(CMD_PARAMS, uint8_t colmode)
 
 	if (parsed->argcount < 2)
 	{
-		Operation op = mx_next_op(matrix, colmode);
+		Operation op = mx_next_op(matrix, colmode, 1);
 		char n = colmode ? 'c' : 'r';
 		int v1 = op.vec1 + 1;
 		int v2 = op.vec2 + 1;

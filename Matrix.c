@@ -269,7 +269,7 @@ Matrix* mx_transpose(Matrix* matrix)
 	return result;
 }
 
-Operation mx_next_op(Matrix* matrix, uint8_t colmode)
+Operation mx_next_op(Matrix* matrix, uint8_t colmode, uint8_t reduce)
 {
 	Operation op = { 0 };
 	op.colmode = colmode;
@@ -319,7 +319,7 @@ Operation mx_next_op(Matrix* matrix, uint8_t colmode)
 				}
 
 			// Ýndirgenmiþ eþelon formu
-			if (vec > 0)
+			if (reduce && vec > 0)
 			{
 				_vec = vec - 1;
 				do
