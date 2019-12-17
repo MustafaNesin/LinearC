@@ -228,7 +228,7 @@ void menu_equation(MENU_PARAMS)
 	if (!memory)
 		return;
 
-	// ...
+	printf("Her satira bir esitlik girin.");
 }
 
 void menu_save(MENU_PARAMS)

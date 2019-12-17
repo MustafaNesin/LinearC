@@ -126,11 +126,11 @@ void parse_command(char* input, Parsed* parsed)
 	goto loop;
 }
 
-void get_one_mx(CMD_PARAMS, uint8_t minargs, Matrix** matrix)
+void get_one_mx(CMD_PARAMS, Matrix** matrix)
 {
 	*matrix = NULL;
 
-	if (parsed->argcount != minargs)
+	if (parsed->argcount > 0 && *parsed->args[0] >= 'A' && *parsed->args[0] <= 'Z')
 	{
 		Node* node = mem_query(memory, *parsed->args[0]);
 
@@ -147,24 +147,11 @@ void get_one_mx(CMD_PARAMS, uint8_t minargs, Matrix** matrix)
 	*matrix = memory->matrix;
 }
 
-void get_two_mx(CMD_PARAMS, uint8_t minargs, Matrix** matrix1, Matrix** matrix2)
+void get_two_mx(CMD_PARAMS, Matrix** matrix1, Matrix** matrix2)
 {
 	*matrix1 = *matrix2 = NULL;
 
-	if (parsed->argcount == minargs)
-	{
-		if (!memory->matrix)
-			CMD_MATRIX_FAIL;
-
-		Node* node = mem_query(memory, *parsed->args[0]);
-
-		if (!node)
-			CMD_SEARCH_FAIL(0);
-
-		*matrix1 = memory->matrix;
-		*matrix2 = node->matrix;
-	}
-	else
+	if (*parsed->args[1] >= 'A' && *parsed->args[1] <= 'Z')
 	{
 		Node* node1 = mem_query(memory, *parsed->args[0]);
 
@@ -179,6 +166,114 @@ void get_two_mx(CMD_PARAMS, uint8_t minargs, Matrix** matrix1, Matrix** matrix2)
 		*matrix1 = node1->matrix;
 		*matrix2 = node2->matrix;
 	}
+	else
+	{
+		if (!memory->matrix)
+			CMD_MATRIX_FAIL;
+
+		Node* node = mem_query(memory, *parsed->args[0]);
+
+		if (!node)
+			CMD_SEARCH_FAIL(0);
+
+		*matrix1 = memory->matrix;
+		*matrix2 = node->matrix;
+	}
+}
+
+void apply_op(CMD_PARAMS, uint8_t colmode)
+{
+	if (parsed->argcount == 2 || parsed->argcount > 5)
+		CMD_PARAMS_FAIL;
+
+	Matrix* matrix;
+	get_one_mx(memory, parsed, &matrix);
+	if (!matrix)
+		return;
+
+	if (parsed->argcount < 2)
+	{
+		Operation op = mx_next_op(matrix, colmode);
+		char n = colmode ? 'c' : 'r';
+		int v1 = op.vec1 + 1;
+		int v2 = op.vec2 + 1;
+
+		switch (op.type)
+		{
+			case OP_ADD:
+				printf("\t%c%d -> %c%d + %g%c%d\n\n", n, v2, n, v2, op.coeff, n, v1);
+				break;
+			case OP_MULTIPLY:
+				printf("\t%c%d -> %g%c%d\n\n", n, v1, op.coeff, n, v1);
+				break;
+			case OP_SWITCH:
+				printf("\t%c%d <-> %c%d\n\n", n, v1, n, v2);
+				break;
+			default:
+				printf("\tMatris zaten indirgenmis eselon formunda.\n\n");
+				return;
+		}
+		mx_apply_op(matrix, op);
+		mx_print(matrix);
+		return;
+	}
+
+	uint8_t i = *parsed->args[0] >= 'A' && *parsed->args[0] <= 'Z';
+	Operation op = { 0 };
+	op.colmode = colmode;
+
+	if (!strcmp(parsed->args[i], "switch"))
+		op.type = OP_SWITCH;
+	else if (!strcmp(parsed->args[i], "multiply"))
+		op.type = OP_MULTIPLY;
+	else if (!strcmp(parsed->args[i], "add"))
+		op.type = OP_ADD;
+	else
+		CMD_PARAMS_FAIL;
+
+	uint8_t vecs = colmode ? matrix->cols : matrix->rows;
+
+	int vec1;
+	(void)sscanf(parsed->args[i + 1], "%d", &vec1);
+	if (vec1 < MIN_MATRIX_SIZE || vec1 > vecs)
+	{
+		printf("\t%s indisi %d ile %d arasinda olmalidir.\n\n", colmode ? "Sutun" : "Satir", MIN_MATRIX_SIZE, vecs);
+		return;
+	}
+	op.vec1 = vec1 - 1;
+
+	if (op.type == OP_MULTIPLY)
+		(void)sscanf(parsed->args[i + 2], "%f", &op.coeff);
+	else
+	{
+		int vec2;
+		(void)sscanf(parsed->args[i + 2 + (op.type == OP_ADD)], "%d", &vec2);
+		if (vec2 < MIN_MATRIX_SIZE || vec2 > vecs)
+		{
+			printf("\t%s indisi %d ile %d arasinda olmalidir.\n\n", colmode ? "Sutun" : "Satir", MIN_MATRIX_SIZE, vecs);
+			return;
+		}
+		op.vec2 = vec2 - 1;
+	}
+
+	if (op.type == OP_ADD)
+	{
+		if (op.vec1 == op.vec2)
+		{
+			printf("\tIki %s indisi birbirinden farkli olmalidir.\n\n", colmode ? "sutun" : "satir");
+			return;
+		}
+		(void)sscanf(parsed->args[i + 2], "%f", &op.coeff);
+	}
+
+	if (!op.coeff)
+	{
+		printf("\tKatsayi sifirdan farkli bir gercel sayi olmalidir.\n\n");
+		return;
+	}
+
+	mx_apply_op(matrix, op);
+	printf("\n\n");
 }
 
 void cmd_help(CMD_PARAMS)
@@ -233,12 +328,15 @@ void cmd_print(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix* matrix;
-	get_one_mx(memory, parsed, 0, &matrix);
+	get_one_mx(memory, parsed, &matrix);
 	if (!matrix)
 		return;
 
 	if (!parsed->argcount)
+	{
 		mx_print(matrix);
+		return;
+	}
 
 	matrix = mx_copy(matrix);
 	CMD_SET_MEMORY;
@@ -375,14 +473,14 @@ void cmd_get(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix* matrix;
-	get_one_mx(memory, parsed, 2, &matrix);
+	get_one_mx(memory, parsed, &matrix);
 	if (!matrix)
 		return;
 
-	char shift = parsed->argcount - 2;
+	uint8_t i = parsed->argcount - 2;
 	int row, col;
-	(void)sscanf(parsed->args[shift++], "%d", &row);
-	(void)sscanf(parsed->args[shift++], "%d", &col);
+	(void)sscanf(parsed->args[i++], "%d", &row);
+	(void)sscanf(parsed->args[i++], "%d", &col);
 
 	if (row < MIN_MATRIX_SIZE || row > matrix->rows)
 	{
@@ -405,16 +503,16 @@ void cmd_set(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix* matrix;
-	get_one_mx(memory, parsed, 3, &matrix);
+	get_one_mx(memory, parsed, &matrix);
 	if (!matrix)
 		return;
 
-	char shift = parsed->argcount - 3;
+	uint8_t i = parsed->argcount - 3;
 	int row, col;
 	float value;
-	(void)sscanf(parsed->args[shift++], "%d", &row);
-	(void)sscanf(parsed->args[shift++], "%d", &col);
-	(void)sscanf(parsed->args[shift++], "%f", &value);
+	(void)sscanf(parsed->args[i++], "%d", &row);
+	(void)sscanf(parsed->args[i++], "%d", &col);
+	(void)sscanf(parsed->args[i++], "%f", &value);
 
 	if (row < MIN_MATRIX_SIZE || row > matrix->rows)
 	{
@@ -438,7 +536,7 @@ void cmd_isequal(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix *matrix, *matrix2;
-	get_two_mx(memory, parsed, 1, &matrix, &matrix2);
+	get_two_mx(memory, parsed, &matrix, &matrix2);
 	if (!matrix)
 		return;
 
@@ -463,7 +561,7 @@ void cmd_transpose(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix* matrix;
-	get_one_mx(memory, parsed, 0, &matrix);
+	get_one_mx(memory, parsed, &matrix);
 	if (!matrix)
 		return;
 
@@ -477,7 +575,7 @@ void cmd_add(CMD_PARAMS)
 		CMD_PARAMS_FAIL;
 
 	Matrix *matrix, *matrix2;
-	get_two_mx(memory, parsed, 1, &matrix, &matrix2);
+	get_two_mx(memory, parsed, &matrix, &matrix2);
 	if (!matrix)
 		return;
 
@@ -489,4 +587,14 @@ void cmd_add(CMD_PARAMS)
 
 	matrix = mx_add(matrix, matrix2);
 	CMD_SET_MEMORY;
+}
+
+void cmd_rowop(CMD_PARAMS)
+{
+	apply_op(memory, parsed, 0);
+}
+
+void cmd_colop(CMD_PARAMS)
+{
+	apply_op(memory, parsed, 1);
 }

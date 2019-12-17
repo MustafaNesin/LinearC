@@ -6,15 +6,32 @@
 #define MAX_PARAM_COUNT	5
 #define FILE_NAME "save.bin"
 
-typedef struct Memory	Memory;
-typedef struct Matrix	Matrix;
-typedef struct Menu		Menu;
-typedef struct Command	Command;
-typedef struct Parsed	Parsed;
-typedef struct Node		Node;
+typedef struct Memory		Memory;
+typedef struct Matrix		Matrix;
+typedef struct Menu			Menu;
+typedef struct Command		Command;
+typedef struct Parsed		Parsed;
+typedef struct Node			Node;
+typedef struct Operation	Operation;
 
 #define MENU_PARAMS	Memory* memory
 #define CMD_PARAMS	Memory* memory, Parsed* parsed
+
+enum OperationType
+{
+	OP_ADD = 1,
+	OP_MULTIPLY,
+	OP_SWITCH
+};
+
+struct Operation
+{
+	uint8_t colmode;
+	uint8_t type;
+	uint8_t vec1;
+	uint8_t vec2;
+	float coeff;
+};
 
 struct Matrix
 {

@@ -25,19 +25,20 @@ void mx_free(Matrix* matrix)
 
 void mx_print(Matrix* matrix)
 {
-	int p = 0;
-	for (uint8_t i = 0, j; i < matrix->rows; i++)
+	int i = 0;
+	for (uint8_t row = 0, col; row < matrix->rows; row++)
 	{
 		printf("\t| ");
 
-		for (j = 0; j < matrix->cols; j++, p++)
-			printf("%10g ", *(matrix->data + p));
+		for (col = 0; col < matrix->cols; col++, i++)
+			printf("%10g ", *(matrix->data + i));
 
 		printf("  | ");
-		if (i == matrix->rows - 1)
+		if (row == matrix->rows - 1)
 			printf("%dx%d", matrix->rows, matrix->cols);
 		printf("\n");
 	}
+	printf("\n");
 }
 
 Matrix* mx_copy(Matrix* matrix)
@@ -73,8 +74,8 @@ Matrix* mx_create_all(uint8_t rows, uint8_t cols, float value)
 		return NULL;
 	}
 
-	for (uint8_t i = 0, j; i < rows; i++)
-		for (j = 0; j < cols; j++)
+	for (uint8_t row = 0, col; row < rows; row++)
+		for (col = 0; col < cols; col++)
 			*data++ = value;
 
 	return matrix;
@@ -95,11 +96,11 @@ Matrix* mx_create_diag(uint8_t size, float value)
 		return NULL;
 	}
 
-	int p = 0;
-	for (uint8_t i = 0, j; i < size; i++)
-		for (j = 0; j < size; j++, p++)
-			if (i == j)
-				*(data + p) = value;
+	int i = 0;
+	for (uint8_t row = 0, col; row < size; row++)
+		for (col = 0; col < size; col++, i++)
+			if (row == col)
+				*(data + i) = value;
 
 	return matrix;
 }
@@ -119,11 +120,11 @@ Matrix* mx_create_low(uint8_t size, float value)
 		return NULL;
 	}
 
-	int p = 0;
-	for (uint8_t i = 0, j; i < size; i++)
-		for (j = 0; j < size; j++, p++)
-			if (i >= j)
-				*(data + p) = value;
+	int i = 0;
+	for (uint8_t row = 0, col; row < size; row++)
+		for (col = 0; col < size; col++, i++)
+			if (row >= col)
+				*(data + i) = value;
 
 	return matrix;
 }
@@ -143,11 +144,11 @@ Matrix* mx_create_up(uint8_t size, float value)
 		return NULL;
 	}
 
-	int p = 0;
-	for (uint8_t i = 0, j; i < size; i++)
-		for (j = 0; j < size; j++, p++)
-			if (i <= j)
-				*(data + p) = value;
+	int i = 0;
+	for (uint8_t row = 0, col; row < size; row++)
+		for (col = 0; col < size; col++, i++)
+			if (row <= col)
+				*(data + i) = value;
 
 	return matrix;
 }
@@ -234,11 +235,11 @@ Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
 		return NULL;
 	}
 
-	int p = 0;
-	for (uint8_t i = 0, j, k; i < result->rows; i++)
-		for (j = 0; j < result->cols; j++, p++)
-			for (k = 0; k < matrix1->cols; k++)
-				*(result->data + p) += *mx_get(matrix1, i, k) * *mx_get(matrix2, k, j);
+	int i = 0;
+	for (uint8_t row = 0, col, s; row < result->rows; row++)
+		for (col = 0; col < result->cols; col++, i++)
+			for (s = 0; s < matrix1->cols; s++)
+				*(result->data + i) += *mx_get(matrix1, row, s) * *mx_get(matrix2, s, col);
 
 	return result;
 }
@@ -260,39 +261,158 @@ Matrix* mx_transpose(Matrix* matrix)
 		return NULL;
 	}
 
-	int p = 0;
-	for (uint8_t j = 0, i; j < result->rows; j++)
-		for (i = 0; i < result->cols; i++, p++)
-			*(result->data + p) = *mx_get(matrix, i, j);
+	int i = 0;
+	for (uint8_t col = 0, row; col < matrix->cols; col++)
+		for (row = 0; row < matrix->rows; row++, i++)
+			*(result->data + i) = *mx_get(matrix, row, col);
 
 	return result;
 }
 
-void mx_rowswitch(Matrix* matrix, uint8_t row1, uint8_t row2)
+Operation mx_next_op(Matrix* matrix, uint8_t colmode)
 {
-	int row_size = matrix->cols * sizeof(float);
-	float* temp = malloc(row_size);
-	if (!temp)
-		return;
+	Operation op = { 0 };
+	op.colmode = colmode;
 
-	float* r1 = matrix->data + row1 * matrix->cols;
-	float* r2 = matrix->data + row2 * matrix->cols;
+	uint8_t
+		vecs = colmode ? matrix->cols : matrix->rows,
+		xvecs = colmode ? matrix->rows : matrix->cols,
+		vec = 0,
+		xvec = 0,
+		_vec,
+		factor1 = colmode ? 1 : xvecs,
+		factor2 = colmode ? xvecs : 1;
 
-	(void)memcpy(temp, r1, row_size);
-	(void)memcpy(r1, r2, row_size);
-	(void)memcpy(r2, temp, row_size);
+	float element, _element;
 
-	free(temp);
+	while (vec < vecs && xvec < xvecs)
+	{
+		op.vec1 = vec;
+		// Satýr iþlemlerinde element;
+		//	X[vec, xvec] yani vec row, xvec col
+		// Sütun iþlemlerinde element;
+		//  X[xvec, vec] yani vec col, xvec row
+		element = *(matrix->data + vec * factor1 + xvec * factor2);
+
+		if (element == 0)
+		{
+			for (_vec = vec + 1; _vec < vecs; _vec++)
+				if (_element = *(matrix->data + _vec * factor1 + xvec * factor2))
+				{
+					op.type = OP_SWITCH;
+					op.vec2 = _vec;
+					return op;
+				}
+
+			xvec++;
+		}
+
+		else if (element == 1)
+		{
+			for (_vec = vec + 1; _vec < vecs; _vec++)
+				if (_element = *(matrix->data + _vec * factor1 + xvec * factor2))
+				{
+					op.type = OP_ADD;
+					op.vec2 = _vec;
+					op.coeff = -_element / element;
+					return op;
+				}
+
+			// Ýndirgenmiþ eþelon formu
+			if (vec > 0)
+			{
+				_vec = vec - 1;
+				do
+					if (_element = *(matrix->data + _vec * factor1 + xvec * factor2))
+					{
+						op.type = OP_ADD;
+						op.vec2 = _vec;
+						op.coeff = -_element / element;
+						return op;
+					}
+				while (_vec--);
+			}
+
+			xvec++;
+			vec++;
+		}
+
+		else
+		{
+			op.type = OP_MULTIPLY;
+			op.vec1 = vec;
+			op.coeff = 1 / element;
+			return op;
+		}
+	}
+
+	op.vec1 = 0;
+	return op;
 }
 
-void mx_rowcoeff(Matrix* matrix, uint8_t row, float coeff)
+void mx_apply_op(Matrix* matrix, Operation operation)
 {
-	 for (uint8_t j = 0; j < matrix->cols; j++)
-		*mx_get(matrix, row, j) *= coeff;
-}
+	uint8_t vecs = operation.colmode ? matrix->rows : matrix->cols;
 
-void mx_rowadd(Matrix* matrix, uint8_t row1, float coeff, uint8_t row2)
-{
-	for (uint8_t j = 0; j < matrix->cols; j++)
-		*mx_get(matrix, row1, j) += coeff * *mx_get(matrix, row2, j);
+	switch (operation.type)
+	{
+		case OP_ADD:
+		{
+			uint8_t vec = 0;
+			if (operation.colmode)
+				for (; vec < vecs; vec++)
+					*mx_get(matrix, vec, operation.vec2) += operation.coeff * *mx_get(matrix, vec, operation.vec1);
+			else
+				for (; vec < vecs; vec++)
+					*mx_get(matrix, operation.vec2, vec) += operation.coeff * *mx_get(matrix, operation.vec1, vec);
+			break;
+		}
+		case OP_MULTIPLY:
+		{
+			uint8_t vec = 0;
+			if (operation.colmode)
+				for (; vec < vecs; vec++)
+					*mx_get(matrix, vec, operation.vec1) *= operation.coeff;
+			else
+				for (; vec < vecs; vec++)
+					*mx_get(matrix, operation.vec1, vec) *= operation.coeff;
+			break;
+		}
+		case OP_SWITCH:
+		{
+			if (operation.colmode)
+			{
+				float v, *v1, *v2;
+				for (uint8_t row = 0; row < vecs; row++)
+				{
+					v1 = mx_get(matrix, row, operation.vec1);
+					v2 = mx_get(matrix, row, operation.vec2);
+
+					v = *v1;
+					*v1 = *v2;
+					*v2 = v;
+				}
+			}
+
+			else
+			{
+				int size = matrix->cols * sizeof(float);
+				float* temp = malloc(size);
+				if (!temp)
+					return;
+
+				float* row1 = matrix->data + operation.vec1 * vecs;
+				float* row2 = matrix->data + operation.vec2 * vecs;
+
+				(void)memcpy(temp, row1, size);
+				(void)memcpy(row1, row2, size);
+				(void)memcpy(row2, temp, size);
+
+				free(temp);
+			}
+			break;
+		}
+		default:
+			break;
+	}
 }

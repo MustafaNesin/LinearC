@@ -104,6 +104,14 @@ Memory* init_mem()
 	commands[11]->help = CMD_HELP_ADD;
 	commands[11]->function = cmd_add;
 
+	commands[12]->name = "rowop";
+	commands[12]->help = CMD_HELP_ROWOP;
+	commands[12]->function = cmd_rowop;
+
+	commands[13]->name = "colop";
+	commands[13]->help = CMD_HELP_COLOP;
+	commands[13]->function = cmd_colop;
+
 	memory->tail = NULL;
 	memory->matrix = NULL;
 	memory->home = home;

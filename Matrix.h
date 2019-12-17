@@ -17,6 +17,5 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2);
 Matrix* mx_multiply(float scalar, Matrix* matrix);
 Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2);
 Matrix* mx_transpose(Matrix* matrix);
-void mx_rowswitch(Matrix* matrix, uint8_t row1, uint8_t row2);
-void mx_rowcoeff(Matrix* matrix, uint8_t row, float coeff);
-void mx_rowadd(Matrix* matrix, uint8_t row1, float coeff, uint8_t row2);
+Operation mx_next_op(Matrix* matrix, uint8_t colmode);
+void mx_apply_op(Matrix* matrix, Operation operation);
