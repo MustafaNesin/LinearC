@@ -288,9 +288,9 @@ Operation mx_next_op(Matrix* matrix, uint8_t colmode, uint8_t reduce)
 	while (vec < vecs && xvec < xvecs)
 	{
 		op.vec1 = vec;
-		// Satýr iþlemlerinde element;
-		//	X[vec, xvec] yani vec row, xvec col
-		// Sütun iþlemlerinde element;
+		// SatÃ½r iÃ¾lemlerinde element;
+		//  X[vec, xvec] yani vec row, xvec col
+		// SÃ¼tun iÃ¾lemlerinde element;
 		//  X[xvec, vec] yani vec col, xvec row
 		element = *(matrix->data + vec * factor1 + xvec * factor2);
 
@@ -318,7 +318,7 @@ Operation mx_next_op(Matrix* matrix, uint8_t colmode, uint8_t reduce)
 					return op;
 				}
 
-			// Ýndirgenmiþ eþelon formu
+			// ÃndirgenmiÃ¾ eÃ¾elon formu
 			if (reduce && vec > 0)
 			{
 				_vec = vec - 1;
