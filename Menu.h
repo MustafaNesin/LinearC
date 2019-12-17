@@ -10,6 +10,13 @@
 #define HOME_OPT5	"Kaydet"
 #define HOME_OPT6	"Yukle"
 
+struct Menu
+{
+	char* title;
+	char* options[10];
+	void (*functions[10])(MENU_PARAMS);
+};
+
 void loop_menu(Menu* menu, Memory* memory);
 int show_menu(Menu* menu);
 

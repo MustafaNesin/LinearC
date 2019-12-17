@@ -102,6 +102,19 @@ colop(X, multiply, C, K)      X matrisinin C'inci sutununun K katini al.\n\t\
 colop(add, C1, K, C2)         Son matrisin C1'inci sutununun K katini C2'inci sutuna ekle.\n\t\
 colop(X, add, C1, K, C2)      X matrisinin C1'inci sutununun K katini C2'inci sutuna ekle."
 
+struct Parsed
+{
+	char* name;
+	uint8_t argcount;
+	char* args[MAX_PARAM_COUNT];
+};
+
+struct Command
+{
+	char* name; // Küçük harflerden ve alt çizgi karakterinden oluþmalýdýr.
+	char* help;
+	void (*function)(CMD_PARAMS);
+};
 
 void parse_command(char* input, Parsed* parsed);
 void get_one_mx(CMD_PARAMS, Matrix** matrix);

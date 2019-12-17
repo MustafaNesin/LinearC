@@ -2,6 +2,29 @@
 #include <stdint.h>
 #include "Memory.h"
 
+enum OperationType
+{
+	OP_ADD = 1,
+	OP_MULTIPLY,
+	OP_SWITCH
+};
+
+struct Operation
+{
+	uint8_t colmode;
+	uint8_t type;
+	uint8_t vec1;
+	uint8_t vec2;
+	float coeff;
+};
+
+struct Matrix
+{
+	uint8_t rows;
+	uint8_t cols;
+	float* data;
+};
+
 Matrix* mx_new(uint8_t rows, uint8_t cols, float* data);
 void mx_free(Matrix* matrix);
 void mx_print(Matrix* matrix);

@@ -17,50 +17,6 @@ typedef struct Operation	Operation;
 #define MENU_PARAMS	Memory* memory
 #define CMD_PARAMS	Memory* memory, Parsed* parsed
 
-enum OperationType
-{
-	OP_ADD = 1,
-	OP_MULTIPLY,
-	OP_SWITCH
-};
-
-struct Operation
-{
-	uint8_t colmode;
-	uint8_t type;
-	uint8_t vec1;
-	uint8_t vec2;
-	float coeff;
-};
-
-struct Matrix
-{
-	uint8_t rows;
-	uint8_t cols;
-	float* data;
-};
-
-struct Parsed
-{
-	char* name;
-	uint8_t argcount;
-	char* args[MAX_PARAM_COUNT];
-};
-
-struct Command
-{
-	char* name; // Küçük harflerden ve alt çizgi karakterinden oluþmalýdýr.
-	char* help;
-	void (*function)(CMD_PARAMS);
-};
-
-struct Menu
-{
-	char* title;
-	char* options[10];
-	void (*functions[10])(MENU_PARAMS);
-};
-
 struct Node
 {
 	Node* prev;
