@@ -14,7 +14,7 @@
 #define IS_ASSIGNMENT (result->assignment = *in++ == '=')
 #define IS_PARENTHESIS (*in == '(')
 #define IS_PARAMETER (*in == ',')
-#define IS_FACTOR (IS_NUMBER || IS_MATRIX || IS_NAME || IS_FUNCTION)
+#define IS_FACTOR (IS_NUMBER || IS_MATRIX || IS_NAME || IS_FUNCTION || IS_PARENTHESIS)
 
 #define IS_TSIGN (*in == '+' || *in == '-')
 #define IS_NEGATIVE (*in == '-')
