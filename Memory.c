@@ -6,6 +6,7 @@
 Memory* init_mem(void)
 {
 	Memory* memory = calloc(1, sizeof(Memory));
+
 	if (!memory)
 		return NULL;
 
@@ -134,7 +135,7 @@ void mem_remove_all(Memory* memory)
 
 int mem_save(Memory* memory)
 {
-	FILE* file = fopen(FILE_NAME, "wb");
+	FILE* file = fopen("save.bin", "wb");
 
 	if (!file)
 		return -1;
@@ -167,7 +168,7 @@ int mem_save(Memory* memory)
 
 int mem_read(Memory* memory)
 {
-	FILE* file = fopen(FILE_NAME, "rb");
+	FILE* file = fopen("save.bin", "rb");
 
 	if (!file)
 		return -1;

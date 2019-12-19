@@ -191,7 +191,11 @@ void menu_console(MENU_PARAM_DECL)
 			exceed = false;
 		else
 		{
-			// ...
+			char* endp;
+			PExpression* input = parse_expression(memory, &buffer, &endp);
+			print_expression(input);
+			printf("\n>");
+			free_expression(input);
 		}
 
 		memset(buffer, 0, CON_BUFFER_SIZE);

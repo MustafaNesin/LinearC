@@ -5,9 +5,9 @@
 #pragma endregion
 
 #pragma region Definitions
-#define OP_ADD          1
-#define OP_MULTIPLY     2
-#define OP_SWITCH       3
+#define OP_ADD          (uint8_t)1
+#define OP_MULTIPLY     (uint8_t)2
+#define OP_SWITCH       (uint8_t)3
 #pragma endregion
 
 #pragma region Structures

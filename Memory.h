@@ -15,12 +15,11 @@
 #pragma endregion
 
 #pragma region Definitions
-#define CMD_COUNT       1    // Her yeni komut eklendiðinde artýrýlmalýdýr
-#define CMD_PARAM_COUNT 5
-#define CON_BUFFER_SIZE 200 // UINT8_MAX (255) deðerinden fazla olamaz.
-#define MIN_MATRIX_SIZE 1
-#define MAX_MATRIX_SIZE 10   // UINT8_MAX (255) deðerinden fazla olamaz.
-#define FILE_NAME       "save.bin"
+#define CMD_COUNT       (uint8_t)2    // Her yeni komut eklendiðinde artýrýlmalýdýr
+#define CMD_PARAM_COUNT (uint8_t)5
+#define CON_BUFFER_SIZE (uint8_t)200 
+#define MIN_MATRIX_SIZE (uint8_t)1
+#define MAX_MATRIX_SIZE (uint8_t)10 
 #define BEGIN_CMD_INIT	c++
 #pragma endregion
 
