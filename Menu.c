@@ -199,7 +199,7 @@ void menu_console(MENU_PARAM_DECL)
 				printf("Ayristirilan yerden sonra karakterler var.");
 			else
 				print_expression(input);
-			printf("\n>");
+			printf("\n\n>");
 			free_expression(input);
 		}
 
