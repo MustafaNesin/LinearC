@@ -1,45 +1,90 @@
 #pragma once
+
+#pragma region Include
+#include <stdarg.h>
+#include <stdbool.h>
 #include <stdint.h>
-#define CON_BUFFER_SIZE	255
-#define MIN_MATRIX_SIZE	1
-#define MAX_MATRIX_SIZE	10 //UINT8_MAX (255) deðerinden fazla olamaz.
-#define MAX_PARAM_COUNT	5
-#define FILE_NAME "save.bin"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "Utils.h"
 
-typedef struct Memory		Memory;
-typedef struct Matrix		Matrix;
-typedef struct Menu			Menu;
-typedef struct Command		Command;
-typedef struct Parsed		Parsed;
-typedef struct Node			Node;
-typedef struct Operation	Operation;
+#ifdef _WIN32
+	#include <Windows.h>
+#endif
+#pragma endregion
 
-#define MENU_PARAMS	Memory* memory
-#define CMD_PARAMS	Memory* memory, Parsed* parsed
+#pragma region Definitions
+#define CMD_COUNT       1    // Her yeni komut eklendiðinde artýrýlmalýdýr
+#define CMD_PARAM_COUNT 5
+#define CON_BUFFER_SIZE 200 // UINT8_MAX (255) deðerinden fazla olamaz.
+#define MIN_MATRIX_SIZE 1
+#define MAX_MATRIX_SIZE 10   // UINT8_MAX (255) deðerinden fazla olamaz.
+#define FILE_NAME       "save.bin"
+#define BEGIN_CMD_INIT	c++
+#pragma endregion
+
+#pragma region Type Definitions
+typedef struct Function    Function;
+typedef struct Parameter   Parameter;
+typedef struct PExpression PExpression;
+typedef struct PTerm       PTerm;
+typedef struct PFactor     PFactor;
+typedef struct PFunction   PFunction;
+
+typedef struct Matrix      Matrix;
+typedef struct Operation   Operation;
+
+typedef struct Memory      Memory;
+typedef struct Node        Node;
+
+typedef struct Menu        Menu;
+
+#define MENU_PARAM_DECL Memory* memory
+#define CMD_PARAM_DECL  Memory* memory
+#pragma endregion
+
+#pragma region Structures
+struct Function
+{
+	char     *name;
+	char     *help;
+	void     (*function)(CMD_PARAM_DECL, ...);
+	uint8_t  ret;
+	uint8_t  paramcount;
+	uint8_t  params[CMD_PARAM_COUNT];
+};
+
+struct Menu
+{
+	char     *title;
+	char     *options[10];
+	void     (*functions[10])(MENU_PARAM_DECL);
+};
 
 struct Node
 {
-	Node* prev;
-	Node* next;
-	Matrix* matrix;
-	char name;
+	Node     *prev;
+	Node     *next;
+	Matrix   *matrix;
+	char     name;
 };
 
 struct Memory
 {
-	Node* tail;
-	Matrix* matrix;
-	Menu* home;
-	Command** commands;
+	Node     *tail;
+	Menu     home;
+	Function commands[CMD_COUNT];
 };
+#pragma endregion
 
-Memory* init_mem(void);
-void free_mem(Memory* memory);
+Memory*   init_mem       (void);
+void      free_mem       (Memory* memory);
 
-Node* mem_new(Memory* memory, char name, uint8_t rows, uint8_t cols, float* data);
-Node* mem_add(Memory* memory, char name, Matrix* matrix);
-Node* mem_query(Memory* memory, char name);
-void mem_remove(Memory* memory, Node* node);
-void mem_remove_all(Memory* memory);
-int mem_save(Memory* memory);
-int mem_read(Memory* memory);
+Node*     mem_new        (Memory* memory, char name, uint8_t rows, uint8_t cols, float* data);
+Node*     mem_add        (Memory* memory, char name, Matrix* matrix);
+Node*     mem_query      (Memory* memory, char name);
+void      mem_remove     (Memory* memory, Node* node);
+void      mem_remove_all (Memory* memory);
+int       mem_save       (Memory* memory);
+int       mem_read       (Memory* memory);

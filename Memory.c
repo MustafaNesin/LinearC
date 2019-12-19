@@ -1,137 +1,59 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include "Console.h"
 #include "Matrix.h"
 #include "Menu.h"
+#include "Utils.h"
 
 Memory* init_mem(void)
 {
-	Memory* memory = malloc(sizeof(Memory) + CMD_COUNT * sizeof(void*));
+	Memory* memory = calloc(1, sizeof(Memory));
 	if (!memory)
 		return NULL;
 
-	Menu* home = calloc(1, sizeof(Menu));
-	if (!home)
+	// Menüyü oluþtur
 	{
-		free(memory);
-		return NULL;
+		memory->home.title = "LineerC | Mustafa Nesin & Cem Ufuk Yilmaz";
+
+		memory->home.options[0] = "Cikis";
+		memory->home.options[1] = "Yeni Matris Tanimla";
+		memory->home.options[2] = "Matris Listesi";
+		memory->home.options[3] = "Islemler";
+		memory->home.options[4] = "Denklem Cozucu";
+		memory->home.options[5] = "Kaydet";
+		memory->home.options[6] = "Yukle";
+
+		memory->home.functions[0] = NULL;
+		memory->home.functions[1] = menu_define;
+		memory->home.functions[2] = menu_list;
+		memory->home.functions[3] = menu_console;
+		memory->home.functions[4] = menu_equation;
+		memory->home.functions[5] = menu_save;
+		memory->home.functions[6] = menu_read;
 	}
-	Command** commands = malloc(CMD_COUNT * sizeof(Command*));
-	if (!commands)
+
+	// Komutlarý oluþtur
 	{
-		free(home);
-		free(memory);
-		return NULL;
-	}
-	for (int cmd = 0; cmd < CMD_COUNT; cmd++)
-	{
-		commands[cmd] = malloc(sizeof(Command));
-		if (!commands[cmd])
+		int c = -1;
+
+		BEGIN_CMD_INIT;
 		{
-			for (int i = cmd - 1; i >= 0; i--)
-				free(commands[i]);
-			free(commands);
-			free(home);
-			free(memory);
-			return NULL;
+			memory->commands[c].name = "return";
+			memory->commands[c].help = "Ana menuye geri dondurur.";
+		}
+
+		BEGIN_CMD_INIT;
+		{
+			memory->commands[c].name = "clear";
+			memory->commands[c].help = "Ekrani temizler.";
+			memory->commands[c].function = cmd_clear;
 		}
 	}
-
-	home->title = HOME_TITLE;
-
-	home->options[0] = HOME_OPT0;
-	home->options[1] = HOME_OPT1;
-	home->options[2] = HOME_OPT2;
-	home->options[3] = HOME_OPT3;
-	home->options[4] = HOME_OPT4;
-	home->options[5] = HOME_OPT5;
-	home->options[6] = HOME_OPT6;
-
-	home->functions[0] = NULL;
-	home->functions[1] = menu_define;
-	home->functions[2] = menu_list;
-	home->functions[3] = menu_console;
-	home->functions[4] = menu_equation;
-	home->functions[5] = menu_save;
-	home->functions[6] = menu_read;
-
-	commands[0]->name = "return";
-	commands[0]->help = CMD_HELP_RETURN;
-	commands[0]->function = NULL;
-
-	commands[1]->name = "help";
-	commands[1]->help = CMD_HELP_HELP;
-	commands[1]->function = cmd_help;
-
-	commands[2]->name = "clear";
-	commands[2]->help = CMD_HELP_CLEAR;
-	commands[2]->function = cmd_clear;
-
-	commands[3]->name = "list";
-	commands[3]->help = CMD_HELP_LIST;
-	commands[3]->function = cmd_list;
-
-	commands[4]->name = "print";
-	commands[4]->help = CMD_HELP_PRINT;
-	commands[4]->function = cmd_print;
-
-	commands[5]->name = "define";
-	commands[5]->help = CMD_HELP_DEFINE;
-	commands[5]->function = cmd_define;
-
-	commands[6]->name = "delete";
-	commands[6]->help = CMD_HELP_DELETE;
-	commands[6]->function = cmd_delete;
-
-	commands[7]->name = "get";
-	commands[7]->help = CMD_HELP_GET;
-	commands[7]->function = cmd_get;
-
-	commands[8]->name = "set";
-	commands[8]->help = CMD_HELP_SET;
-	commands[8]->function = cmd_set;
-
-	commands[9]->name = "isequal";
-	commands[9]->help = CMD_HELP_ISEQUAL;
-	commands[9]->function = cmd_isequal;
-
-	commands[10]->name = "transpose";
-	commands[10]->help = CMD_HELP_TRANSPOSE;
-	commands[10]->function = cmd_transpose;
-
-	commands[11]->name = "add";
-	commands[11]->help = CMD_HELP_ADD;
-	commands[11]->function = cmd_add;
-
-	commands[12]->name = "rowop";
-	commands[12]->help = CMD_HELP_ROWOP;
-	commands[12]->function = cmd_rowop;
-
-	commands[13]->name = "colop";
-	commands[13]->help = CMD_HELP_COLOP;
-	commands[13]->function = cmd_colop;
-
-	memory->tail = NULL;
-	memory->matrix = NULL;
-	memory->home = home;
-	memory->commands = commands;
 
 	return memory;
 }
 
 void free_mem(Memory* memory)
 {
-	if (!memory)
-		return;
-
 	mem_remove_all(memory);
-
-	for (int cmd = 0; cmd < CMD_COUNT; cmd++)
-		free(memory->commands[cmd]);
-
-	free(memory->commands);
-	free(memory->home);
 	free(memory);
 }
 
