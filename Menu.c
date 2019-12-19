@@ -193,7 +193,9 @@ void menu_console(MENU_PARAM_DECL)
 		{
 			char* endp;
 			PExpression* input = parse_expression(memory, &buffer, &endp);
-			if (*endp)
+			if (!input)
+				printf("Ayristirma basarisiz.");
+			else if (*endp)
 				printf("Ayristirilan yerden sonra karakterler var.");
 			else
 				print_expression(input);
