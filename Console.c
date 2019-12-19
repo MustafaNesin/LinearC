@@ -42,7 +42,8 @@
 /* Function Parsing States */
 #define FPS_NAME (uint8_t)1
 #define FPS_SPACE (uint8_t)2
-#define FPS_PARAMETER (uint8_t)3
+#define FPS_EMPTY_PARAM (uint8_t)3
+#define FPS_PARAMETER (uint8_t)4
 #endif
 
 PExpression* parse_expression(Memory* memory, char* in, char** out)
@@ -211,10 +212,13 @@ PFunction* parse_function(Memory* memory, char* in, char** out)
 			case FPS_NAME:
 			{
 				if (IS_FUNCTION)
+				{
 					in++;
+					result->namelen++;
+				}
 				else
 				{
-					ASSERT(result->namelen = in - *out);
+					ASSERT(result->namelen);
 					state = FPS_SPACE;
 				}
 				break;
@@ -223,9 +227,28 @@ PFunction* parse_function(Memory* memory, char* in, char** out)
 			case FPS_SPACE:
 			{
 				if (IS_PARENTHESIS)
-					state = FPS_PARAMETER;
+					state = FPS_EMPTY_PARAM;
 				else if (!IS_SPACE) 
 					goto end;
+
+				in++;
+				break;
+			}
+
+			case FPS_EMPTY_PARAM:
+			{
+				if (!IS_SPACE)
+				{
+					if (*in == ')')
+					{
+						in++;
+						state = 0;
+						goto end;
+					}
+
+					state = FPS_PARAMETER;
+					break;
+				}
 
 				in++;
 				break;
@@ -253,7 +276,7 @@ PFunction* parse_function(Memory* memory, char* in, char** out)
 		}
 
 	end:
-	if (state != FPS_PARAMETER && result->namelen)
+	if (state != FPS_EMPTY_PARAM && state != FPS_PARAMETER && result->namelen)
 	{
 		*out = in;
 		return result;

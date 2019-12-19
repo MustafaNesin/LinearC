@@ -199,6 +199,19 @@ void menu_console(MENU_PARAM_DECL)
 				printf("Ayristirilan yerden sonra karakterler var.");
 			else
 				print_expression(input);
+
+			if (input && !input->assignment && input->right && !input->right->negative && !input->right->next)
+			{
+				if (input->right->factors->type == FACTOR_FUNCTION && !input->right->factors->next)
+				{
+					PFunction* pfunc = input->right->factors->value;
+					if (!memcmp(pfunc->name, "return", 6) && pfunc->argcount == 0)
+					{
+						free_expression(input);
+						return;
+					}
+				}
+			}
 			printf("\n\n>");
 			free_expression(input);
 		}
