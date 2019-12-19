@@ -23,8 +23,8 @@
 		tail = tail->next = calloc(1, sizeof(PTerm)); \
 	else \
 		tail = result = calloc(1, sizeof(PTerm)); \
-	tail->negative = negative; \
-	ASSERT(tail);
+	ASSERT(tail); \
+	tail->negative = negative;
 
 #define IS_FSIGN (*in == '*' || *in == '/')
 #define IS_DIVISOR (*in == '/')
@@ -33,8 +33,8 @@
 		tail = tail->next = calloc(1, sizeof(PFactor)); \
 	else \
 		tail = result = calloc(1, sizeof(PFactor)); \
-	tail->divisor = divisor; \
-	ASSERT(tail);
+	ASSERT(tail); \
+	tail->divisor = divisor;
 
 #define CURRENT_PARAMTYPE result->argtypes[result->argcount]
 #define CURRENT_PARAMETER result->args[result->argcount]
