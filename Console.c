@@ -326,7 +326,7 @@ bool run_command(Memory* memory, PExpression* input, bool* newline)
 			if (strcmp(func->name, pfunc->name))
 				continue;
 
-			if (func->ret)
+			if (func->returns)
 				continue;
 
 			if (!memory->commands[i].function)
@@ -423,7 +423,7 @@ char* check_factor(Memory* memory, void* input, uint8_t type)
 					continue;
 				if (strcmp(func->name, pfunc->name))
 					continue;
-				ASSERT__ERROR(func->ret, 
+				ASSERT__ERROR(func->returns, 
 					"Hata: Deger dondurmeyen bir fonksiyon ifade icinde kullanilamaz.");
 				return NULL;
 			}
@@ -639,7 +639,8 @@ EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 					continue;
 
 				EValue args[CMD_PARAM_COUNT] = { 0 };
-				for (int p = 0; p < func->paramcount; p++)
+				int p;
+				for (p = 0; p < func->paramcount; p++)
 				{
 					args[p] = evaluate_expression(memory, pfunc->args[p], error);
 					if (*error)
@@ -650,7 +651,11 @@ EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 						return result;
 					}
 				}
-				return func->function(memory, args, error);
+				result = func->function(memory, args, error);
+				for (p = 0; p < func->paramcount; p++)
+					if (!args[p].scalar)
+						mx_free(args[p].value.matrix);
+				return result;
 			}
 
 			*error = "Kritik hata."; //check fonksiyonunda zaten kontrol edildi
@@ -731,7 +736,21 @@ void free_function(PFunction* function)
 	free(function);
 }
 
-void cmd_clear(CMD_PARAM_DECL)
+EValue cmd_clear(CMD_PARAM_DECL)
 {
+	INITIALIZE_EVALUE;
+
 	clear();
+
+	RETURN_EVALUE;
+}
+
+EValue cmd_transpose(CMD_PARAM_DECL)
+{
+	INITIALIZE_EVALUE;
+
+	result.scalar = false;
+	result.value.matrix = mx2_transpose(GET_MATRIX_ARG(0));
+
+	RETURN_EVALUE;
 }

@@ -9,6 +9,12 @@
 #define FACTOR_NODE        (uint8_t)2
 #define FACTOR_FUNCTION    (uint8_t)3
 #define FACTOR_PARENTHESIS (uint8_t)4
+
+#define INITIALIZE_EVALUE  EValue result = {0};
+#define RETURN_EVALUE      return result;
+
+#define GET_SCALAR_ARG(i)  args[i].value.scalar
+#define GET_MATRIX_ARG(i)  args[i].value.matrix
 #pragma endregion
 
 #pragma region Structures
@@ -76,4 +82,5 @@ void free_expression(PTerm* term);
 void free_term(PFactor* factor);
 void free_function(PFunction* function);
 
-void cmd_clear(CMD_PARAM_DECL);
+EValue cmd_clear(CMD_PARAM_DECL);
+EValue cmd_transpose(CMD_PARAM_DECL);

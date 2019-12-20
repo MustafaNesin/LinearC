@@ -38,14 +38,21 @@ Memory* init_mem(void)
 		BEGIN_CMD_INIT;
 		{
 			memory->commands[c].name = "return";
-			memory->commands[c].help = "Ana menuye geri dondurur.";
 		}
 
 		BEGIN_CMD_INIT;
 		{
 			memory->commands[c].name = "clear";
-			memory->commands[c].help = "Ekrani temizler.";
 			memory->commands[c].function = cmd_clear;
+		}
+
+		BEGIN_CMD_INIT;
+		{
+			memory->commands[c].name = "t";
+			memory->commands[c].function = cmd_transpose;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 1;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
 		}
 	}
 

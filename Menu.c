@@ -160,7 +160,7 @@ void menu_console(MENU_PARAM_DECL)
 	uint8_t length = 0;
 	bool exceed = false, newline = true;
 
-	printf("Konsol hakkinda yardim almak icin help, geri donmek icin return yazin.\n> ");
+	printf("Geri donmek icin return yazin.\n> ");
 
 	while (true)
 	{

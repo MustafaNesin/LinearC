@@ -20,12 +20,14 @@
 #pragma endregion
 
 #pragma region Definitions
-#define CMD_COUNT       (uint8_t)2    // Her yeni komut eklendiðinde artýrýlmalýdýr
-#define CMD_PARAM_COUNT (uint8_t)5
-#define CON_BUFFER_SIZE (uint8_t)200 
-#define MIN_MATRIX_SIZE (uint8_t)1
-#define MAX_MATRIX_SIZE (uint8_t)10 
-#define BEGIN_CMD_INIT	c++
+#define CMD_COUNT        (uint8_t)3    // Her yeni komut eklendiðinde artýrýlmalýdýr
+#define CMD_PARAM_COUNT  (uint8_t)5
+#define CON_BUFFER_SIZE  (uint8_t)200 
+#define MIN_MATRIX_SIZE  (uint8_t)1
+#define MAX_MATRIX_SIZE  (uint8_t)10 
+#define BEGIN_CMD_INIT   c++
+#define CMD_MATRIX_PARAM (bool)false
+#define CMD_SCALAR_PARAM (bool)true
 #pragma endregion
 
 #pragma region Type Definitions
@@ -46,16 +48,15 @@ typedef struct Node        Node;
 typedef struct Menu        Menu;
 
 #define MENU_PARAM_DECL Memory* memory
-#define CMD_PARAM_DECL  Memory* memory, EValue params[CMD_PARAM_COUNT], char** error
+#define CMD_PARAM_DECL  Memory* memory, EValue args[CMD_PARAM_COUNT], char** error
 #pragma endregion
 
 #pragma region Structures
 struct Function
 {
 	char     *name;
-	char     *help;
 	EValue   (*function)(CMD_PARAM_DECL);
-	uint8_t  ret; //0: none, 1: matrix, 2: scalar
+	bool     returns;
 	uint8_t  paramcount;
 	bool     params[CMD_PARAM_COUNT]; //true: scalar, false: matrix
 };
