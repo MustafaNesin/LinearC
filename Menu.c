@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
 #include "Console.h"
 #include "Matrix.h"
 #include "Menu.h"
@@ -12,7 +8,7 @@ void loop_menu(Menu* menu, Memory* memory)
 	if (!menu || !memory)
 		return;
 
-	void (*func)(MENU_PARAMS);
+	void (*func)(MENU_PARAM_DECL);
 
 	while (func = menu->functions[show_menu(menu)])
 	{
@@ -53,7 +49,7 @@ int show_menu(Menu* menu)
 	return opt;
 }
 
-void menu_define(MENU_PARAMS)
+void menu_define(MENU_PARAM_DECL)
 {
 	if (!memory)
 		return;
@@ -66,7 +62,7 @@ void menu_define(MENU_PARAMS)
 	{
 		printf("Matris Adi (Buyuk harf): ");
 		scanl("%c", &name);
-		if (name < 'A' || name > 'Z')
+		if (!isupper(name))
 		{
 			printf("\nMatris adi buyuk bir harf olmalidir. (Yalnizca Ingiliz alfabesi harfleri)");
 			get_char();
@@ -137,7 +133,7 @@ void menu_define(MENU_PARAMS)
 		}
 }
 
-void menu_list(MENU_PARAMS)
+void menu_list(MENU_PARAM_DECL)
 {
 	if (!memory)
 		return;
@@ -157,73 +153,67 @@ void menu_list(MENU_PARAMS)
 	get_char();
 }
 
-void menu_console(MENU_PARAMS)
+void menu_console(MENU_PARAM_DECL)
 {
-	if (!memory)
-		return;
-
-	Command* command = 0;
-	Parsed parsed = { 0 };
 	int input;
-	char buffer[CON_BUFFER_SIZE];
-	uint8_t length = 0, cmd;
+	char buffer[CON_BUFFER_SIZE] = { 0 }, *endp;
+	uint8_t length = 0;
+	bool exceed = false, newline = true;
 
 	printf("Konsol hakkinda yardim almak icin help, geri donmek icin return yazin.\n> ");
 
-	next:
-	input = getchar();
-
-	if (input == -1)
-		goto end;
-
-	if (input == '\n')
+	while (true)
 	{
-		buffer[length] = '\0';
-		parse_command(buffer, &parsed);
+		input = getchar();
 
-		if (!parsed.name || !*parsed.name)
+		if (input != '\n')
 		{
-			printf("> ");
-			length = 0;
-			goto next;
+			if (exceed)
+				continue;
+
+			if (input == EOF)
+				break;
+
+			buffer[length++] = (char)input;
+
+			// çýkarýlan sayý parse_formula fonksiyonunda aþma yaþanmamasý için
+			if (length == CON_BUFFER_SIZE - 5)
+			{
+				printf("\nKonsola yazilabilecek maksimum karakter sayisi asildi.");
+				exceed = true;
+				continue;
+			}
+
+			continue;
 		}
 
-		for (cmd = 0; cmd < CMD_COUNT; cmd++)
-			if (!strcmp(parsed.name, memory->commands[cmd]->name))
-				command = memory->commands[cmd];
-
-		if (!command)
-			printf("%s adinda bir fonksiyon bulunamadi. (Fonksiyon listesi icin help yazin.)\n", parsed.name);
+		if (exceed)
+			exceed = false;
 		else
 		{
-			if (!command->function)
-				goto end;
-			command->function(memory, &parsed);
+			PExpression* input = parse_formula(memory, &buffer, &endp);
+
+			if (*endp)
+				printf("Sozdizimi hatasi.");
+			else if (!run_command(memory, input, &newline))
+			{
+				free_formula(input);
+				break;
+			}
+
+			if (newline)
+				printf("\n\n");
+
+			printf("> ");
+			free_formula(input);
 		}
 
-		printf("> ");
+		memset(buffer, 0, CON_BUFFER_SIZE);
 		length = 0;
-		command = NULL;
-		goto next;
 	}
-
-	buffer[length++] = (char)input;
-	if (length == CON_BUFFER_SIZE)
-	{
-		printf("\nKonsola yazilabilecek maksimum karakter sayisi (%d) asildi.", length);
-		get_char();
-		length = 0;
-		goto next;
-	}
-	goto next;
-
-	end:
-	if (memory->matrix)
-		mx_free(memory->matrix);
-	memory->matrix = NULL;
 }
 
-void menu_equation(MENU_PARAMS)
+void menu_equation(MENU_PARAM_DECL)
 {
 	if (!memory)
 		return;
@@ -231,7 +221,7 @@ void menu_equation(MENU_PARAMS)
 	printf("Her satira bir esitlik girin.");
 }
 
-void menu_save(MENU_PARAMS)
+void menu_save(MENU_PARAM_DECL)
 {
 	if (!memory)
 		return;
@@ -245,7 +235,7 @@ void menu_save(MENU_PARAMS)
 	get_char();
 }
 
-void menu_read(MENU_PARAMS)
+void menu_read(MENU_PARAM_DECL)
 {
 	if (!memory)
 		return;

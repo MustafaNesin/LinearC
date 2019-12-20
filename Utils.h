@@ -1,5 +1,9 @@
 #pragma once
 
-void clear(void);
-void scanl(char* format, ...);
-int get_char(void);
+#pragma region Include
+#include "Memory.h"
+#pragma endregion
+
+void      clear          (void);
+void      scanl          (char const* const format, ...);
+int       get_char       (void);
