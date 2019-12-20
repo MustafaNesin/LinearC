@@ -14,10 +14,9 @@
 #pragma region Structures
 struct PFunction
 {
-	uint8_t  argcount;
-	uint8_t  namelen;
 	char     *name;
 	PTerm    *args[CMD_PARAM_COUNT];
+	uint8_t  argcount;
 };
 
 struct PFactor
@@ -39,24 +38,42 @@ struct PExpression
 {
 	Node     *left;
 	PTerm    *right;
+	char     leftname;
 	bool     assignment;
+};
+
+struct EValue
+{
+	union
+	{
+		float scalar;
+		Matrix* matrix;
+	} value;
+	bool     scalar;
 };
 #pragma endregion
 
 
-PExpression* parse_expression(Memory* memory, char* in, char** out);
-PTerm* parse_terms(Memory* memory, char* in, char** out);
-PFactor* parse_factors(Memory* memory, char* in, char** out);
+PExpression* parse_formula(Memory* memory, char* in, char** out);
+PTerm* parse_expression(Memory* memory, char* in, char** out);
+PFactor* parse_term(Memory* memory, char* in, char** out);
 PFunction* parse_function(Memory* memory, char* in, char** out);
-void free_expression(PExpression* expresion);
-void free_terms(PTerm* term);
-void free_factors(PFactor* factor);
+
+bool run_command(Memory* memory, PExpression* input, bool* newline);
+
+char* check_formula(Memory* memory, PExpression* input);
+char* check_expression(Memory* memory, PTerm* input);
+char* check_term(Memory* memory, PFactor* input);
+char* check_factor(Memory* memory, void* input, uint8_t type);
+
+EValue evaluate_formula(Memory* memory, PExpression* input, char** error);
+EValue evaluate_expression(Memory* memory, PTerm* input, char** error);
+EValue evaluate_term(Memory* memory, PFactor* input, char** error);
+EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error);
+
+void free_formula(PExpression* expresion);
+void free_expression(PTerm* term);
+void free_term(PFactor* factor);
 void free_function(PFunction* function);
 
 void cmd_clear(CMD_PARAM_DECL);
-
-char* strfactortype(uint8_t type);
-void print_indentation(uint8_t indent);
-void print_factor(PFactor* factor, uint8_t indent);
-void print_term(PTerm* term, uint8_t indent);
-void print_expression(PExpression* expression);

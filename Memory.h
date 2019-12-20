@@ -12,6 +12,11 @@
 #ifdef _WIN32
 	#include <Windows.h>
 #endif
+
+#if _DEBUG
+	#define _CRTDBG_MAP_ALLOC  
+	#include <crtdbg.h>
+#endif
 #pragma endregion
 
 #pragma region Definitions
@@ -30,6 +35,7 @@ typedef struct PExpression PExpression;
 typedef struct PTerm       PTerm;
 typedef struct PFactor     PFactor;
 typedef struct PFunction   PFunction;
+typedef struct EValue      EValue;
 
 typedef struct Matrix      Matrix;
 typedef struct Operation   Operation;
@@ -40,7 +46,7 @@ typedef struct Node        Node;
 typedef struct Menu        Menu;
 
 #define MENU_PARAM_DECL Memory* memory
-#define CMD_PARAM_DECL  Memory* memory
+#define CMD_PARAM_DECL  Memory* memory, EValue params[CMD_PARAM_COUNT], char** error
 #pragma endregion
 
 #pragma region Structures
@@ -48,10 +54,10 @@ struct Function
 {
 	char     *name;
 	char     *help;
-	void     (*function)(CMD_PARAM_DECL, ...);
-	uint8_t  ret;
+	EValue   (*function)(CMD_PARAM_DECL);
+	uint8_t  ret; //0: none, 1: matrix, 2: scalar
 	uint8_t  paramcount;
-	uint8_t  params[CMD_PARAM_COUNT];
+	bool     params[CMD_PARAM_COUNT]; //true: scalar, false: matrix
 };
 
 struct Menu

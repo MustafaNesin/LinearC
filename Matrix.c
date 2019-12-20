@@ -44,7 +44,6 @@ void mx_print(Matrix* matrix)
 			printf("%dx%d", matrix->rows, matrix->cols);
 		printf("\n");
 	}
-	printf("\n");
 }
 
 Matrix* mx_copy(Matrix* matrix)
@@ -178,7 +177,7 @@ bool mx_isequal(Matrix* matrix1, Matrix* matrix2)
 	return true;
 }
 
-Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
+Matrix* mx2_add(Matrix* matrix1, Matrix* matrix2)
 {
 	Matrix* result = malloc(sizeof(Matrix));
 
@@ -201,7 +200,13 @@ Matrix* mx_add(Matrix* matrix1, Matrix* matrix2)
 	return result;
 }
 
-Matrix* mx_multiply(float scalar, Matrix* matrix)
+void mx_add(Matrix* matrix1, Matrix* matrix2)
+{
+	for (uint8_t i = 0; i < matrix1->rows * matrix1->cols; i++)
+		*(matrix1->data + i) = *(matrix1->data + i) + *(matrix2->data + i);
+}
+
+Matrix* mx2_multiply(Matrix* matrix, float scalar)
 {
 	Matrix* result = malloc(sizeof(Matrix));
 
@@ -224,7 +229,13 @@ Matrix* mx_multiply(float scalar, Matrix* matrix)
 	return result;
 }
 
-Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
+void mx_multiply(Matrix* matrix, float scalar)
+{
+	for (uint8_t i = 0; i < matrix->rows * matrix->cols; i++)
+		*(matrix->data + i) *= scalar;
+}
+
+Matrix* mx2_dot(Matrix* matrix1, Matrix* matrix2)
 {
 	Matrix* result = malloc(sizeof(Matrix));
 
@@ -250,7 +261,20 @@ Matrix* mx_dot(Matrix* matrix1, Matrix* matrix2)
 	return result;
 }
 
-Matrix* mx_transpose(Matrix* matrix)
+bool mx_dot(Matrix* matrix1, Matrix* matrix2)
+{
+	Matrix* matrix = mx2_dot(matrix1, matrix2);
+	if (!matrix)
+		return false;
+	free(matrix1->data);
+	matrix1->rows = matrix->rows;
+	matrix1->cols = matrix->cols;
+	matrix1->data = matrix->data;
+	free(matrix);
+	return true;
+}
+
+Matrix* mx2_transpose(Matrix* matrix)
 {
 	Matrix* result = malloc(sizeof(Matrix));
 
@@ -273,6 +297,19 @@ Matrix* mx_transpose(Matrix* matrix)
 			*(result->data + i) = *mx_get(matrix, row, col);
 
 	return result;
+}
+
+bool mx_transpose(Matrix* matrix1)
+{
+	Matrix* matrix = mx2_transpose(matrix1);
+	if (!matrix)
+		return false;
+	free(matrix1->data);
+	matrix1->rows = matrix->rows;
+	matrix1->cols = matrix->cols;
+	matrix1->data = matrix->data;
+	free(matrix);
+	return true;
 }
 
 Operation mx_next_op(Matrix* matrix, bool colmode, bool reduce)

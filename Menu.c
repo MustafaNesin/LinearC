@@ -156,9 +156,9 @@ void menu_list(MENU_PARAM_DECL)
 void menu_console(MENU_PARAM_DECL)
 {
 	int input;
-	char buffer[CON_BUFFER_SIZE] = { 0 };
+	char buffer[CON_BUFFER_SIZE] = { 0 }, *endp;
 	uint8_t length = 0;
-	bool exceed = false;
+	bool exceed = false, newline = true;
 
 	printf("Konsol hakkinda yardim almak icin help, geri donmek icin return yazin.\n> ");
 
@@ -191,29 +191,21 @@ void menu_console(MENU_PARAM_DECL)
 			exceed = false;
 		else
 		{
-			char* endp;
-			PExpression* input = parse_expression(memory, &buffer, &endp);
-			if (!input)
-				printf("Ayristirma basarisiz.");
-			else if (*endp)
-				printf("Ayristirilan yerden sonra karakterler var.");
-			else
-				print_expression(input);
+			PExpression* input = parse_formula(memory, &buffer, &endp);
 
-			if (input && !input->assignment && input->right && !input->right->negative && !input->right->next)
+			if (*endp)
+				printf("Sozdizimi hatasi.");
+			else if (!run_command(memory, input, &newline))
 			{
-				if (input->right->factors->type == FACTOR_FUNCTION && !input->right->factors->next)
-				{
-					PFunction* pfunc = input->right->factors->value;
-					if (!memcmp(pfunc->name, "return", 6) && pfunc->argcount == 0)
-					{
-						free_expression(input);
-						return;
-					}
-				}
+				free_formula(input);
+				break;
 			}
-			printf("\n\n>");
-			free_expression(input);
+
+			if (newline)
+				printf("\n\n");
+
+			printf("> ");
+			free_formula(input);
 		}
 
 		memset(buffer, 0, CON_BUFFER_SIZE);
