@@ -459,3 +459,53 @@ void mx_apply_op(Matrix* matrix, Operation operation)
 			break;
 	}
 }
+
+bool mx_isidentity(Matrix* matrix)
+{
+	if (matrix->rows != matrix->cols)
+		return false;
+
+	for (uint8_t row = 0, col, i = 0; row < matrix->rows; row++)
+		for (col = 0; col < matrix->cols; col++, i++)
+			if (*(matrix->data + i) != (row == col))
+				return false;
+
+	return true;
+}
+
+Matrix* mx2_inverse(Matrix* matrix)
+{
+	Matrix* result = mx_copy(matrix);
+	Matrix* identity = mx_create_diag(matrix->rows, 1);
+
+	Operation op;
+	while ((op = mx_next_op(result, false, true)).type)
+	{
+		mx_apply_op(result, op);
+		mx_apply_op(identity, op);
+	}
+
+	if (!mx_isidentity(result))
+	{
+		free(identity);
+		free(result);
+		return NULL;
+	}
+
+	free(result);
+	return identity;
+}
+
+bool mx_inverse(Matrix* matrix)
+{
+	Matrix* inverse = mx2_inverse(matrix);
+	if (!inverse)
+		return false;;
+
+	free(matrix->data);
+	matrix->rows = inverse->rows;
+	matrix->cols = inverse->cols;
+	matrix->data = inverse->data;
+	free(inverse);
+	return true;
+}

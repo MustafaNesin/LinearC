@@ -54,6 +54,15 @@ Memory* init_mem(void)
 			memory->commands[c].paramcount = 1;
 			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
 		}
+
+		BEGIN_CMD_INIT;
+		{
+			memory->commands[c].name = "inv";
+			memory->commands[c].function = cmd_inverse;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 1;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+		}
 	}
 
 	return memory;

@@ -84,3 +84,4 @@ void free_function(PFunction* function);
 
 EValue cmd_clear(CMD_PARAM_DECL);
 EValue cmd_transpose(CMD_PARAM_DECL);
+EValue cmd_inverse(CMD_PARAM_DECL);

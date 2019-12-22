@@ -754,3 +754,22 @@ EValue cmd_transpose(CMD_PARAM_DECL)
 
 	RETURN_EVALUE;
 }
+
+EValue cmd_inverse(CMD_PARAM_DECL)
+{
+	INITIALIZE_EVALUE;
+
+	Matrix* matrix = GET_MATRIX_ARG(0);
+	if (matrix->rows == matrix->cols)
+	{
+		result.scalar = false;
+		result.value.matrix = mx2_inverse(matrix);
+
+		if (!result.value.matrix)
+			*error = "Matrisin tersi yok.";
+	}
+	else
+		*error = "Yalnizca kare matrislerin tersi alinabilir.";
+
+	RETURN_EVALUE;
+}

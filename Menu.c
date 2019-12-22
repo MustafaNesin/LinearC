@@ -5,9 +5,6 @@
 
 void loop_menu(Menu* menu, Memory* memory)
 {
-	if (!menu || !memory)
-		return;
-
 	void (*func)(MENU_PARAM_DECL);
 
 	while (func = menu->functions[show_menu(menu)])
@@ -19,9 +16,6 @@ void loop_menu(Menu* menu, Memory* memory)
 
 int show_menu(Menu* menu)
 {
-	if (!menu)
-		return 0;
-
 	int opt, i, error = 0;
 
 	do
@@ -51,9 +45,6 @@ int show_menu(Menu* menu)
 
 void menu_define(MENU_PARAM_DECL)
 {
-	if (!memory)
-		return;
-
 	int rows, cols;
 	char c, name;
 	float* data;
@@ -135,9 +126,6 @@ void menu_define(MENU_PARAM_DECL)
 
 void menu_list(MENU_PARAM_DECL)
 {
-	if (!memory)
-		return;
-
 	uint8_t count = 0;
 
 	printf("\tAd\tSat\tSut");
@@ -215,17 +203,14 @@ void menu_console(MENU_PARAM_DECL)
 
 void menu_equation(MENU_PARAM_DECL)
 {
-	if (!memory)
-		return;
+	uint8_t varc = 0, conc = 0;
 
-	printf("Her satira bir esitlik girin.");
+	printf("Her satira bir esitlik girin.\n");
+	printf("Hesaplama yapmak icin bos satir girin.\n");
 }
 
 void menu_save(MENU_PARAM_DECL)
 {
-	if (!memory)
-		return;
-
 	int count = mem_save(memory);
 	if (count >= 0)
 		printf("Tanimlanmis %d matris dosyaya basariyla kaydedildi.", count);
@@ -237,9 +222,6 @@ void menu_save(MENU_PARAM_DECL)
 
 void menu_read(MENU_PARAM_DECL)
 {
-	if (!memory)
-		return;
-
 	{
 		char c;
 		printf("Mevcut tanimli matrisler silinecektir, devam edilsin mi? (E/H): ");
