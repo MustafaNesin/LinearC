@@ -50,6 +50,6 @@ bool      mx_transpose   (Matrix* matrix);
 float     mx_determinant (Matrix* matrix);
 Operation mx_next_op     (Matrix* matrix, bool colmode, bool reduce);
 void      mx_apply_op    (Matrix* matrix, Operation operation); 
-bool      mx_isidentity (Matrix* matrix);
+bool      mx_isidentity  (Matrix* matrix);
 Matrix*   mx2_inverse    (Matrix* matrix);
 bool      mx_inverse     (Matrix* matrix);
