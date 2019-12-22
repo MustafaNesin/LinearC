@@ -179,7 +179,7 @@ void menu_console(MENU_PARAM_DECL)
 			exceed = false;
 		else
 		{
-			PExpression* input = parse_formula(memory, &buffer, &endp);
+			PExpression* input = parse_formula(memory, (char*)buffer, &endp);
 
 			if (*endp)
 				printf("Sozdizimi hatasi.");

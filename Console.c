@@ -332,8 +332,8 @@ bool run_command(Memory* memory, PExpression* input, bool* newline)
 			if (!memory->commands[i].function)
 				return false;
 
-			memory->commands[i].function(memory, func, pfunc);
-
+			(void)memory->commands[i].function(memory, 0, &error);
+			
 			if (!strcmp(func->name, "clear"))
 				*newline = false;
 
@@ -622,6 +622,11 @@ EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 			result.value.scalar = *(float*)input;
 			break;
 		case FACTOR_NODE:
+			if (!input)
+			{
+				*error = "Hata: Tanimlanmamis matris kullanimi.";
+				return result;
+			}
 			result.scalar = false;
 			result.value.matrix = mx_copy(((Node*)input)->matrix);
 			break;
@@ -646,19 +651,19 @@ EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 					if (*error)
 						return result;
 					if (func->params[p] != args[p].scalar)
-					{
-						*error = "Fonksiyon parametreleri uyusmuyor.";
-						return result;
-					}
+						goto cont;
 				}
+
 				result = func->function(memory, args, error);
 				for (p = 0; p < func->paramcount; p++)
 					if (!args[p].scalar)
 						mx_free(args[p].value.matrix);
+
 				return result;
+				cont:;
 			}
 
-			*error = "Kritik hata."; //check fonksiyonunda zaten kontrol edildi
+			*error = "Fonksiyon parametreleri uyusmuyor.";
 			break;
 		}
 		case FACTOR_PARENTHESIS:
@@ -738,26 +743,26 @@ void free_function(PFunction* function)
 
 EValue cmd_clear(CMD_PARAM_DECL)
 {
-	INITIALIZE_EVALUE;
+	EValue result = { 0 };
 
 	clear();
 
-	RETURN_EVALUE;
+	return result;
 }
 
 EValue cmd_transpose(CMD_PARAM_DECL)
 {
-	INITIALIZE_EVALUE;
+	EValue result = { 0 };
 
 	result.scalar = false;
 	result.value.matrix = mx2_transpose(GET_MATRIX_ARG(0));
 
-	RETURN_EVALUE;
+	return result;
 }
 
 EValue cmd_inverse(CMD_PARAM_DECL)
 {
-	INITIALIZE_EVALUE;
+	EValue result = { 0 };
 
 	Matrix* matrix = GET_MATRIX_ARG(0);
 	if (matrix->rows == matrix->cols)
@@ -771,12 +776,12 @@ EValue cmd_inverse(CMD_PARAM_DECL)
 	else
 		*error = "Yalnizca kare matrislerin tersi olabilir.";
 
-	RETURN_EVALUE;
+	return result;
 }
 
 EValue cmd_determinant(CMD_PARAM_DECL)
 {
-	INITIALIZE_EVALUE;
+	EValue result = { 0 };
 
 	Matrix* matrix = GET_MATRIX_ARG(0);
 	if (matrix->rows == matrix->cols)
@@ -787,15 +792,15 @@ EValue cmd_determinant(CMD_PARAM_DECL)
 	else
 		*error = "Yalnizca kare matrislerin determinanti olabilir.";
 
-	RETURN_EVALUE;
+	return result;
 }
 
 EValue cmd_adjoint(CMD_PARAM_DECL)
 {
-	INITIALIZE_EVALUE;
+	EValue result = { 0 };
 
 	Matrix* matrix = GET_MATRIX_ARG(0);
-	if (matrix->rows == matrix->cols)
+	if (matrix->rows != matrix->cols)
 	{
 		result.scalar = false;
 		result.value.matrix = mx2_adjoint(matrix);
@@ -806,15 +811,61 @@ EValue cmd_adjoint(CMD_PARAM_DECL)
 	else
 		*error = "Yalnizca kare matrislerin ek matrisi olabilir.";
 
-	RETURN_EVALUE;
+	return result;
 }
 
 EValue cmd_rank(CMD_PARAM_DECL)
 {
-	INITIALIZE_EVALUE;
+	EValue result = { 0 };
 
 	result.scalar = true;
 	result.value.scalar = mx_rank(GET_MATRIX_ARG(0));
 
-	RETURN_EVALUE;
+	return result;
+}
+
+EValue cmd_power(CMD_PARAM_DECL)
+{
+	EValue result = { 0 };
+
+	result.scalar = args[0].scalar;
+
+	if (result.scalar)
+		result.value.scalar = powf(GET_SCALAR_ARG(0), GET_SCALAR_ARG(1));
+	else
+	{
+		Matrix* matrix = GET_MATRIX_ARG(0), *copy;
+		float power = GET_SCALAR_ARG(1);
+		if (matrix->rows == matrix->cols)
+			if (ceilf(power) == power)
+			{
+				int p = (int)power;
+
+				if (p < 0)
+				{
+					copy = mx2_inverse(matrix);
+					if (!copy)
+					{
+						*error = "Tersi olmayan matrislerin negatif kuvveti alinamaz.";
+						return result;
+					}
+				}
+				else
+					copy = mx_copy(matrix);
+				
+				result.value.matrix = mx_create_diag(matrix->rows, 1);
+
+				p = abs(p);
+				for (uint8_t i = 0; i < p; i++)
+					mx_dot(result.value.matrix, copy);
+
+				mx_free(copy);
+			}
+			else
+				*error = "Matrislerin yalnizca tam sayi kuvveti alinabilir.";
+		else
+			*error = "Yalnizca kare matrislerin kuvveti alinabilir.";
+	}
+
+	return result;
 }

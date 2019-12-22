@@ -90,6 +90,26 @@ Memory* init_mem(void)
 			memory->commands[c].paramcount = 1;
 			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
 		}
+
+		BEGIN_CMD_INIT;
+		{
+			memory->commands[c].name = "pow";
+			memory->commands[c].function = cmd_power;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 2;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_SCALAR_PARAM;
+		}
+
+		BEGIN_CMD_INIT;
+		{
+			memory->commands[c].name = "pow";
+			memory->commands[c].function = cmd_power;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 2;
+			memory->commands[c].params[0] = CMD_SCALAR_PARAM;
+			memory->commands[c].params[1] = CMD_SCALAR_PARAM;
+		}
 	}
 
 	return memory;

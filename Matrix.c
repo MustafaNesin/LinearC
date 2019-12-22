@@ -36,7 +36,7 @@ void mx_print(Matrix* matrix)
 			if (element == -0.0f)
 				element = 0;
 
-			printf("%10g ", element);
+			printf("%12g ", element);
 		}
 
 		printf("  | ");

@@ -10,9 +10,6 @@
 #define FACTOR_FUNCTION    (uint8_t)3
 #define FACTOR_PARENTHESIS (uint8_t)4
 
-#define INITIALIZE_EVALUE  EValue result = {0};
-#define RETURN_EVALUE      return result;
-
 #define GET_SCALAR_ARG(i)  args[i].value.scalar
 #define GET_MATRIX_ARG(i)  args[i].value.matrix
 #pragma endregion
@@ -88,3 +85,4 @@ EValue cmd_inverse(CMD_PARAM_DECL);
 EValue cmd_determinant(CMD_PARAM_DECL);
 EValue cmd_adjoint(CMD_PARAM_DECL);
 EValue cmd_rank(CMD_PARAM_DECL);
+EValue cmd_power(CMD_PARAM_DECL);
