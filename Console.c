@@ -769,7 +769,23 @@ EValue cmd_inverse(CMD_PARAM_DECL)
 			*error = "Matrisin tersi yok.";
 	}
 	else
-		*error = "Yalnizca kare matrislerin tersi alinabilir.";
+		*error = "Yalnizca kare matrislerin tersi olabilir.";
+
+	RETURN_EVALUE;
+}
+
+EValue cmd_determinant(CMD_PARAM_DECL)
+{
+	INITIALIZE_EVALUE;
+
+	Matrix* matrix = GET_MATRIX_ARG(0);
+	if (matrix->rows == matrix->cols)
+	{
+		result.scalar = true;
+		result.value.scalar = mx_determinant(matrix);
+	}
+	else
+		*error = "Yalnizca kare matrislerin determinanti olabilir.";
 
 	RETURN_EVALUE;
 }

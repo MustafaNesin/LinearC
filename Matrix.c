@@ -321,16 +321,17 @@ float mx_determinant(Matrix* matrix)
 	while ((op = mx_next_op(copy, false, false)).type)
 	{
 		if (op.type == OP_SWITCH)
-			det *= -1;
+			det /= -1;
 		if (op.type == OP_MULTIPLY)
-			det *= op.coeff;
+			det /= op.coeff;
 
 		mx_apply_op(copy, op);
 	}
 	
-	for (uint8_t diag = 0; diag < matrix->rows; diag++)
-		det *= *mx_get(matrix, diag, diag);
+	for (uint8_t diag = 0; diag < copy->rows; diag++)
+		det *= *mx_get(copy, diag, diag);
 	
+	mx_free(copy);
 	return det;
 }
 
@@ -509,12 +510,12 @@ Matrix* mx2_inverse(Matrix* matrix)
 
 	if (!mx_isidentity(result))
 	{
-		free(identity);
-		free(result);
+		mx_free(identity);
+		mx_free(result);
 		return NULL;
 	}
 
-	free(result);
+	mx_free(result);
 	return identity;
 }
 
@@ -522,7 +523,7 @@ bool mx_inverse(Matrix* matrix)
 {
 	Matrix* inverse = mx2_inverse(matrix);
 	if (!inverse)
-		return false;;
+		return false;
 
 	free(matrix->data);
 	matrix->rows = inverse->rows;
