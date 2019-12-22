@@ -312,6 +312,28 @@ bool mx_transpose(Matrix* matrix1)
 	return true;
 }
 
+float mx_determinant(Matrix* matrix)
+{
+	Matrix* copy = mx_copy(matrix);
+	Operation op;
+	float det = 1;
+
+	while ((op = mx_next_op(copy, false, false)).type)
+	{
+		if (op.type == OP_SWITCH)
+			det *= -1;
+		if (op.type == OP_MULTIPLY)
+			det *= op.coeff;
+
+		mx_apply_op(copy, op);
+	}
+	
+	for (uint8_t diag = 0; diag < matrix->rows; diag++)
+		det *= *mx_get(matrix, diag, diag);
+	
+	return det;
+}
+
 Operation mx_next_op(Matrix* matrix, bool colmode, bool reduce)
 {
 	Operation op = { 0 };
