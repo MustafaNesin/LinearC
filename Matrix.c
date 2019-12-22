@@ -312,6 +312,32 @@ bool mx_transpose(Matrix* matrix1)
 	return true;
 }
 
+uint8_t mx_rank(Matrix* matrix)
+{
+	Matrix* copy = mx_copy(matrix);
+	if (!copy)
+		return 0;
+
+	uint8_t rank = 0;
+	Operation op;
+
+	while ((op = mx_next_op(copy, false, false)).type)
+		mx_apply_op(copy, op);
+
+	for (uint8_t col; rank < copy->rows; rank++)
+	{
+		for (col = 0; col < copy->cols; col++)
+			if (*mx_get(copy, rank, col))
+				goto cont;
+
+		break;
+		cont:
+	}
+
+	mx_free(copy);
+	return rank;
+}
+
 float mx_determinant(Matrix* matrix)
 {
 	Matrix* copy = mx_copy(matrix);

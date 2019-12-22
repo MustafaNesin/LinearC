@@ -47,6 +47,7 @@ Matrix*   mx2_dot        (Matrix* matrix1, Matrix* matrix2);
 bool      mx_dot         (Matrix* matrix1, Matrix* matrix2);
 Matrix*   mx2_transpose  (Matrix* matrix);
 bool      mx_transpose   (Matrix* matrix);
+uint8_t   mx_rank        (Matrix* matrix);
 float     mx_determinant (Matrix* matrix);
 Operation mx_next_op     (Matrix* matrix, bool colmode, bool reduce);
 void      mx_apply_op    (Matrix* matrix, Operation operation); 
