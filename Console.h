@@ -86,3 +86,5 @@ EValue cmd_clear(CMD_PARAM_DECL);
 EValue cmd_transpose(CMD_PARAM_DECL);
 EValue cmd_inverse(CMD_PARAM_DECL);
 EValue cmd_determinant(CMD_PARAM_DECL);
+EValue cmd_adjoint(CMD_PARAM_DECL);
+EValue cmd_rank(CMD_PARAM_DECL);

@@ -6,14 +6,14 @@
 #define CMD_SYNTAX
 
 #define ASSERT__FAIL(cond) if (!(cond)) goto fail;
-#define IS_SPACE isspace(*in)
+#define IS_SPACE (*in < -1 || isspace(*in))
 #define EAT_SPACE if (IS_SPACE) { in++; continue; }
 #define _EAT_SPACE while (*in) { EAT_SPACE; break; }
 
-#define IS_NUMBER isdigit(*in)
-#define IS_MATRIX isupper(*in)
-#define IS_NAME islower(*in)
-#define IS_FUNCTION islower(*in)
+#define IS_NUMBER (*in > -1 && isdigit(*in))
+#define IS_MATRIX (*in > -1 && isupper(*in))
+#define IS_NAME (*in > -1 && islower(*in))
+#define IS_FUNCTION (*in > -1 && islower(*in))
 #define IS_ASSIGNMENT (result->assignment = *in++ == '=')
 #define IS_PARENTHESIS (*in == '(')
 #define IS_PARAMETER (*in == ',')
@@ -786,6 +786,35 @@ EValue cmd_determinant(CMD_PARAM_DECL)
 	}
 	else
 		*error = "Yalnizca kare matrislerin determinanti olabilir.";
+
+	RETURN_EVALUE;
+}
+
+EValue cmd_adjoint(CMD_PARAM_DECL)
+{
+	INITIALIZE_EVALUE;
+
+	Matrix* matrix = GET_MATRIX_ARG(0);
+	if (matrix->rows == matrix->cols)
+	{
+		result.scalar = false;
+		result.value.matrix = mx2_adjoint(matrix);
+
+		if (!result.value.matrix)
+			*error = "Determinanti sifir olan matrisin ek matrisini bulma desteklenmiyor.";
+	}
+	else
+		*error = "Yalnizca kare matrislerin ek matrisi olabilir.";
+
+	RETURN_EVALUE;
+}
+
+EValue cmd_rank(CMD_PARAM_DECL)
+{
+	INITIALIZE_EVALUE;
+
+	result.scalar = true;
+	result.value.scalar = mx_rank(GET_MATRIX_ARG(0));
 
 	RETURN_EVALUE;
 }

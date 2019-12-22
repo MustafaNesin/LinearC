@@ -72,6 +72,24 @@ Memory* init_mem(void)
 			memory->commands[c].paramcount = 1;
 			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
 		}
+
+		BEGIN_CMD_INIT;
+		{
+			memory->commands[c].name = "adj";
+			memory->commands[c].function = cmd_adjoint;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 1;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+		}
+
+		BEGIN_CMD_INIT;
+		{
+			memory->commands[c].name = "r";
+			memory->commands[c].function = cmd_rank;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 1;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+		}
 	}
 
 	return memory;

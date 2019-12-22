@@ -21,7 +21,7 @@
 #pragma endregion
 
 #pragma region Definitions
-#define CMD_COUNT        (uint8_t)5    // Her yeni komut eklendiðinde artýrýlmalýdýr
+#define CMD_COUNT        (uint8_t)7    // Her yeni komut eklendiðinde artýrýlmalýdýr
 #define CMD_PARAM_COUNT  (uint8_t)5
 #define CON_BUFFER_SIZE  (uint8_t)200 
 #define MIN_MATRIX_SIZE  (uint8_t)1

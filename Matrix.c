@@ -331,7 +331,7 @@ uint8_t mx_rank(Matrix* matrix)
 				goto cont;
 
 		break;
-		cont:
+		cont:;
 	}
 
 	mx_free(copy);
@@ -570,7 +570,7 @@ bool mx_inverse(Matrix* matrix)
 	return true;
 }
 
-Matrix* mx2_adjacent(Matrix* matrix)
+Matrix* mx2_adjoint(Matrix* matrix)
 {
 	Matrix* result = mx_copy(matrix);
 	if (!result)
@@ -586,16 +586,16 @@ Matrix* mx2_adjacent(Matrix* matrix)
 	return result;
 }
 
-bool mx_adjacent(Matrix* matrix)
+bool mx_adjoint(Matrix* matrix)
 {
-	Matrix* adjacent = mx2_adjacent(matrix);
-	if (!adjacent)
+	Matrix* adjoint = mx2_adjoint(matrix);
+	if (!adjoint)
 		return false;
 
 	free(matrix->data);
-	matrix->rows = adjacent->rows;
-	matrix->cols = adjacent->cols;
-	matrix->data = adjacent->data;
-	free(adjacent);
+	matrix->rows = adjoint->rows;
+	matrix->cols = adjoint->cols;
+	matrix->data = adjoint->data;
+	free(adjoint);
 	return true;
 }
