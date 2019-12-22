@@ -315,6 +315,9 @@ bool mx_transpose(Matrix* matrix1)
 float mx_determinant(Matrix* matrix)
 {
 	Matrix* copy = mx_copy(matrix);
+	if (!copy)
+		return 0;
+
 	Operation op;
 	float det = 1;
 
@@ -499,7 +502,15 @@ bool mx_isidentity(Matrix* matrix)
 Matrix* mx2_inverse(Matrix* matrix)
 {
 	Matrix* result = mx_copy(matrix);
+	if (!result)
+		return NULL;
+
 	Matrix* identity = mx_create_diag(matrix->rows, 1);
+	if (!identity)
+	{
+		mx_free(result);
+		return NULL;
+	}
 
 	Operation op;
 	while ((op = mx_next_op(result, false, true)).type)
@@ -530,5 +541,35 @@ bool mx_inverse(Matrix* matrix)
 	matrix->cols = inverse->cols;
 	matrix->data = inverse->data;
 	free(inverse);
+	return true;
+}
+
+Matrix* mx2_adjacent(Matrix* matrix)
+{
+	Matrix* result = mx_copy(matrix);
+	if (!result)
+		return NULL;
+
+	if (!mx_inverse(result))
+	{
+		mx_free(result);
+		return NULL;
+	}
+
+	mx_multiply(result, mx_determinant(matrix));
+	return result;
+}
+
+bool mx_adjacent(Matrix* matrix)
+{
+	Matrix* adjacent = mx2_adjacent(matrix);
+	if (!adjacent)
+		return false;
+
+	free(matrix->data);
+	matrix->rows = adjacent->rows;
+	matrix->cols = adjacent->cols;
+	matrix->data = adjacent->data;
+	free(adjacent);
 	return true;
 }

@@ -53,3 +53,5 @@ void      mx_apply_op    (Matrix* matrix, Operation operation);
 bool      mx_isidentity  (Matrix* matrix);
 Matrix*   mx2_inverse    (Matrix* matrix);
 bool      mx_inverse     (Matrix* matrix);
+Matrix*   mx2_adjacent    (Matrix* matrix);
+bool      mx_adjacent    (Matrix* matrix);
