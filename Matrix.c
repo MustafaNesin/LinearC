@@ -29,15 +29,7 @@ void mx_print(Matrix* matrix)
 		printf("\t| ");
 
 		for (col = 0; col < matrix->cols; col++, i++)
-		{
-			element = *(matrix->data + i);
-
-			// -0'ı 0'a dönüştür
-			if (element == -0.0f)
-				element = 0;
-
-			printf("%12g ", element);
-		}
+			printf("%10g ", (float)froundf(*(matrix->data + i)));
 
 		printf("  | ");
 		if (row == matrix->rows - 1)

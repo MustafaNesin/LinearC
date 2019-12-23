@@ -35,64 +35,16 @@ Memory* init_mem(void)
 	{
 		int c = -1;
 
-		BEGIN_CMD_INIT;
-		{
-			memory->commands[c].name = "return";
-		}
+		CMD_INIT("return", NULL);
+		CMD_INIT("clear", cmd_clear);
 
-		BEGIN_CMD_INIT;
-		{
-			memory->commands[c].name = "clear";
-			memory->commands[c].function = cmd_clear;
-		}
-
-		BEGIN_CMD_INIT;
-		{
-			memory->commands[c].name = "t";
-			memory->commands[c].function = cmd_transpose;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 1;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-		}
-
-		BEGIN_CMD_INIT;
-		{
-			memory->commands[c].name = "inv";
-			memory->commands[c].function = cmd_inverse;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 1;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-		}
-
-		BEGIN_CMD_INIT;
-		{
-			memory->commands[c].name = "det";
-			memory->commands[c].function = cmd_determinant;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 1;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-		}
-
-		BEGIN_CMD_INIT;
-		{
-			memory->commands[c].name = "adj";
-			memory->commands[c].function = cmd_adjoint;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 1;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-		}
-
-		BEGIN_CMD_INIT;
-		{
-			memory->commands[c].name = "r";
-			memory->commands[c].function = cmd_rank;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 1;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-		}
-
-		BEGIN_CMD_INIT;
-		{
+		#pragma region Matrix
+		CMD_INIT_M("t", cmd_transpose);
+		CMD_INIT_M("inv", cmd_inverse);
+		CMD_INIT_M("det", cmd_determinant);
+		CMD_INIT_M("adj", cmd_adjoint);
+		CMD_INIT_M2("r", "rank", cmd_rank);
+		BEGIN_CMD_INIT; /* pow */ {
 			memory->commands[c].name = "pow";
 			memory->commands[c].function = cmd_power;
 			memory->commands[c].returns = true;
@@ -100,9 +52,7 @@ Memory* init_mem(void)
 			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
 			memory->commands[c].params[1] = CMD_SCALAR_PARAM;
 		}
-
-		BEGIN_CMD_INIT;
-		{
+		BEGIN_CMD_INIT; /* pow */ {
 			memory->commands[c].name = "pow";
 			memory->commands[c].function = cmd_power;
 			memory->commands[c].returns = true;
@@ -110,6 +60,49 @@ Memory* init_mem(void)
 			memory->commands[c].params[0] = CMD_SCALAR_PARAM;
 			memory->commands[c].params[1] = CMD_SCALAR_PARAM;
 		}
+		#pragma endregion
+
+		#pragma region Math
+		CMD_INIT2("deg", "degree", cmd_deg);
+		CMD_INIT2("rad", "radian", cmd_rad);
+		CMD_INIT_0("pi", cmd_pi);
+		CMD_INIT_0("e", cmd_e);
+		CMD_INIT_S("sqrt", cmd_sqrt);
+		CMD_INIT_S("ln", cmd_ln);
+		CMD_INIT_S("log", cmd_log);
+		BEGIN_CMD_INIT; /* log */ {
+			memory->commands[c].name = "log";
+			memory->commands[c].function = cmd_log;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 2;
+			memory->commands[c].params[0] = CMD_SCALAR_PARAM;
+			memory->commands[c].params[1] = CMD_SCALAR_PARAM;
+		}
+		CMD_INIT_S("sin", cmd_sin);
+		CMD_INIT_S("cos", cmd_cos);
+		CMD_INIT_S("tan", cmd_tan);
+		CMD_INIT_S("cot", cmd_cot);
+		CMD_INIT_S("sec", cmd_sec);
+		CMD_INIT_S("csc", cmd_csc);
+		CMD_INIT_S("sinh", cmd_sinh);
+		CMD_INIT_S("cosh", cmd_cosh);
+		CMD_INIT_S("tanh", cmd_tanh);
+		CMD_INIT_S("coth", cmd_coth);
+		CMD_INIT_S("sech", cmd_sech);
+		CMD_INIT_S("csch", cmd_csch);
+		CMD_INIT_S2("asin", "arcsin", cmd_asin);
+		CMD_INIT_S2("acos", "arccos", cmd_acos);
+		CMD_INIT_S2("atan", "arctan", cmd_atan);
+		CMD_INIT_S2("acot", "arccot", cmd_acot);
+		CMD_INIT_S2("asec", "arcsec", cmd_asec);
+		CMD_INIT_S2("acsc", "arccsc", cmd_acsc);
+		CMD_INIT_S2("asinh", "arcsinh", cmd_asinh);
+		CMD_INIT_S2("acosh", "arccosh", cmd_acosh);
+		CMD_INIT_S2("atanh", "arctanh", cmd_atanh);
+		CMD_INIT_S2("acoth", "arccoth", cmd_acoth);
+		CMD_INIT_S2("asech", "arcsech", cmd_asech);
+		CMD_INIT_S2("acsch", "arccsch", cmd_acsch);
+		#pragma endregion
 	}
 
 	return memory;

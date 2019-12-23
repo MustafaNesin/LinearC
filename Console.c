@@ -5,7 +5,7 @@
 #ifndef CMD_SYNTAX
 #define CMD_SYNTAX
 
-#define ASSERT__FAIL(cond) if (!(cond)) goto fail;
+#define ASSERT__FAIL(X_COND) if (!(X_COND)) goto fail;
 #define IS_SPACE (*in < -1 || isspace(*in))
 #define EAT_SPACE if (IS_SPACE) { in++; continue; }
 #define _EAT_SPACE while (*in) { EAT_SPACE; break; }
@@ -56,7 +56,7 @@
 #ifndef CMD_SEMANTICS
 #define CMD_SEMANTICS
 
-#define ASSERT__ERROR(cond, error) if (!(cond)) return error;
+#define ASSERT__ERROR(X_COND, X_ERR) if (!(X_COND)) return X_ERR;
 #endif
 
 PExpression* parse_formula(Memory* memory, char* in, char** out)
@@ -86,7 +86,7 @@ PExpression* parse_formula(Memory* memory, char* in, char** out)
 	ASSERT__FAIL(result->right = parse_expression(memory, in, &in));
 
 	*out = in;
-	return result;
+	RETURN_RESULT;
 
 	fail:
 	free_formula(result);
@@ -129,7 +129,7 @@ PTerm* parse_expression(Memory* memory, char* in, char** out)
 	if (tail && !sign)
 	{
 		*out = in;
-		return result;
+		RETURN_RESULT;
 	}
 
 	fail:
@@ -203,7 +203,7 @@ PFactor* parse_term(Memory* memory, char* in, char** out)
 	if (tail && !sign)
 	{
 		*out = in;
-		return result;
+		RETURN_RESULT;
 	}
 
 	fail:
@@ -298,7 +298,7 @@ PFunction* parse_function(Memory* memory, char* in, char** out)
 		result->name[namelen] = '\0';
 
 		*out = in;
-		return result;
+		RETURN_RESULT;
 	}
 
 	fail:
@@ -350,7 +350,7 @@ bool run_command(Memory* memory, PExpression* input, bool* newline)
 		if (error)
 			printf("%s", error);
 		else if (result.scalar)
-			printf("= %g", result.value.scalar);
+			printf("= %g", froundf(result.value.scalar));
 		else
 		{
 			mx_print(result.value.matrix);
@@ -442,14 +442,14 @@ EValue evaluate_formula(Memory* memory, PExpression* input, char** error)
 	EValue result = evaluate_expression(memory, input->right, error);
 
 	if (*error)
-		return result;
+		RETURN_RESULT;
 
 	if (input->assignment)
 	{
 		if (result.scalar)
 		{
 			*error = "Matris skaler bir sayiya esitlenemez.";
-			return result;
+			RETURN_RESULT;
 		}
 
 		if (input->left)
@@ -460,18 +460,18 @@ EValue evaluate_formula(Memory* memory, PExpression* input, char** error)
 		{
 			*error = "Kritik hafiza hatasi.";
 			mx_free(result.value.matrix);
-			return result;
+			RETURN_RESULT;
 		}
 		if (!(input->left = mem_add(memory, input->leftname, copy)))
 		{
 			*error = "Kritik hafiza hatasi.";
 			mx_free(copy);
 			mx_free(result.value.matrix);
-			return result;
+			RETURN_RESULT;
 		}
 	}
 
-	return result;
+	RETURN_RESULT;
 }
 
 EValue evaluate_expression(Memory* memory, PTerm* input, char** error)
@@ -480,7 +480,7 @@ EValue evaluate_expression(Memory* memory, PTerm* input, char** error)
 	EValue result = evaluate_term(memory, tail->factors, error), term;
 
 	if (*error)
-		return result;
+		RETURN_RESULT;
 
 	if (tail->negative)
 	{
@@ -498,7 +498,7 @@ EValue evaluate_expression(Memory* memory, PTerm* input, char** error)
 		{
 			if (!result.scalar)
 				mx_free(result.value.matrix);
-			return result;
+			RETURN_RESULT;
 		}
 
 		if (term.scalar)
@@ -507,7 +507,7 @@ EValue evaluate_expression(Memory* memory, PTerm* input, char** error)
 			{
 				*error = "Skaler sayilar matrislerle toplanamaz.";
 				mx_free(result.value.matrix);
-				return result;
+				RETURN_RESULT;
 			}
 
 			if (tail->negative)
@@ -521,7 +521,7 @@ EValue evaluate_expression(Memory* memory, PTerm* input, char** error)
 			{
 				*error = "Skaler sayilar matrislerle toplanamaz.";
 				mx_free(term.value.matrix);
-				return result;
+				RETURN_RESULT;
 			}
 
 			if (result.value.matrix->rows != term.value.matrix->rows ||
@@ -530,7 +530,7 @@ EValue evaluate_expression(Memory* memory, PTerm* input, char** error)
 				*error = "Toplama/cikarma yapabilmek icin matrislerin boyutlari birbirine esit olmalidir.";
 				mx_free(term.value.matrix);
 				mx_free(result.value.matrix);
-				return result;
+				RETURN_RESULT;
 			}
 
 			if (tail->negative)
@@ -541,7 +541,7 @@ EValue evaluate_expression(Memory* memory, PTerm* input, char** error)
 		}
 	}
 
-	return result;
+	RETURN_RESULT;
 }
 
 EValue evaluate_term(Memory* memory, PFactor* input, char** error)
@@ -550,7 +550,7 @@ EValue evaluate_term(Memory* memory, PFactor* input, char** error)
 	EValue result = evaluate_factor(memory, tail->value, tail->type, error), factor;
 
 	if (*error)
-		return result;
+		RETURN_RESULT;
 
 	while (tail = tail->next)
 	{
@@ -560,7 +560,7 @@ EValue evaluate_term(Memory* memory, PFactor* input, char** error)
 		{
 			if (!result.scalar)
 				mx_free(result.value.matrix);
-			return result;
+			RETURN_RESULT;
 		}
 
 		if (factor.scalar)
@@ -581,7 +581,7 @@ EValue evaluate_term(Memory* memory, PFactor* input, char** error)
 				mx_free(factor.value.matrix);
 				if (!result.scalar)
 					mx_free(result.value.matrix);
-				return result;
+				RETURN_RESULT;
 			}
 
 			if (result.scalar)
@@ -597,7 +597,7 @@ EValue evaluate_term(Memory* memory, PFactor* input, char** error)
 				*error = "Matris boyutlari carpmaya uygun degil.";
 				mx_free(factor.value.matrix);
 				mx_free(result.value.matrix);
-				return result;
+				RETURN_RESULT;
 			}
 
 			else
@@ -608,12 +608,12 @@ EValue evaluate_term(Memory* memory, PFactor* input, char** error)
 		}
 	}
 
-	return result;
+	RETURN_RESULT;
 }
 
 EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 {
-	EValue result = { 0 };
+	INIT_RESULT;
 
 	switch (type)
 	{
@@ -625,7 +625,7 @@ EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 			if (!input)
 			{
 				*error = "Hata: Tanimlanmamis matris kullanimi.";
-				return result;
+				RETURN_RESULT;
 			}
 			result.scalar = false;
 			result.value.matrix = mx_copy(((Node*)input)->matrix);
@@ -649,7 +649,7 @@ EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 				{
 					args[p] = evaluate_expression(memory, pfunc->args[p], error);
 					if (*error)
-						return result;
+						RETURN_RESULT;
 					if (func->params[p] != args[p].scalar)
 						goto cont;
 				}
@@ -659,7 +659,7 @@ EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 					if (!args[p].scalar)
 						mx_free(args[p].value.matrix);
 
-				return result;
+				RETURN_RESULT;
 				cont:;
 			}
 
@@ -674,7 +674,7 @@ EValue evaluate_factor(Memory* memory, void* input, uint8_t type, char** error)
 			break;
 	}
 
-	return result;
+	RETURN_RESULT;
 }
 
 void free_formula(PExpression* expression)
@@ -741,28 +741,30 @@ void free_function(PFunction* function)
 	free(function);
 }
 
+#pragma region Commands
 EValue cmd_clear(CMD_PARAM_DECL)
 {
-	EValue result = { 0 };
+	INIT_RESULT;
 
 	clear();
 
-	return result;
+	RETURN_RESULT;
 }
 
+#pragma region Matrix
 EValue cmd_transpose(CMD_PARAM_DECL)
 {
-	EValue result = { 0 };
+	INIT_RESULT;
 
 	result.scalar = false;
 	result.value.matrix = mx2_transpose(GET_MATRIX_ARG(0));
 
-	return result;
+	RETURN_RESULT;
 }
 
 EValue cmd_inverse(CMD_PARAM_DECL)
 {
-	EValue result = { 0 };
+	INIT_RESULT;
 
 	Matrix* matrix = GET_MATRIX_ARG(0);
 	if (matrix->rows == matrix->cols)
@@ -776,12 +778,12 @@ EValue cmd_inverse(CMD_PARAM_DECL)
 	else
 		*error = "Yalnizca kare matrislerin tersi olabilir.";
 
-	return result;
+	RETURN_RESULT;
 }
 
 EValue cmd_determinant(CMD_PARAM_DECL)
 {
-	EValue result = { 0 };
+	INIT_RESULT;
 
 	Matrix* matrix = GET_MATRIX_ARG(0);
 	if (matrix->rows == matrix->cols)
@@ -792,12 +794,12 @@ EValue cmd_determinant(CMD_PARAM_DECL)
 	else
 		*error = "Yalnizca kare matrislerin determinanti olabilir.";
 
-	return result;
+	RETURN_RESULT;
 }
 
 EValue cmd_adjoint(CMD_PARAM_DECL)
 {
-	EValue result = { 0 };
+	INIT_RESULT;
 
 	Matrix* matrix = GET_MATRIX_ARG(0);
 	if (matrix->rows != matrix->cols)
@@ -811,22 +813,22 @@ EValue cmd_adjoint(CMD_PARAM_DECL)
 	else
 		*error = "Yalnizca kare matrislerin ek matrisi olabilir.";
 
-	return result;
+	RETURN_RESULT;
 }
 
 EValue cmd_rank(CMD_PARAM_DECL)
 {
-	EValue result = { 0 };
+	INIT_RESULT;
 
 	result.scalar = true;
 	result.value.scalar = mx_rank(GET_MATRIX_ARG(0));
 
-	return result;
+	RETURN_RESULT;
 }
 
 EValue cmd_power(CMD_PARAM_DECL)
 {
-	EValue result = { 0 };
+	INIT_RESULT;
 
 	result.scalar = args[0].scalar;
 
@@ -847,7 +849,7 @@ EValue cmd_power(CMD_PARAM_DECL)
 					if (!copy)
 					{
 						*error = "Tersi olmayan matrislerin negatif kuvveti alinamaz.";
-						return result;
+						RETURN_RESULT;
 					}
 				}
 				else
@@ -867,5 +869,170 @@ EValue cmd_power(CMD_PARAM_DECL)
 			*error = "Yalnizca kare matrislerin kuvveti alinabilir.";
 	}
 
-	return result;
+	RETURN_RESULT;
 }
+#pragma endregion
+
+#pragma region Math
+EValue cmd_pi(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT( MATH_PI ); }
+
+EValue cmd_e(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT( MATH_E ); }
+
+EValue cmd_sqrt(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+
+	float input = GET_SCALAR_ARG(0);
+
+	if (input >= 0)
+	{
+		result.scalar = true;
+		result.value.scalar = sqrtf(input);
+	}
+	else
+		*error = "Karekoku alinacak sayi negatif olamaz.";
+
+	RETURN_RESULT;
+}
+
+EValue cmd_ln(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+
+	float x = GET_SCALAR_ARG(0);
+
+	if (x > 0)
+	{
+		result.scalar = true;
+		result.value.scalar = logf(x);
+	}
+	else
+		*error = "Dogal logaritmasi hesaplanacak sayi pozitif olmalidir.";
+
+	RETURN_RESULT;
+}
+
+EValue cmd_log(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+
+	float x = GET_SCALAR_ARG(0);
+	float base = 10;
+
+	if (args[1].scalar)
+		base = GET_SCALAR_ARG(1);
+
+	if (base > 0 && base != 1)
+	{
+		if (x > 0)
+		{
+			result.scalar = true;
+
+			result.value.scalar = log10f(x);
+
+			if (base != 10)
+				result.value.scalar /= log10f(base);
+		}
+		else
+			*error = "Logaritmasi hesaplanacak sayi pozitif olmalidir.";
+	}
+	else
+		*error = "Logaritma tabani 1 haric bir pozitif sayi olmalidir.";
+
+	RETURN_RESULT;
+}
+
+EValue cmd_deg(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+
+	if (memory->radian)
+	{
+		memory->radian = false;
+		printf("Gecerli aci birimi derece yapildi.");
+	}
+	else
+		printf("Gecerli aci birimi: Derece.");
+
+	RETURN_RESULT;
+}
+
+EValue cmd_rad(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+
+	if (memory->radian)
+		printf("Gecerli aci birimi: Radyan.");
+	else
+	{
+		memory->radian = true;
+		printf("Gecerli aci birimi radyan yapildi.");
+	}
+
+	RETURN_RESULT;
+}
+
+EValue cmd_sin(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT( sinf(GET_RADIAN_ARG(0)) ); }
+
+EValue cmd_cos(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT( cosf(GET_RADIAN_ARG(0)) ); }
+
+EValue cmd_tan(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT( tanf(GET_RADIAN_ARG(0)) ); }
+
+EValue cmd_cot(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT( 1.0f / tanf(GET_RADIAN_ARG(0)) ); }
+
+EValue cmd_sec(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT( 1.0f / cosf(GET_RADIAN_ARG(0)) ); }
+
+EValue cmd_csc(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT( 1.0f / sinf(GET_RADIAN_ARG(0)) ); }
+
+EValue cmd_sinh(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(sinhf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_cosh(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(coshf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_tanh(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(tanhf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_coth(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(1.0f / tanhf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_sech(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(1.0f / coshf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_csch(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(1.0f / sinhf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_asin(CMD_PARAM_DECL) { RETURN_UNIT_RESULT(asinf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_acos(CMD_PARAM_DECL) { RETURN_UNIT_RESULT(acosf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_atan(CMD_PARAM_DECL) { RETURN_UNIT_RESULT(atanf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_acot(CMD_PARAM_DECL) { RETURN_UNIT_RESULT(atanf(1.0f / GET_SCALAR_ARG(0))); }
+
+EValue cmd_asec(CMD_PARAM_DECL) { RETURN_UNIT_RESULT(acosf(1.0f / GET_SCALAR_ARG(0))); }
+
+EValue cmd_acsc(CMD_PARAM_DECL) { RETURN_UNIT_RESULT(asinf(1.0f / GET_SCALAR_ARG(0))); }
+
+EValue cmd_asinh(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(asinhf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_acosh(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(acoshf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_atanh(CMD_PARAM_DECL) { RETURN_SCALAR_RESULT(atanhf(GET_SCALAR_ARG(0))); }
+
+EValue cmd_acoth(CMD_PARAM_DECL)
+{
+	float x = GET_SCALAR_ARG(0);
+	x = logf((x + 1) / (x - 1)) / 2;
+	RETURN_SCALAR_RESULT(x);
+}
+
+EValue cmd_asech(CMD_PARAM_DECL)
+{
+	float x = GET_SCALAR_ARG(0);
+	x = logf(1 / x + sqrtf(1 / powf(x, 2) - 1));
+	RETURN_SCALAR_RESULT(x);
+}
+
+EValue cmd_acsch(CMD_PARAM_DECL) 
+{ 
+	float x = GET_SCALAR_ARG(0);
+	x = logf(1 / x + sqrtf(1 / powf(x, 2) + 1));
+	RETURN_SCALAR_RESULT(x);
+}
+#pragma endregion
+#pragma endregion

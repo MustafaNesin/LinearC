@@ -21,7 +21,7 @@
 #pragma endregion
 
 #pragma region Definitions
-#define CMD_COUNT        (uint8_t)9    // Her yeni komut eklendiðinde artýrýlmalýdýr
+#define CMD_COUNT        (uint8_t)56    // Her yeni komut eklendiðinde artýrýlmalýdýr
 #define CMD_PARAM_COUNT  (uint8_t)5
 #define CON_BUFFER_SIZE  (uint8_t)200 
 #define MIN_MATRIX_SIZE  (uint8_t)1
@@ -29,6 +29,41 @@
 #define BEGIN_CMD_INIT   c++
 #define CMD_MATRIX_PARAM (bool)false
 #define CMD_SCALAR_PARAM (bool)true
+#define MATH_PI          3.14159265358979323846f
+#define MATH_E           2.71828182845904523536f
+
+#define CMD_INIT(CMD_NAME, CMD_FUNCTION) \
+	BEGIN_CMD_INIT; \
+	memory->commands[c].name = CMD_NAME; \
+	memory->commands[c].function = CMD_FUNCTION;
+
+#define CMD_INIT2(CMD_NAME1, CMD_NAME2, CMD_FUNCTION) \
+	CMD_INIT(CMD_NAME1, CMD_FUNCTION) \
+	CMD_INIT(CMD_NAME2, CMD_FUNCTION)
+
+#define CMD_INIT_0(CMD_NAME, CMD_FUNCTION, CMD_PARAM) \
+	CMD_INIT(CMD_NAME, CMD_FUNCTION) \
+	memory->commands[c].returns = true;
+
+#define CMD_INIT_1(CMD_NAME, CMD_FUNCTION, CMD_PARAM) \
+	CMD_INIT_0(CMD_NAME, CMD_FUNCTION) \
+	memory->commands[c].paramcount = 1; \
+	memory->commands[c].params[0] = CMD_PARAM;
+
+#define CMD_INIT_S(CMD_NAME, CMD_FUNCTION) \
+	CMD_INIT_1(CMD_NAME, CMD_FUNCTION, CMD_SCALAR_PARAM)
+
+#define CMD_INIT_S2(CMD_NAME1, CMD_NAME2, CMD_FUNCTION) \
+	CMD_INIT_1(CMD_NAME1, CMD_FUNCTION, CMD_SCALAR_PARAM) \
+	CMD_INIT_1(CMD_NAME2, CMD_FUNCTION, CMD_SCALAR_PARAM)
+
+#define CMD_INIT_M(CMD_NAME, CMD_FUNCTION) \
+	CMD_INIT_1(CMD_NAME, CMD_FUNCTION, CMD_MATRIX_PARAM)
+
+#define CMD_INIT_M2(CMD_NAME1, CMD_NAME2, CMD_FUNCTION) \
+	CMD_INIT_1(CMD_NAME1, CMD_FUNCTION, CMD_MATRIX_PARAM) \
+	CMD_INIT_1(CMD_NAME2, CMD_FUNCTION, CMD_MATRIX_PARAM)
+
 #pragma endregion
 
 #pragma region Type Definitions
@@ -82,6 +117,7 @@ struct Memory
 	Node     *tail;
 	Menu     home;
 	Function commands[CMD_COUNT];
+	bool     radian;
 };
 #pragma endregion
 

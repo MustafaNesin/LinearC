@@ -49,3 +49,25 @@ int get_char(void)
 			c = _;
 	return c;
 }
+
+float froundf(float value)
+{
+	float integer = roundf(value);
+	if (fabsf(value - integer) < 0.001)
+	{
+		if (integer == -0.0f)
+			return 0;
+		return integer;
+	}
+	return value;
+}
+
+float deg2rad(float degree)
+{
+	return degree * MATH_PI / 180.0f;
+}
+
+float rad2deg(float radian)
+{
+	return radian / MATH_PI * 180.0f;
+}
