@@ -181,7 +181,7 @@ void menu_console(MENU_PARAM_DECL)
 		{
 			PExpression* input = parse_formula(memory, (char*)buffer, &endp);
 
-			if (*endp)
+			if (*endp || !input)
 				printf("Sozdizimi hatasi.");
 			else if (!run_command(memory, input, &newline))
 			{
@@ -222,6 +222,7 @@ void menu_save(MENU_PARAM_DECL)
 
 void menu_read(MENU_PARAM_DECL)
 {
+	if (memory->tail)
 	{
 		char c;
 		printf("Mevcut tanimli matrisler silinecektir, devam edilsin mi? (E/H): ");

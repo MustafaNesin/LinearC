@@ -10,18 +10,18 @@
 #define FACTOR_FUNCTION            (uint8_t)3
 #define FACTOR_PARENTHESIS         (uint8_t)4
 
-#define GET_SCALAR_ARG(X_ID)       (args[X_ID].value.scalar)
+#define GET_NUMBER_ARG(X_ID)       (args[X_ID].value.number)
 #define GET_MATRIX_ARG(X_ID)       (args[X_ID].value.matrix)
-#define GET_RADIAN_ARG(X_ID)       (memory->radian ? GET_SCALAR_ARG(X_ID) : deg2rad(GET_SCALAR_ARG(X_ID)))
+#define GET_RADIAN_ARG(X_ID)       (memory->radian ? GET_NUMBER_ARG(X_ID) : deg2rad(GET_NUMBER_ARG(X_ID)))
 
 #define INIT_RESULT                EValue result = {0};
 #define RETURN_RESULT              return result;
 
-#define SET_MATRIX_RESULT(X_ID)    result.scalar = false; result.value.matrix = X_ID;
-#define SET_SCALAR_RESULT(X_ID)    result.scalar = true; result.value.scalar = X_ID;
-#define SET_UNIT_RESULT(X_ID)      result.scalar = true; result.value.scalar = memory->radian ? X_ID : rad2deg(X_ID);
+#define SET_MATRIX_RESULT(X_ID)    result.number = false; result.value.matrix = X_ID;
+#define SET_NUMBER_RESULT(X_ID)    result.number = true; result.value.number = X_ID;
+#define SET_UNIT_RESULT(X_ID)      result.number = true; result.value.number = memory->radian ? X_ID : rad2deg(X_ID);
 
-#define RETURN_SCALAR_RESULT(X_ID) INIT_RESULT; SET_SCALAR_RESULT(X_ID); RETURN_RESULT;
+#define RETURN_NUMBER_RESULT(X_ID) INIT_RESULT; SET_NUMBER_RESULT(X_ID); RETURN_RESULT;
 #define RETURN_MATRIX_RESULT(X_ID) INIT_RESULT; SET_MATRIX_RESULT(X_ID); RETURN_RESULT;
 #define RETURN_UNIT_RESULT(X_ID)   INIT_RESULT; SET_UNIT_RESULT(X_ID); RETURN_RESULT;
 #pragma endregion
@@ -61,10 +61,10 @@ struct EValue
 {
 	union
 	{
-		float scalar;
+		float number;
 		Matrix* matrix;
 	} value;
-	bool     scalar;
+	bool     number;
 };
 #pragma endregion
 
@@ -99,6 +99,11 @@ EValue cmd_inverse(CMD_PARAM_DECL);
 EValue cmd_determinant(CMD_PARAM_DECL);
 EValue cmd_adjoint(CMD_PARAM_DECL);
 EValue cmd_rank(CMD_PARAM_DECL);
+EValue cmd_id(CMD_PARAM_DECL);
+EValue cmd_rowop(CMD_PARAM_DECL);
+EValue cmd_rowswt(CMD_PARAM_DECL);
+EValue cmd_rowmul(CMD_PARAM_DECL);
+EValue cmd_rowadd(CMD_PARAM_DECL);
 EValue cmd_power(CMD_PARAM_DECL);
 #pragma endregion
 

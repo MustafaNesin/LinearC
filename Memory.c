@@ -44,21 +44,60 @@ Memory* init_mem(void)
 		CMD_INIT_M("det", cmd_determinant);
 		CMD_INIT_M("adj", cmd_adjoint);
 		CMD_INIT_M2("r", "rank", cmd_rank);
-		BEGIN_CMD_INIT; /* pow */ {
-			memory->commands[c].name = "pow";
-			memory->commands[c].function = cmd_power;
+		CMD_INIT_S("id", cmd_id);
+		BEGIN_CMD_INIT; /* rowop */ {
+			memory->commands[c].name = "rowop";
+			memory->commands[c].function = cmd_rowop;
 			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 2;
+			memory->commands[c].paramcount = 1;
 			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_SCALAR_PARAM;
+		}
+		BEGIN_CMD_INIT; /* rowswt */
+		{
+			memory->commands[c].name = "rowswt";
+			memory->commands[c].function = cmd_rowswt;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 3;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* rowmul */
+		{
+			memory->commands[c].name = "rowmul";
+			memory->commands[c].function = cmd_rowmul;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 3;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* rowadd */
+		{
+			memory->commands[c].name = "rowadd";
+			memory->commands[c].function = cmd_rowadd;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 4;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[3] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* pow */ {
 			memory->commands[c].name = "pow";
 			memory->commands[c].function = cmd_power;
 			memory->commands[c].returns = true;
 			memory->commands[c].paramcount = 2;
-			memory->commands[c].params[0] = CMD_SCALAR_PARAM;
-			memory->commands[c].params[1] = CMD_SCALAR_PARAM;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* pow */ {
+			memory->commands[c].name = "pow";
+			memory->commands[c].function = cmd_power;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 2;
+			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
 		}
 		#pragma endregion
 
@@ -75,8 +114,8 @@ Memory* init_mem(void)
 			memory->commands[c].function = cmd_log;
 			memory->commands[c].returns = true;
 			memory->commands[c].paramcount = 2;
-			memory->commands[c].params[0] = CMD_SCALAR_PARAM;
-			memory->commands[c].params[1] = CMD_SCALAR_PARAM;
+			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
 		}
 		CMD_INIT_S("sin", cmd_sin);
 		CMD_INIT_S("cos", cmd_cos);

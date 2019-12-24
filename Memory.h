@@ -21,14 +21,14 @@
 #pragma endregion
 
 #pragma region Definitions
-#define CMD_COUNT        (uint8_t)56    // Her yeni komut eklendiðinde artýrýlmalýdýr
+#define CMD_COUNT        (uint8_t)61    // Her yeni komut eklendiðinde artýrýlmalýdýr
 #define CMD_PARAM_COUNT  (uint8_t)5
 #define CON_BUFFER_SIZE  (uint8_t)200 
 #define MIN_MATRIX_SIZE  (uint8_t)1
 #define MAX_MATRIX_SIZE  (uint8_t)10 
 #define BEGIN_CMD_INIT   c++
 #define CMD_MATRIX_PARAM (bool)false
-#define CMD_SCALAR_PARAM (bool)true
+#define CMD_NUMBER_PARAM (bool)true
 #define MATH_PI          3.14159265358979323846f
 #define MATH_E           2.71828182845904523536f
 
@@ -51,11 +51,11 @@
 	memory->commands[c].params[0] = CMD_PARAM;
 
 #define CMD_INIT_S(CMD_NAME, CMD_FUNCTION) \
-	CMD_INIT_1(CMD_NAME, CMD_FUNCTION, CMD_SCALAR_PARAM)
+	CMD_INIT_1(CMD_NAME, CMD_FUNCTION, CMD_NUMBER_PARAM)
 
 #define CMD_INIT_S2(CMD_NAME1, CMD_NAME2, CMD_FUNCTION) \
-	CMD_INIT_1(CMD_NAME1, CMD_FUNCTION, CMD_SCALAR_PARAM) \
-	CMD_INIT_1(CMD_NAME2, CMD_FUNCTION, CMD_SCALAR_PARAM)
+	CMD_INIT_1(CMD_NAME1, CMD_FUNCTION, CMD_NUMBER_PARAM) \
+	CMD_INIT_1(CMD_NAME2, CMD_FUNCTION, CMD_NUMBER_PARAM)
 
 #define CMD_INIT_M(CMD_NAME, CMD_FUNCTION) \
 	CMD_INIT_1(CMD_NAME, CMD_FUNCTION, CMD_MATRIX_PARAM)
@@ -94,7 +94,7 @@ struct Function
 	EValue   (*function)(CMD_PARAM_DECL);
 	bool     returns;
 	uint8_t  paramcount;
-	bool     params[CMD_PARAM_COUNT]; //true: scalar, false: matrix
+	bool     params[CMD_PARAM_COUNT]; //true: number, false: matrix
 };
 
 struct Menu

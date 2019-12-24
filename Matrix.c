@@ -23,12 +23,11 @@ void mx_free(Matrix* matrix)
 void mx_print(Matrix* matrix)
 {
 	int i = 0;
-	float element = 0;
-	for (uint8_t row = 0, col; row < matrix->rows; row++)
+	for (uint8_t row = 0, col; row < matrix->rows; ++row)
 	{
 		printf("\t| ");
 
-		for (col = 0; col < matrix->cols; col++, i++)
+		for (col = 0; col < matrix->cols; ++col, ++i)
 			printf("%10g ", (float)froundf(*(matrix->data + i)));
 
 		printf("  | ");
@@ -71,8 +70,8 @@ Matrix* mx_create_all(uint8_t rows, uint8_t cols, float value)
 		return NULL;
 	}
 
-	for (uint8_t row = 0, col; row < rows; row++)
-		for (col = 0; col < cols; col++)
+	for (uint8_t row = 0, col; row < rows; ++row)
+		for (col = 0; col < cols; ++col)
 			*data++ = value;
 
 	return matrix;
@@ -94,8 +93,8 @@ Matrix* mx_create_diag(uint8_t size, float value)
 	}
 
 	int i = 0;
-	for (uint8_t row = 0, col; row < size; row++)
-		for (col = 0; col < size; col++, i++)
+	for (uint8_t row = 0, col; row < size; ++row)
+		for (col = 0; col < size; ++col, ++i)
 			if (row == col)
 				*(data + i) = value;
 
@@ -118,8 +117,8 @@ Matrix* mx_create_low(uint8_t size, float value)
 	}
 
 	int i = 0;
-	for (uint8_t row = 0, col; row < size; row++)
-		for (col = 0; col < size; col++, i++)
+	for (uint8_t row = 0, col; row < size; ++row)
+		for (col = 0; col < size; ++col, ++i)
 			if (row >= col)
 				*(data + i) = value;
 
@@ -142,8 +141,8 @@ Matrix* mx_create_up(uint8_t size, float value)
 	}
 
 	int i = 0;
-	for (uint8_t row = 0, col; row < size; row++)
-		for (col = 0; col < size; col++, i++)
+	for (uint8_t row = 0, col; row < size; ++row)
+		for (col = 0; col < size; ++col, ++i)
 			if (row <= col)
 				*(data + i) = value;
 
@@ -162,7 +161,7 @@ void mx_set(Matrix* matrix, uint8_t row, uint8_t col, float value)
 
 bool mx_isequal(Matrix* matrix1, Matrix* matrix2)
 {
-	for (uint8_t i = 0; i < matrix1->rows * matrix1->cols; i++)
+	for (uint8_t i = 0; i < matrix1->rows * matrix1->cols; ++i)
 		if (*(matrix1->data + i) != *(matrix2->data + i))
 			return false;
 
@@ -186,7 +185,7 @@ Matrix* mx2_add(Matrix* matrix1, Matrix* matrix2)
 		return NULL;
 	}
 
-	for (uint8_t i = 0; i < result->rows * result->cols; i++)
+	for (uint8_t i = 0; i < result->rows * result->cols; ++i)
 		*(result->data + i) = *(matrix1->data + i) + *(matrix2->data + i);
 
 	return result;
@@ -194,11 +193,11 @@ Matrix* mx2_add(Matrix* matrix1, Matrix* matrix2)
 
 void mx_add(Matrix* matrix1, Matrix* matrix2)
 {
-	for (uint8_t i = 0; i < matrix1->rows * matrix1->cols; i++)
+	for (uint8_t i = 0; i < matrix1->rows * matrix1->cols; ++i)
 		*(matrix1->data + i) = *(matrix1->data + i) + *(matrix2->data + i);
 }
 
-Matrix* mx2_multiply(Matrix* matrix, float scalar)
+Matrix* mx2_multiply(Matrix* matrix, float number)
 {
 	Matrix* result = malloc(sizeof(Matrix));
 
@@ -215,16 +214,16 @@ Matrix* mx2_multiply(Matrix* matrix, float scalar)
 		return NULL;
 	}
 
-	for (uint8_t i = 0; i < result->rows * result->cols; i++)
-		*(result->data + i) = *(matrix->data + i) * scalar;
+	for (uint8_t i = 0; i < result->rows * result->cols; ++i)
+		*(result->data + i) = *(matrix->data + i) * number;
 
 	return result;
 }
 
-void mx_multiply(Matrix* matrix, float scalar)
+void mx_multiply(Matrix* matrix, float number)
 {
-	for (uint8_t i = 0; i < matrix->rows * matrix->cols; i++)
-		*(matrix->data + i) *= scalar;
+	for (uint8_t i = 0; i < matrix->rows * matrix->cols; ++i)
+		*(matrix->data + i) *= number;
 }
 
 Matrix* mx2_dot(Matrix* matrix1, Matrix* matrix2)
@@ -245,9 +244,9 @@ Matrix* mx2_dot(Matrix* matrix1, Matrix* matrix2)
 	}
 
 	int i = 0;
-	for (uint8_t row = 0, col, s; row < result->rows; row++)
-		for (col = 0; col < result->cols; col++, i++)
-			for (s = 0; s < matrix1->cols; s++)
+	for (uint8_t row = 0, col, s; row < result->rows; ++row)
+		for (col = 0; col < result->cols; ++col, ++i)
+			for (s = 0; s < matrix1->cols; ++s)
 				*(result->data + i) += *mx_get(matrix1, row, s) * *mx_get(matrix2, s, col);
 
 	return result;
@@ -284,8 +283,8 @@ Matrix* mx2_transpose(Matrix* matrix)
 	}
 
 	int i = 0;
-	for (uint8_t col = 0, row; col < matrix->cols; col++)
-		for (row = 0; row < matrix->rows; row++, i++)
+	for (uint8_t col = 0, row; col < matrix->cols; ++col)
+		for (row = 0; row < matrix->rows; ++row, ++i)
 			*(result->data + i) = *mx_get(matrix, row, col);
 
 	return result;
@@ -316,9 +315,9 @@ uint8_t mx_rank(Matrix* matrix)
 	while ((op = mx_next_op(copy, false, false)).type)
 		mx_apply_op(copy, op);
 
-	for (uint8_t col; rank < copy->rows; rank++)
+	for (uint8_t col; rank < copy->rows; ++rank)
 	{
-		for (col = 0; col < copy->cols; col++)
+		for (col = 0; col < copy->cols; ++col)
 			if (*mx_get(copy, rank, col))
 				goto cont;
 
@@ -349,7 +348,7 @@ float mx_determinant(Matrix* matrix)
 		mx_apply_op(copy, op);
 	}
 	
-	for (uint8_t diag = 0; diag < copy->rows; diag++)
+	for (uint8_t diag = 0; diag < copy->rows; ++diag)
 		det *= *mx_get(copy, diag, diag);
 	
 	mx_free(copy);
@@ -383,7 +382,7 @@ Operation mx_next_op(Matrix* matrix, bool colmode, bool reduce)
 
 		if (element == 0)
 		{
-			for (_vec = vec + 1; _vec < vecs; _vec++)
+			for (_vec = vec + 1; _vec < vecs; ++_vec)
 				if (_element = *(matrix->data + _vec * factor1 + xvec * factor2))
 				{
 					op.type = OP_SWITCH;
@@ -391,12 +390,12 @@ Operation mx_next_op(Matrix* matrix, bool colmode, bool reduce)
 					return op;
 				}
 
-			xvec++;
+			++xvec;
 		}
 
 		else if (element == 1)
 		{
-			for (_vec = vec + 1; _vec < vecs; _vec++)
+			for (_vec = vec + 1; _vec < vecs; ++_vec)
 				if (_element = *(matrix->data + _vec * factor1 + xvec * factor2))
 				{
 					op.type = OP_ADD;
@@ -420,8 +419,8 @@ Operation mx_next_op(Matrix* matrix, bool colmode, bool reduce)
 				while (_vec--);
 			}
 
-			xvec++;
-			vec++;
+			++xvec;
+			++vec;
 		}
 
 		else
@@ -437,6 +436,13 @@ Operation mx_next_op(Matrix* matrix, bool colmode, bool reduce)
 	return op;
 }
 
+Matrix* mx2_apply_op(Matrix* matrix, Operation operation)
+{
+	Matrix* copy = mx_copy(matrix);
+	mx_apply_op(copy, operation);
+	return copy;
+}
+
 void mx_apply_op(Matrix* matrix, Operation operation)
 {
 	uint8_t vecs = operation.colmode ? matrix->rows : matrix->cols;
@@ -447,10 +453,10 @@ void mx_apply_op(Matrix* matrix, Operation operation)
 		{
 			uint8_t vec = 0;
 			if (operation.colmode)
-				for (; vec < vecs; vec++)
+				for (; vec < vecs; ++vec)
 					*mx_get(matrix, vec, operation.vec2) += operation.coeff * *mx_get(matrix, vec, operation.vec1);
 			else
-				for (; vec < vecs; vec++)
+				for (; vec < vecs; ++vec)
 					*mx_get(matrix, operation.vec2, vec) += operation.coeff * *mx_get(matrix, operation.vec1, vec);
 			break;
 		}
@@ -458,10 +464,10 @@ void mx_apply_op(Matrix* matrix, Operation operation)
 		{
 			uint8_t vec = 0;
 			if (operation.colmode)
-				for (; vec < vecs; vec++)
+				for (; vec < vecs; ++vec)
 					*mx_get(matrix, vec, operation.vec1) *= operation.coeff;
 			else
-				for (; vec < vecs; vec++)
+				for (; vec < vecs; ++vec)
 					*mx_get(matrix, operation.vec1, vec) *= operation.coeff;
 			break;
 		}
@@ -470,7 +476,7 @@ void mx_apply_op(Matrix* matrix, Operation operation)
 			if (operation.colmode)
 			{
 				float v, *v1, *v2;
-				for (uint8_t row = 0; row < vecs; row++)
+				for (uint8_t row = 0; row < vecs; ++row)
 				{
 					v1 = mx_get(matrix, row, operation.vec1);
 					v2 = mx_get(matrix, row, operation.vec2);
@@ -509,8 +515,8 @@ bool mx_isidentity(Matrix* matrix)
 	if (matrix->rows != matrix->cols)
 		return false;
 
-	for (uint8_t row = 0, col, i = 0; row < matrix->rows; row++)
-		for (col = 0; col < matrix->cols; col++, i++)
+	for (uint8_t row = 0, col, i = 0; row < matrix->rows; ++row)
+		for (col = 0; col < matrix->cols; ++col, ++i)
 			if (*(matrix->data + i) != (row == col))
 				return false;
 
