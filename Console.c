@@ -336,17 +336,28 @@ bool run_command(Memory* memory, PExpression* input, bool* newline)
 	}
 
 	if (error = check_formula(memory, input))
+	{
+		setcolor(12);
 		printf("%s", error);
+	}
 	else
 	{
+		setcolor(8);
 		EValue result = evaluate_formula(memory, input, &error);
 
 		if (error)
+		{
+			setcolor(12);
 			printf("%s", error);
+		}
 		else if (result.number)
+		{
+			setcolor(11);
 			printf("= %g", froundf(result.value.number));
+		}
 		else
 		{
+			setcolor(11);
 			mx_print(result.value.matrix);
 			mx_free(result.value.matrix);
 		}
@@ -815,7 +826,7 @@ EValue cmd_set(CMD_PARAM_DECL)
 	}
 
 	mx_set(matrix, (uint8_t)(row - 1), (uint8_t)(col - 1), value);
-	SET_NUMBER_RESULT(*mx_get(matrix, (uint8_t)(row - 1), (uint8_t)(col - 1)));
+	SET_MATRIX_RESULT(mx_copy(matrix));
 	RETURN_RESULT;
 }
 

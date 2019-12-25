@@ -3,7 +3,7 @@
 #include "Menu.h"
 #include "Utils.h"
 
-#define EQ_ASSERT(X_COND, X_ERR) if(!(X_COND)) { printf("Hata: %s", X_ERR); goto end; }
+#define EQ_ASSERT(X_COND, X_ERR) if(!(X_COND)) { setcolor(12); printf("Hata: %s", X_ERR); goto end; }
 
 void loop_menu(Menu* menu, Memory* memory)
 {
@@ -24,8 +24,10 @@ int show_menu(Menu* menu)
 	{
 		clear();
 
+		setcolor(7);
 		printf("%s", menu->title);
 
+		setcolor(11);
 		for (i = 1; i < 10; i++)
 		{
 			printf("\n");
@@ -36,7 +38,9 @@ int show_menu(Menu* menu)
 		if (menu->options[0])
 			printf("\n0. %s", menu->options[0]);
 
+		setcolor(12);
 		printf("\n%s", error ? "Lutfen uygun bir secenek secin." : " ");
+		setcolor(7);
 		printf("\n> ");
 
 		scanl("%d", &opt);
@@ -182,7 +186,10 @@ void menu_console(MENU_PARAM_DECL)
 	bool newline = true;
 	PExpression* input;
 
-	printf("Geri donmek icin return yazin.\n> ");
+	setcolor(8);
+	printf("Geri donmek icin return yazin.");
+	setcolor(7);
+	printf("\n> ");
 
 	while (true)
 	{
@@ -193,7 +200,10 @@ void menu_console(MENU_PARAM_DECL)
 		newline = input;
 
 		if (*endp)
+		{
+			setcolor(12);
 			printf("Sozdizimi hatasi.");
+		}
 
 		else if (input && !run_command(memory, input, &newline))
 		{
@@ -201,6 +211,7 @@ void menu_console(MENU_PARAM_DECL)
 			break;
 		}
 
+		setcolor(7);
 		if (newline)
 			printf("\n");
 
@@ -221,9 +232,12 @@ void menu_equation(MENU_PARAM_DECL)
 	float* temp, number, con[MAX_MATRIX_SIZE];
 	bool negative, first = true;
 
+	setcolor(8);
 	printf("Denklem sisteminde bulunan degisken isimlerini boslukla ayirarak giriniz.\n");
-	printf("Degisken isimleri kucuk harf olmalidir. (e haric ve maks. %d degisken)\n\n> ", MAX_MATRIX_SIZE);
+	printf("Degisken isimleri kucuk harf olmalidir. (e haric ve maks. %d degisken)\n\n", MAX_MATRIX_SIZE);
 
+	setcolor(7);
+	printf("> ");
 	EQU_READ_LINE;
 
 	while (++i < len)
@@ -248,9 +262,12 @@ void menu_equation(MENU_PARAM_DECL)
 		_++;
 	} while (flags >>= 1);
 
+	setcolor(8);
 	printf("\n\nHer satira bir esitlik yazin. En fazla %d esitlik yazilabilir.\n", MAX_MATRIX_SIZE);
-	printf("Denklem sistemini cozmek icin bos satir girin.\n\n> ");
+	printf("Denklem sistemini cozmek icin bos satir girin.\n\n");
 
+	setcolor(7);
+	printf("> ");
 	while (EQU_READ_LINE)
 	{
 		EQ_ASSERT(rows < MAX_MATRIX_SIZE, "Maksimum esitlik sayisi asildi.");
@@ -280,6 +297,7 @@ void menu_equation(MENU_PARAM_DECL)
 			switch (state)
 			{
 				case -1: //son
+					setcolor(12);
 					printf("Hata: Esitligin sag tarafi sadece bir sayidan olusmalidir.\nKarakter: %c", b);
 					goto end;
 				case 0: //opsiyonel iþaret
@@ -297,6 +315,7 @@ void menu_equation(MENU_PARAM_DECL)
 						state = 4;
 					else
 					{
+						setcolor(12);
 						printf("Hata: Sayi ya da degisken adi bekleniyordu.\nKarakter: %c", b);
 						goto end;
 					}
@@ -314,6 +333,7 @@ void menu_equation(MENU_PARAM_DECL)
 				case 3: //sayý
 					if (!sscanf(buffer + i, "%f%n", &number, &_))
 					{
+						setcolor(12);
 						printf("Hata: Sayi bekleniyordu.");
 						goto end;
 					}
@@ -323,6 +343,7 @@ void menu_equation(MENU_PARAM_DECL)
 				case 4: //degisken
 					if (!islower(b))
 					{
+						setcolor(12);
 						printf("Hata: Degisken bekleniyordu.\nKarakter: %c", b);
 						goto end;
 					}
@@ -336,6 +357,7 @@ void menu_equation(MENU_PARAM_DECL)
 
 					if (_ == cols)
 					{
+						setcolor(12);
 						printf("Hata: %c degiskeni basta tanimlanmamis.", b);
 						goto end;
 					}
@@ -356,6 +378,7 @@ void menu_equation(MENU_PARAM_DECL)
 						state = 2;
 					else
 					{
+						setcolor(12);
 						printf("Hata: Isaret (+ ya da -) ya da esittir (=) bekleniyordu.\nKarakter: %c", b);
 						goto end;
 					}
@@ -363,6 +386,7 @@ void menu_equation(MENU_PARAM_DECL)
 				case 6: //eþittir
 					if (b != '=')
 					{
+						setcolor(12);
 						printf("Hata: Esittir (=) bekleniyordu.\nKarakter: %c", b);
 						goto end;
 					}
@@ -372,6 +396,7 @@ void menu_equation(MENU_PARAM_DECL)
 				case 7: //sabit
 					if (!sscanf(buffer + i, "%f%n", &con[rows], &_))
 					{
+						setcolor(12);
 						printf("Hata: Sayi bekleniyordu.");
 						goto end;
 					}
@@ -400,7 +425,8 @@ void menu_equation(MENU_PARAM_DECL)
 	printf("\n");
 
 	EQ_ASSERT(check_system(matrix1, matrix2), "Denklem sistemi tutarsiz oldugundan cozum yok.");
-	
+
+	setcolor(11);
 	for (row = 0, col = 0; col < cols; col++)
 	{
 		number = *mx_get(matrix1, row, col);

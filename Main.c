@@ -4,8 +4,6 @@
 
 int main()
 {
-	setcolor(11);
-
 	Memory* memory = init_mem();
 
 	if (!memory)
