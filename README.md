@@ -4,9 +4,6 @@ Lineer cebir uygulamalarıyla matrisler üzerinde işlem yapabilen ve lineer den
 ## Komutlar
 return;	"Ana menüye geri döndürür."  
 clear;	"Ekranı temizler."  
-deleteall; Tüm Matrisleri Silme  
-delete(M); Matris Silme  
-del(M);	Matris Silme  
 list;	Matris Adlarını Listeleme  
 get(M, R, C);		Eleman Okuma  
 set(M, S, R, C);	Eleman Yazma  
