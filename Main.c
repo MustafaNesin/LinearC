@@ -5,6 +5,7 @@
 
 int main()
 {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
 	Memory* memory = init_mem();
 
 	if (!memory)
