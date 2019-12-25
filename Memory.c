@@ -70,7 +70,7 @@ Memory* init_mem(void)
 
 	// Komutlarý oluþtur
 	{
-		int c = -1;
+		int cmd = -1;
 
 		CMD_INIT("return", NULL);
 		CMD_INIT("clear", cmd_clear);
@@ -78,23 +78,39 @@ Memory* init_mem(void)
 		#pragma region Matrix
 		CMD_INIT("list", cmd_list);
 		BEGIN_CMD_INIT; /* get */ {
-			memory->commands[c].name = "get";
-			memory->commands[c].function = cmd_get;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 3;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "get";
+			memory->commands[cmd].function = cmd_get;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 3;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* set */ {
-			memory->commands[c].name = "set";
-			memory->commands[c].function = cmd_set;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 4;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[3] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "set";
+			memory->commands[cmd].function = cmd_set;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 4;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[3] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* iseq */ {
+			memory->commands[cmd].name = "iseq";
+			memory->commands[cmd].function = cmd_iseq;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 2;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_MATRIX_PARAM;
+		}
+		BEGIN_CMD_INIT; /* isequal */ {
+			memory->commands[cmd].name = "isequal";
+			memory->commands[cmd].function = cmd_iseq;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 2;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_MATRIX_PARAM;
 		}
 		CMD_INIT_M("t", cmd_transpose);
 		CMD_INIT_M("inv", cmd_inverse);
@@ -103,123 +119,123 @@ Memory* init_mem(void)
 		CMD_INIT_M2("r", "rank", cmd_rank);
 		CMD_INIT_S("id", cmd_id);
 		BEGIN_CMD_INIT; /* diag */ {
-			memory->commands[c].name = "diag";
-			memory->commands[c].function = cmd_diag;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 2;
-			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "diag";
+			memory->commands[cmd].function = cmd_diag;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 2;
+			memory->commands[cmd].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* low */ {
-			memory->commands[c].name = "low";
-			memory->commands[c].function = cmd_low;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 2;
-			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "low";
+			memory->commands[cmd].function = cmd_low;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 2;
+			memory->commands[cmd].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* up */ {
-			memory->commands[c].name = "up";
-			memory->commands[c].function = cmd_up;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 2;
-			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "up";
+			memory->commands[cmd].function = cmd_up;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 2;
+			memory->commands[cmd].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* all */ {
-			memory->commands[c].name = "all";
-			memory->commands[c].function = cmd_all;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 3;
-			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "all";
+			memory->commands[cmd].function = cmd_all;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 3;
+			memory->commands[cmd].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* rowop */ {
-			memory->commands[c].name = "rowop";
-			memory->commands[c].function = cmd_rowop;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 1;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].name = "rowop";
+			memory->commands[cmd].function = cmd_rowop;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 1;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
 		}
 		BEGIN_CMD_INIT; /* rowswt */ {
-			memory->commands[c].name = "rowswt";
-			memory->commands[c].function = cmd_rowswt;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 3;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "rowswt";
+			memory->commands[cmd].function = cmd_rowswt;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 3;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* rowmul */ {
-			memory->commands[c].name = "rowmul";
-			memory->commands[c].function = cmd_rowmul;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 3;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "rowmul";
+			memory->commands[cmd].function = cmd_rowmul;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 3;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* rowadd */ {
-			memory->commands[c].name = "rowadd";
-			memory->commands[c].function = cmd_rowadd;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 4;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[3] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "rowadd";
+			memory->commands[cmd].function = cmd_rowadd;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 4;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[3] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* colop */ {
-			memory->commands[c].name = "colop";
-			memory->commands[c].function = cmd_colop;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 1;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].name = "colop";
+			memory->commands[cmd].function = cmd_colop;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 1;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
 		}
 		BEGIN_CMD_INIT; /* colswt */ {
-			memory->commands[c].name = "colswt";
-			memory->commands[c].function = cmd_colswt;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 3;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "colswt";
+			memory->commands[cmd].function = cmd_colswt;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 3;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* colmul */ {
-			memory->commands[c].name = "colmul";
-			memory->commands[c].function = cmd_colmul;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 3;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "colmul";
+			memory->commands[cmd].function = cmd_colmul;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 3;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* coladd */ {
-			memory->commands[c].name = "coladd";
-			memory->commands[c].function = cmd_coladd;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 4;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[3] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "coladd";
+			memory->commands[cmd].function = cmd_coladd;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 4;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[3] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* pow */ {
-			memory->commands[c].name = "pow";
-			memory->commands[c].function = cmd_power;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 2;
-			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "pow";
+			memory->commands[cmd].function = cmd_power;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 2;
+			memory->commands[cmd].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
 		}
 		BEGIN_CMD_INIT; /* pow */ {
-			memory->commands[c].name = "pow";
-			memory->commands[c].function = cmd_power;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 2;
-			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "pow";
+			memory->commands[cmd].function = cmd_power;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 2;
+			memory->commands[cmd].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
 		}
 		#pragma endregion
 
@@ -231,12 +247,12 @@ Memory* init_mem(void)
 		CMD_INIT_S("ln", cmd_ln);
 		CMD_INIT_S("log", cmd_log);
 		BEGIN_CMD_INIT; /* log */ {
-			memory->commands[c].name = "log";
-			memory->commands[c].function = cmd_log;
-			memory->commands[c].returns = true;
-			memory->commands[c].paramcount = 2;
-			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
-			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].name = "log";
+			memory->commands[cmd].function = cmd_log;
+			memory->commands[cmd].returns = true;
+			memory->commands[cmd].paramcount = 2;
+			memory->commands[cmd].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[cmd].params[1] = CMD_NUMBER_PARAM;
 		}
 		CMD_INIT2("deg", "degree", cmd_deg);
 		CMD_INIT2("rad", "radian", cmd_rad); 
@@ -265,6 +281,14 @@ Memory* init_mem(void)
 		CMD_INIT_S2("asech", "arcsech", cmd_asech);
 		CMD_INIT_S2("acsch", "arccsch", cmd_acsch);
 		#pragma endregion
+
+		#ifdef _DEBUG
+		if (++cmd != CMD_COUNT)
+		{
+			printf("Kritik hata.");
+			(void)getchar();
+		}
+		#endif
 	}
 
 	return memory;

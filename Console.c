@@ -983,6 +983,12 @@ EValue cmd_set(CMD_PARAM_DECL)
 	RETURN_RESULT;
 }
 
+EValue cmd_iseq(CMD_PARAM_DECL)
+{
+	Matrix *matrix1 = GET_MATRIX_ARG(0), *matrix2 = GET_MATRIX_ARG(1);
+	RETURN_NUMBER_RESULT(mx_isequal(matrix1, matrix2));
+}
+
 EValue cmd_transpose(CMD_PARAM_DECL)
 {
 	INIT_RESULT;

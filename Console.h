@@ -97,6 +97,7 @@ EValue cmd_clear(CMD_PARAM_DECL);
 EValue cmd_list(CMD_PARAM_DECL);
 EValue cmd_get(CMD_PARAM_DECL);
 EValue cmd_set(CMD_PARAM_DECL);
+EValue cmd_iseq(CMD_PARAM_DECL);
 EValue cmd_transpose(CMD_PARAM_DECL);
 EValue cmd_inverse(CMD_PARAM_DECL);
 EValue cmd_determinant(CMD_PARAM_DECL);

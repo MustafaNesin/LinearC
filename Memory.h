@@ -25,12 +25,12 @@
 #define HOME_MENU        (uint8_t)0
 #define MATRIX_MENU      (uint8_t)1
 #define FILE_MENU        (uint8_t)2
-#define CMD_COUNT        (uint8_t)73    // Her yeni komut eklendiðinde artýrýlmalýdýr
+#define CMD_COUNT        (uint8_t)75    // Her yeni komut eklendiðinde artýrýlmalýdýr
 #define CMD_PARAM_COUNT  (uint8_t)5
 #define CON_BUFFER_SIZE  (uint8_t)200 
 #define MIN_MATRIX_SIZE  (uint8_t)1
 #define MAX_MATRIX_SIZE  (uint8_t)10 
-#define BEGIN_CMD_INIT   c++
+#define BEGIN_CMD_INIT   cmd++
 #define CMD_MATRIX_PARAM (bool)false
 #define CMD_NUMBER_PARAM (bool)true
 #define MATH_PI          3.14159265358979323846f
@@ -38,8 +38,8 @@
 
 #define CMD_INIT(CMD_NAME, CMD_FUNCTION) \
 	BEGIN_CMD_INIT; \
-	memory->commands[c].name = CMD_NAME; \
-	memory->commands[c].function = CMD_FUNCTION;
+	memory->commands[cmd].name = CMD_NAME; \
+	memory->commands[cmd].function = CMD_FUNCTION;
 
 #define CMD_INIT2(CMD_NAME1, CMD_NAME2, CMD_FUNCTION) \
 	CMD_INIT(CMD_NAME1, CMD_FUNCTION) \
@@ -47,12 +47,12 @@
 
 #define CMD_INIT_0(CMD_NAME, CMD_FUNCTION) \
 	CMD_INIT(CMD_NAME, CMD_FUNCTION) \
-	memory->commands[c].returns = true;
+	memory->commands[cmd].returns = true;
 
 #define CMD_INIT_1(CMD_NAME, CMD_FUNCTION, CMD_PARAM) \
 	CMD_INIT_0(CMD_NAME, CMD_FUNCTION) \
-	memory->commands[c].paramcount = 1; \
-	memory->commands[c].params[0] = CMD_PARAM;
+	memory->commands[cmd].paramcount = 1; \
+	memory->commands[cmd].params[0] = CMD_PARAM;
 
 #define CMD_INIT_S(CMD_NAME, CMD_FUNCTION) \
 	CMD_INIT_1(CMD_NAME, CMD_FUNCTION, CMD_NUMBER_PARAM)
