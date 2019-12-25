@@ -263,7 +263,7 @@ void menu_equation(MENU_PARAM_DECL)
 	} while (flags >>= 1);
 
 	setcolor(8);
-	printf("\n\nHer satira bir esitlik yazin. En fazla %d esitlik yazilabilir.\n", MAX_MATRIX_SIZE);
+	printf("\nHer satira bir esitlik yazin. En fazla %d esitlik yazilabilir.\n", MAX_MATRIX_SIZE);
 	printf("Denklem sistemini cozmek icin bos satir girin.\n\n");
 
 	setcolor(7);
@@ -463,6 +463,8 @@ void menu_equation(MENU_PARAM_DECL)
 	end:
 	mx_free(matrix1);
 	mx_free(matrix2);
+	setcolor(7);
+	printf("\n");
 	get_char();
 }
 
