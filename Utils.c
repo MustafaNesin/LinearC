@@ -98,3 +98,10 @@ bool iszero(float value)
 {
 	return value == 0.0f || value == -0.0f;
 }
+
+void setcolor(uint16_t color)
+{
+	#ifdef _WIN32
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+	#endif
+}

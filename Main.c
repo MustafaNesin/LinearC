@@ -4,9 +4,7 @@
 
 int main()
 {
-	#ifdef _WIN32
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
-	#endif
+	setcolor(11);
 
 	Memory* memory = init_mem();
 

@@ -12,3 +12,4 @@ float     froundf        (float value);
 float     deg2rad        (float degree);
 float     rad2deg        (float radian);
 bool      iszero         (float value);
+void      setcolor       (uint16_t color);
