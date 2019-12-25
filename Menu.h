@@ -12,9 +12,17 @@ void      loop_menu      (Menu* menu, Memory* memory);
 int       show_menu      (Menu* menu);
 void      print_equterm  (float value, char name, bool first, bool last);
 
-void      menu_define    (MENU_PARAM_DECL);
-void      menu_list      (MENU_PARAM_DECL);
+void      menu_matrices  (MENU_PARAM_DECL);
 void      menu_console   (MENU_PARAM_DECL);
 void      menu_equation  (MENU_PARAM_DECL);
+void      menu_file      (MENU_PARAM_DECL);
+void      menu_about     (MENU_PARAM_DECL);
+
+void      menu_define    (MENU_PARAM_DECL);
+void      menu_list      (MENU_PARAM_DECL);
+void      menu_show      (MENU_PARAM_DECL);
+void      menu_delete    (MENU_PARAM_DECL);
+void      menu_clear     (MENU_PARAM_DECL);
+
 void      menu_save      (MENU_PARAM_DECL);
 void      menu_read      (MENU_PARAM_DECL);

@@ -324,6 +324,7 @@ bool run_command(Memory* memory, PExpression* input, bool* newline)
 			if (!memory->commands[i].function)
 				return false;
 
+			setcolor(11);
 			(void)memory->commands[i].function(memory, 0, &error);
 			
 			if (!strcmp(func->name, "clear"))
@@ -342,7 +343,6 @@ bool run_command(Memory* memory, PExpression* input, bool* newline)
 	}
 	else
 	{
-		setcolor(8);
 		EValue result = evaluate_formula(memory, input, &error);
 
 		if (error)

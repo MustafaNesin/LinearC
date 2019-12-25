@@ -12,23 +12,21 @@ Memory* init_mem(void)
 
 	// Menüyü oluþtur
 	{
-		memory->home.title = "LineerC | Mustafa Nesin & Cem Ufuk Yilmaz";
+		memory->home.title = "Ana Menu";
 
 		memory->home.options[0] = "Cikis";
-		memory->home.options[1] = "Yeni Matris Tanimla";
-		memory->home.options[2] = "Matris Listesi";
-		memory->home.options[3] = "Islemler";
-		memory->home.options[4] = "Denklem Cozucu";
-		memory->home.options[5] = "Kaydet";
-		memory->home.options[6] = "Yukle";
+		memory->home.options[1] = "Matrisler";
+		memory->home.options[2] = "Islem Konsolu";
+		memory->home.options[3] = "Denklem Cozucu";
+		memory->home.options[4] = "Dosya Islemleri";
+		memory->home.options[9] = "Hakkinda";
 
 		memory->home.functions[0] = NULL;
-		memory->home.functions[1] = menu_define;
-		memory->home.functions[2] = menu_list;
-		memory->home.functions[3] = menu_console;
-		memory->home.functions[4] = menu_equation;
-		memory->home.functions[5] = menu_save;
-		memory->home.functions[6] = menu_read;
+		memory->home.functions[1] = menu_matrices;
+		memory->home.functions[2] = menu_console;
+		memory->home.functions[3] = menu_equation;
+		memory->home.functions[4] = menu_file;
+		memory->home.functions[9] = menu_about;
 	}
 
 	// Komutlarý oluþtur
@@ -319,8 +317,6 @@ int mem_read(Memory* memory)
 	if (!file)
 		return -1;
 
-	mem_remove_all(memory);
-
 	uint8_t count;
 	if (fread(&count, sizeof(count), 1, file) != 1)
 		return -1;
@@ -328,34 +324,23 @@ int mem_read(Memory* memory)
 	char name;
 	int p;
 	uint8_t rows, cols, row, col;
+	Node* node;
 	float* data;
 
 	for (uint8_t c = 0; c < count; c++)
 	{
 		if (fread(&name, sizeof(name), 1, file) != 1)
-		{
-			mem_remove_all(memory);
 			return -1;
-		}
 
 		if (fread(&rows, sizeof(rows), 1, file) != 1)
-		{
-			mem_remove_all(memory);
 			return -1;
-		}
 
 		if (fread(&cols, sizeof(cols), 1, file) != 1)
-		{
-			mem_remove_all(memory);
 			return -1;
-		}
 
 		data = malloc(rows * cols * sizeof(float));
 		if (!data)
-		{
-			mem_remove_all(memory);
 			return -1;
-		}
 
 		for (row = 0, p = 0; row < rows; row++)
 			for (col = 0; col < cols; col++, p++)
@@ -363,10 +348,12 @@ int mem_read(Memory* memory)
 				if (fread(data + p, sizeof(float), 1, file) != 1)
 				{
 					free(data);
-					mem_remove_all(memory);
 					return -1;
 				}
 			}
+
+		if (node = mem_query(memory, name))
+			mem_remove(memory, node);
 
 		mem_new(memory, name, rows, cols, data);
 	}

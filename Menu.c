@@ -5,6 +5,40 @@
 
 #define EQ_ASSERT(X_COND, X_ERR) if(!(X_COND)) { setcolor(12); printf("Hata: %s", X_ERR); goto end; }
 
+Menu g_matrices_menu = {
+	"Matrisler",
+	{
+		"Geri",
+		"Yeni",
+		"Listele",
+		"Goruntule",
+		"Sil",
+		"Hafizayi Temizle"
+	},
+	{
+		NULL,
+		menu_define,
+		menu_list,
+		menu_show,
+		menu_delete,
+		menu_clear
+	}
+};
+
+Menu g_file_menu = {
+	"Dosya Islemleri",
+	{
+		"Geri",
+		"Yukle",
+		"Kaydet"
+	},
+	{
+		NULL,
+		menu_read,
+		menu_save
+	}
+};
+
 void loop_menu(Menu* menu, Memory* memory)
 {
 	void (*func)(MENU_PARAM_DECL);
@@ -82,102 +116,10 @@ void print_equterm(float value, char name, bool first, bool last)
 	}
 }
 
-void menu_define(MENU_PARAM_DECL)
+
+void menu_matrices(MENU_PARAM_DECL)
 {
-	int rows, cols;
-	char c, name;
-	float* data;
-
-	// Matris adý al, ayný adda varsa üzerine yazýlýp yazýlmayacaðýný sor
-	{
-		printf("Matris Adi (Buyuk harf): ");
-		scanl("%c", &name);
-		if (name < 0 || !isupper(name))
-		{
-			printf("\nMatris adi buyuk bir harf olmalidir. (Yalnizca Ingiliz alfabesi harfleri)");
-			get_char();
-			return;
-		}
-		Node* node;
-		if (node = mem_query(memory, name))
-		{
-			printf("\nAyni adda bir matris zaten var. Uzerine yazilsin mi? (E/H): ");
-			scanl("%c", &c);
-			if ((c | 0x20) != 'e')
-			{
-				printf("\nIslem kullanici tarafindan iptal edildi.");
-				get_char();
-				return;
-			}
-			mem_remove(memory, node);
-		}
-	}
-
-	// Satýr ve sütun sayýsý al
-	{
-		printf("Satir Sayisi: ");
-		scanl("%d", &rows);
-		if (rows < MIN_MATRIX_SIZE || rows > MAX_MATRIX_SIZE)
-		{
-			printf("\nMatris satir sayisi %d ile %d arasinda olmalidir.", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
-			get_char();
-			return;
-		}
-
-		printf("Sutun Sayisi: ");
-		scanl("%d", &cols);
-		if (cols < MIN_MATRIX_SIZE || cols > MAX_MATRIX_SIZE)
-		{
-			printf("\nMatris sutun sayisi %d ile %d arasinda olmalidir.", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
-			get_char();
-			return;
-		}
-	}
-
-	// Matris oluþtur
-	{
-		data = calloc(rows * cols, sizeof(float));
-		if (!data)
-		{
-			printf("\nYeni matris verisi icin bellek yeri ayirilirken hata olustu.");
-			get_char();
-			return;
-		}
-
-		if (!mem_new(memory, name, rows, cols, data))
-		{
-			free(data);
-			printf("\nYeni matris icin bellek yeri ayirilirken hata olustu.");
-			get_char();
-			return;
-		}
-	}
-
-	// Matris içeriðini al;
-	int p = 0;
-	for (uint8_t i = 0, j; i < rows; i++)
-		for (j = 0; j < cols; j++, p++)
-		{
-			printf("%c[%d, %d] = ", name, i + 1, j + 1);
-			scanl("%f", data + p);
-		}
-}
-
-void menu_list(MENU_PARAM_DECL)
-{
-	uint8_t count = 0;
-
-	printf("\tAd\tSat\tSut");
-
-	Node* node = memory->tail;
-	while (node)
-	{
-		printf("\n%d.\t%c\t%d\t%d", ++count, node->name, node->matrix->rows, node->matrix->cols);
-		node = node->prev;
-	}
-
-	printf("\n\n%d adet matris bulundu.", count);
-	get_char();
+	loop_menu(&g_matrices_menu, memory);
 }
 
 void menu_console(MENU_PARAM_DECL)
@@ -186,6 +128,7 @@ void menu_console(MENU_PARAM_DECL)
 	bool newline = true;
 	PExpression* input;
 
+	printf("Islem Konsolu\n\n");
 	setcolor(8);
 	printf("Geri donmek icin return yazin.");
 	setcolor(7);
@@ -202,7 +145,7 @@ void menu_console(MENU_PARAM_DECL)
 		if (*endp)
 		{
 			setcolor(12);
-			printf("Sozdizimi hatasi.");
+			printf("Sozdizimi hatasi.\n");
 		}
 
 		else if (input && !run_command(memory, input, &newline))
@@ -225,6 +168,8 @@ void menu_equation(MENU_PARAM_DECL)
 	//                                                                                            col
 	// 31 30 29 28 27 26 25 24 23 22 21 20 19 18 27 16 15 14 13 12 11 10 9  8  7  6  5  4  3  2  1  0
 	//                   z  y  x  w  v  u  t  s  r  q  p  o  n  m  l  k  j  i  h  g  f  e  d  c  b  a
+
+	printf("Denklem Cozucu\n\n");
 	uint32_t flags = 0;
 	char buffer[CON_BUFFER_SIZE], var[MAX_MATRIX_SIZE], b;
 	int i = -1, state = 0, rows = 0, row, col, len, cols = 0, _ = 0;
@@ -468,27 +413,279 @@ void menu_equation(MENU_PARAM_DECL)
 	get_char();
 }
 
+void menu_file(MENU_PARAM_DECL)
+{
+	loop_menu(&g_file_menu, memory);
+}
+
+void menu_about(MENU_PARAM_DECL)
+{
+	printf("Hakkinda\n\n");
+	setcolor(11);
+	printf("Bu yazilim Mustafa Nesin ve Cem Ufuk Yilmaz tarafindan hazirlanmistir.\n");
+	printf("Temel Ozellikler\n");
+	printf("- Temel Matematik Islemleri\n");
+	printf("- Cesitli Matris Islemleri (transpoz, carpma, toplama, ters, eselon form vb.)\n");
+	printf("- Lineer Denklem Sistemi Cozme\n");
+	printf("Detayli bilgi: https://github.com/MustafaNesin/LinearC\n");
+	get_char();
+}
+
+void menu_define(MENU_PARAM_DECL)
+{
+	int rows, cols;
+	char c, name;
+	float* data;
+
+	printf("Matrisler | Yeni\n\n");
+
+	// Matris adý al, ayný adda varsa üzerine yazýlýp yazýlmayacaðýný sor
+	{
+		printf("Matris Adi (Buyuk harf): ");
+		scanl("%c", &name);
+		if (name < 0 || !isupper(name))
+		{
+			setcolor(12);
+			printf("Matris adi buyuk harf olmalidir.");
+			get_char();
+			return;
+		}
+		Node* node;
+		if (node = mem_query(memory, name))
+		{
+			printf("Ayni adda bir matris zaten var. Uzerine yazilsin mi? (E/H): ");
+			scanl("%c", &c);
+			if ((c | 0x20) != 'e')
+			{
+				setcolor(12);
+				printf("Islem iptal edildi.");
+				get_char();
+				return;
+			}
+			mem_remove(memory, node);
+		}
+	}
+
+	// Satýr ve sütun sayýsý al
+	{
+		printf("Satir Sayisi: ");
+		scanl("%d", &rows);
+		if (rows < MIN_MATRIX_SIZE || rows > MAX_MATRIX_SIZE)
+		{
+			setcolor(12);
+			printf("Matris satir sayisi %d ile %d arasinda olmalidir.", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
+			get_char();
+			return;
+		}
+
+		printf("Sutun Sayisi: ");
+		scanl("%d", &cols);
+		if (cols < MIN_MATRIX_SIZE || cols > MAX_MATRIX_SIZE)
+		{
+			setcolor(12);
+			printf("Matris sutun sayisi %d ile %d arasinda olmalidir.", MIN_MATRIX_SIZE, MAX_MATRIX_SIZE);
+			get_char();
+			return;
+		}
+	}
+
+	// Matris oluþtur
+	{
+		data = calloc(rows * cols, sizeof(float));
+		if (!data)
+		{
+			setcolor(12);
+			printf("Yeni matris verisi icin bellek yeri ayirilirken hata olustu.");
+			get_char();
+			return;
+		}
+
+		if (!mem_new(memory, name, rows, cols, data))
+		{
+			setcolor(12);
+			free(data);
+			printf("Yeni matris icin bellek yeri ayirilirken hata olustu.");
+			get_char();
+			return;
+		}
+	}
+
+	// Matris içeriðini al;
+	int p = 0;
+	for (uint8_t i = 0, j; i < rows; i++)
+		for (j = 0; j < cols; j++, p++)
+		{
+			setcolor(11);
+			printf("%c[%d, %d] = ", name, i + 1, j + 1);
+			scanl("%f", data + p);
+		}
+}
+
+void menu_list(MENU_PARAM_DECL)
+{
+	uint8_t count = 0;
+
+	printf("Matrisler | Liste\n\n");
+
+	setcolor(11);
+	printf("\tAd\tSat\tSut");
+
+	Node* node = memory->tail;
+	while (node)
+	{
+		printf("\n%d.\t%c\t%d\t%d", ++count, node->name, node->matrix->rows, node->matrix->cols);
+		node = node->prev;
+	}
+
+	printf("\n\n%d adet matris bulundu.", count);
+	get_char();
+}
+
+void menu_show(MENU_PARAM_DECL)
+{
+	printf("Matrisler | Goruntule\n\n");
+	
+	int len;
+	char buffer[CON_BUFFER_SIZE], name;
+	Node* node;
+
+	setcolor(8);
+	printf("Goruntulemek istediginiz matrisin adini yazin.\nCikmak icin bos satir girin.");
+
+	while (true)
+	{
+		setcolor(7);
+		printf("\n\n> ");
+
+		if (!(len = readl(buffer, CON_BUFFER_SIZE)))
+			break;
+
+		if (len == 1)
+		{
+			name = buffer[0];
+			if (!isupper(name))
+			{
+				setcolor(12);
+				printf("Matris adi buyuk harf olmalidir.");
+			}
+			else if (node = mem_query(memory, name))
+			{
+				setcolor(11);
+				mx_print(node->matrix);
+			}
+			else
+			{
+				setcolor(12);
+				printf("Matris bulunamadi.");
+			}
+		}
+		else
+		{
+			setcolor(12);
+			printf("Gecersiz giris. Yalnizca matris adi girilmelidir.");
+		}
+	}
+}
+
+void menu_delete(MENU_PARAM_DECL)
+{
+	printf("Matrisler | Sil\n\n");
+
+	int len;
+	char buffer[CON_BUFFER_SIZE], name;
+	Node* node;
+
+	setcolor(8);
+	printf("Silmek istediginiz matrisin adini yazin.\nCikmak icin bos satir girin.");
+
+	while (true)
+	{
+		setcolor(7);
+		printf("\n\n> ");
+
+		if (!(len = readl(buffer, CON_BUFFER_SIZE)))
+			break;
+
+		if (len == 1)
+		{
+			name = buffer[0];
+			if (!isupper(name))
+			{
+				setcolor(12);
+				printf("Matris adi buyuk harf olmalidir.");
+			}
+			else if (node = mem_query(memory, name))
+			{
+				setcolor(11);
+				mem_remove(memory, node);
+				printf("Matris basariyla silindi.");
+			}
+			else
+			{
+				setcolor(12);
+				printf("Matris bulunamadi.");
+			}
+		}
+		else
+		{
+			setcolor(12);
+			printf("Gecersiz giris. Yalnizca matris adi girilmelidir.");
+		}
+	}
+}
+
+void menu_clear(MENU_PARAM_DECL)
+{
+	printf("Matrisler | Hafizayi Temizle\n\n");
+
+	char c;
+	printf("Tanimli olan tum matrisler silinecektir, devam edilsin mi? (E/H):");
+	scanl("%c", &c);
+
+	if ((c | 0x20) != 'e')
+	{
+		setcolor(12);
+		printf("Islem iptal edildi.");
+		get_char();
+		return;
+	}
+
+	mem_remove_all(memory);
+	printf("Hafizadaki tum matrisler basariyla silindi.\n");
+	get_char();
+}
+
 void menu_save(MENU_PARAM_DECL)
 {
+	printf("Dosya Islemleri | Kaydet\n\n");
+
 	int count = mem_save(memory);
 	if (count >= 0)
+	{
+		setcolor(10);
 		printf("Tanimlanmis %d matris dosyaya basariyla kaydedildi.", count);
+	}
 	else
+	{
+		setcolor(12);
 		printf("Tanimlanmis matrisler dosyaya kaydedilemedi.");
+	}
 
 	get_char();
 }
 
 void menu_read(MENU_PARAM_DECL)
 {
+	printf("Dosya Islemleri | Yukle\n\n");
 	if (memory->tail)
 	{
 		char c;
-		printf("Mevcut tanimli matrisler silinecektir, devam edilsin mi? (E/H): ");
+		printf("Mevcut tanimli matrislerin uzerine yazilacaktir, devam edilsin mi? (E/H): ");
 		scanl("%c", &c);
 		if ((c | 0x20) != 'e')
 		{
-			printf("Islem kullanici tarafindan iptal edildi.");
+			setcolor(12);
+			printf("Islem iptal edildi.");
 			get_char();
 			return;
 		}
@@ -496,9 +693,15 @@ void menu_read(MENU_PARAM_DECL)
 
 	int count = mem_read(memory);
 	if (count >= 0)
+	{
+		setcolor(10);
 		printf("%d adet matris kayit dosyasindan basariyla yuklendi.", count);
+	}
 	else
-		printf("Kayit dosyasi bozuk, matrisler okunamadi.");
+	{
+		setcolor(12);
+		printf("Kayit dosyasi bozuk, matrislerin tamami okunamadi.");
+	}
 
 	get_char();
 }

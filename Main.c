@@ -4,6 +4,10 @@
 
 int main()
 {
+	#ifdef _WIN32
+	SetConsoleTitle("LinearC by Mustafa Nesin & Cem Ufuk Yilmaz");
+	#endif
+
 	Memory* memory = init_mem();
 
 	if (!memory)
