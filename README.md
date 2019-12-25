@@ -24,6 +24,7 @@ rowmul(M, R1, S);		R1 -> S*R1
 rowadd(M, R1, R2, S);	R1 -> R1 + S*R2  
 pow(S, P); Üs  
 pow(M, P); Üs  
+abs; Mutlak Değer
 pi;		PI  
 e;		E  
 sqrt(S);	Karekök  
