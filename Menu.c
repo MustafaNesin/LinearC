@@ -51,7 +51,9 @@ int show_menu(Menu* menu)
 
 void print_equterm(float value, char name, bool first, bool last)
 {
-	if (iszero(value))
+	value = froundf(value);
+
+	if (!value)
 	{
 		if (first && last)
 			printf("0");
@@ -76,9 +78,7 @@ void print_equterm(float value, char name, bool first, bool last)
 		if (value == -1 || value == 1)
 			printf("%c", name);
 		else
-		{
 			printf("%g%c", fabsf(value), name);
-		}
 	}
 }
 
