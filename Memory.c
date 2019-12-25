@@ -10,23 +10,62 @@ Memory* init_mem(void)
 	if (!memory)
 		return NULL;
 
-	// Menüyü oluþtur
+	// Menüleri oluþtur
 	{
-		memory->home.title = "Ana Menu";
+		// Ana Menü
+		{
+			Menu* home = &memory->menus[HOME_MENU];
+			home->title = "Ana Menu";
 
-		memory->home.options[0] = "Cikis";
-		memory->home.options[1] = "Matrisler";
-		memory->home.options[2] = "Islem Konsolu";
-		memory->home.options[3] = "Denklem Cozucu";
-		memory->home.options[4] = "Dosya Islemleri";
-		memory->home.options[9] = "Hakkinda";
+			home->options[0] = "Cikis";
+			home->options[1] = "Matrisler";
+			home->options[2] = "Islem Konsolu";
+			home->options[3] = "Denklem Cozucu";
+			home->options[4] = "Dosya Islemleri";
+			home->options[9] = "Hakkinda";
 
-		memory->home.functions[0] = NULL;
-		memory->home.functions[1] = menu_matrices;
-		memory->home.functions[2] = menu_console;
-		memory->home.functions[3] = menu_equation;
-		memory->home.functions[4] = menu_file;
-		memory->home.functions[9] = menu_about;
+			home->functions[0] = NULL;
+			home->functions[1] = menu_matrices;
+			home->functions[2] = menu_console;
+			home->functions[3] = menu_equation;
+			home->functions[4] = menu_file;
+			home->functions[9] = menu_about;
+		}
+
+		// Matris Menüsü
+		{
+			Menu* matrix = &memory->menus[MATRIX_MENU];
+			matrix->title = "Matrisler";
+
+			matrix->options[0] = "Geri";
+			matrix->options[1] = "Yeni";
+			matrix->options[2] = "Listele";
+			matrix->options[3] = "Goruntule";
+			matrix->options[4] = "Sil";
+			matrix->options[5] = "Hafizayi Temizle";
+
+			matrix->functions[0] = NULL;
+			matrix->functions[1] = menu_define;
+			matrix->functions[2] = menu_list;
+			matrix->functions[3] = menu_show;
+			matrix->functions[4] = menu_delete;
+			matrix->functions[5] = menu_clear;
+		}
+
+		// Dosya Menüsü
+		{
+			Menu* file = &memory->menus[FILE_MENU];
+
+			file->title = "Dosya Islemleri";
+
+			file->options[0] = "Geri";
+			file->options[1] = "Yukle";
+			file->options[2] = "Kaydet";
+
+			file->functions[0] = NULL;
+			file->functions[1] = menu_read;
+			file->functions[2] = menu_save;
+		}
 	}
 
 	// Komutlarý oluþtur
@@ -124,6 +163,41 @@ Memory* init_mem(void)
 		BEGIN_CMD_INIT; /* rowadd */ {
 			memory->commands[c].name = "rowadd";
 			memory->commands[c].function = cmd_rowadd;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 4;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[3] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* colop */ {
+			memory->commands[c].name = "colop";
+			memory->commands[c].function = cmd_colop;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 1;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+		}
+		BEGIN_CMD_INIT; /* colswt */ {
+			memory->commands[c].name = "colswt";
+			memory->commands[c].function = cmd_colswt;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 3;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* colmul */ {
+			memory->commands[c].name = "colmul";
+			memory->commands[c].function = cmd_colmul;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 3;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* coladd */ {
+			memory->commands[c].name = "coladd";
+			memory->commands[c].function = cmd_coladd;
 			memory->commands[c].returns = true;
 			memory->commands[c].paramcount = 4;
 			memory->commands[c].params[0] = CMD_MATRIX_PARAM;

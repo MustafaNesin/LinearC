@@ -2,6 +2,7 @@
 #include "Matrix.h"
 #include "Utils.h"
 
+#pragma region Definitions
 #define ASSERT__FAIL(X_COND) if (!(X_COND)) goto fail;
 #define IS_SPACE isspace(*in)
 #define EAT_SPACE if (IS_SPACE) { in++; continue; }
@@ -50,6 +51,158 @@
 #define FPS_PARAMETER (uint8_t)4
 
 #define ASSERT__ERROR(X_COND, X_ERR) if (!(X_COND)) return X_ERR;
+#pragma endregion
+
+#pragma region Common Functions
+EValue common_op(CMD_PARAM_DECL, bool colmode)
+{
+	INIT_RESULT;
+
+	char c = colmode ? 'c' : 'r';
+	Matrix* matrix = GET_MATRIX_ARG(0), * r;
+	Operation op = mx_next_op(matrix, colmode, false), op2;
+
+	if (!op.type)
+		op = mx_next_op(matrix, colmode, true);
+
+	switch (op.type)
+	{
+		case OP_ADD:
+			printf("%c%d -> %c%d%+g%c%d\n", c, op.vec2 + 1, c, op.vec2 + 1, op.coeff, c, op.vec1 + 1);
+			break;
+		case OP_MULTIPLY:
+			printf("%c%d -> %g%c%d\n", c, op.vec1 + 1, op.coeff, c, op.vec1 + 1);
+			break;
+		case OP_SWITCH:
+			printf("%c%d <-> %c%d\n", c, op.vec1 + 1, c, op.vec2 + 1);
+			break;
+		default:
+			break;
+	}
+
+	r = mx2_apply_op(matrix, op);
+
+	op = mx_next_op(r, colmode, false);
+	op2 = mx_next_op(r, colmode, true);
+
+	setcolor(8);
+	if (!op2.type)
+		printf("Indirgenmis %s Eselon Formu\n", colmode ? "Sutun" : "Satir");
+	else if (!op.type)
+		printf("%s Eselon Formu\n", colmode ? "Sutun" : "Satir");
+
+	SET_MATRIX_RESULT(r);
+	RETURN_RESULT;
+}
+
+EValue common_swt(CMD_PARAM_DECL, bool colmode)
+{
+	INIT_RESULT;
+
+	Matrix* matrix = GET_MATRIX_ARG(0);
+	float num1 = GET_NUMBER_ARG(1), num2 = GET_NUMBER_ARG(2);
+	char c = colmode ? 'c' : 'r';
+	uint8_t vecs = colmode ? matrix->cols : matrix->rows;
+
+	if (ceilf(num1) != num1 || ceilf(num2) != num2)
+	{
+		*error = colmode ? "Sutun numaralari tam sayi olmalidir." : "Satir numaralari tam sayi olmalidir.";
+		RETURN_RESULT;
+	}
+
+	if (num1 < MIN_MATRIX_SIZE || num2 < MIN_MATRIX_SIZE || num1 > vecs || num2 > vecs)
+	{
+		*error = colmode ? "Sutun numaralari matris boyutunu asiyor." : "Satir numaralari matris boyutunu asiyor.";
+		RETURN_RESULT;
+	}
+
+	if (num1 == num2)
+	{
+		*error = colmode ? "Sutun numaralari ayni olamaz." : "Satir numaralari ayni olamaz.";
+		RETURN_RESULT;
+	}
+
+	printf("%c%d <-> %c%d\n", c, (int)num1, c, (int)num2);
+
+	Operation op = { colmode, OP_SWITCH, (uint8_t)(num1 - 1), (uint8_t)(num2 - 1), 0.0f };
+	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
+	RETURN_RESULT;
+}
+
+EValue common_mul(CMD_PARAM_DECL, bool colmode)
+{
+	INIT_RESULT;
+
+	Matrix* matrix = GET_MATRIX_ARG(0);
+	float num1 = GET_NUMBER_ARG(1), num2 = GET_NUMBER_ARG(2);
+	char c = colmode ? 'c' : 'r';
+	uint8_t vecs = colmode ? matrix->cols : matrix->rows;
+
+	if (iszero(num2))
+	{
+		*error = colmode ? "Sutun ile carpilacak katsayi 0 olamaz." : "Satir ile carpilacak katsayi 0 olamaz.";
+		RETURN_RESULT;
+	}
+
+	if (ceilf(num1) != num1)
+	{
+		*error = colmode ? "Sutun numarasi tam sayi olmalidir." : "Satir numarasi tam sayi olmalidir.";
+		RETURN_RESULT;
+	}
+
+	if (num1 < MIN_MATRIX_SIZE || num1 > vecs)
+	{
+		*error = colmode ? "Sutun numarasi matris boyutunu asiyor." : "Satir numarasi matris boyutunu asiyor.";
+		RETURN_RESULT;
+	}
+
+	printf("%c%d -> %g%c%d\n", c, (int)num1, num2, c, (int)num1);
+
+	Operation op = { colmode, OP_MULTIPLY, (uint8_t)(num1 - 1), (uint8_t)0, num2 };
+	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
+	RETURN_RESULT;
+}
+
+EValue common_add(CMD_PARAM_DECL, bool colmode)
+{
+	INIT_RESULT;
+
+	Matrix* matrix = GET_MATRIX_ARG(0);
+	float num1 = GET_NUMBER_ARG(1), num2 = GET_NUMBER_ARG(2), num3 = GET_NUMBER_ARG(3);
+	char c = colmode ? 'c' : 'r';
+	uint8_t vecs = colmode ? matrix->cols : matrix->rows;
+
+	if (iszero(num3))
+	{
+		*error = colmode ? "Sutun ile carpilacak katsayi 0 olamaz." : "Satir ile carpilacak katsayi 0 olamaz.";
+		RETURN_RESULT;
+	}
+
+	if (ceilf(num1) != num1 || ceilf(num2) != num2)
+	{
+		*error = colmode ? "Sutun numaralari tam sayi olmalidir." : "Satir numaralari tam sayi olmalidir.";
+		RETURN_RESULT;
+	}
+
+	if (num1 < MIN_MATRIX_SIZE || num2 < MIN_MATRIX_SIZE || num1 > vecs || num2 > vecs)
+	{
+		*error = colmode ? "Sutun numaralari matris boyutunu asiyor." : "Satir numaralari matris boyutunu asiyor.";
+		RETURN_RESULT;
+	}
+
+	if (num1 == num2)
+	{
+		*error = colmode ? "Sutun numaralari ayni olamaz." : "Satir numaralari ayni olamaz.";
+		RETURN_RESULT;
+	}
+
+	printf("%c%d -> %c%d%+g%c%d\n", c, (int)num1, c, (int)num1, num3, c, (int)num2);
+
+	Operation op = { colmode, OP_ADD, (uint8_t)(num2 - 1), (uint8_t)(num1 - 1), num3 };
+	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
+	RETURN_RESULT;
+}
+#pragma endregion
 
 PExpression* parse_formula(Memory* memory, char* in, char** out)
 {
@@ -980,145 +1133,21 @@ EValue cmd_all(CMD_PARAM_DECL)
 	RETURN_RESULT;
 }
 
-EValue cmd_rowop(CMD_PARAM_DECL)
-{
-	INIT_RESULT;
+EValue cmd_rowop(CMD_PARAM_DECL) { return common_op(CMD_PARAMS, false); }
 
-	Matrix* matrix = GET_MATRIX_ARG(0), *r;
-	Operation op = mx_next_op(matrix, false, false), op2;
+EValue cmd_rowswt(CMD_PARAM_DECL) { return common_swt(CMD_PARAMS, false); }
 
-	if (!op.type)
-		op = mx_next_op(matrix, false, true);
+EValue cmd_rowmul(CMD_PARAM_DECL) { return common_mul(CMD_PARAMS, false); }
 
-	switch (op.type)
-	{
-		case OP_ADD:
-			printf("r%d -> r%d%+gr%d\n", op.vec2 + 1, op.vec2 + 1, op.coeff, op.vec1 + 1);
-			break;
-		case OP_MULTIPLY:
-			printf("r%d -> %gr%d\n", op.vec1 + 1, op.coeff, op.vec1 + 1);
-			break;
-		case OP_SWITCH:
-			printf("r%d <-> r%d\n", op.vec1 + 1, op.vec2 + 1);
-			break;
-		default:
-			break;
-	}
+EValue cmd_rowadd(CMD_PARAM_DECL) { return common_add(CMD_PARAMS, false); }
 
-	r = mx2_apply_op(matrix, op);
+EValue cmd_colop(CMD_PARAM_DECL) { return common_op(CMD_PARAMS, true); }
 
-	op = mx_next_op(r, false, false);
-	op2 = mx_next_op(r, false, true);
-	if (!op2.type)
-		printf("RREF: Indirgenmis Satir Eselon Formu\n");
-	else if (!op.type)
-		printf("REF: Satir Eselon Formu\n");
+EValue cmd_colswt(CMD_PARAM_DECL) { return common_swt(CMD_PARAMS, true); }
 
-	SET_MATRIX_RESULT(r);
-	RETURN_RESULT;
-}
+EValue cmd_colmul(CMD_PARAM_DECL) { return common_mul(CMD_PARAMS, true); }
 
-EValue cmd_rowswt(CMD_PARAM_DECL)
-{
-	INIT_RESULT;
-
-	Matrix* matrix = GET_MATRIX_ARG(0);
-	float num1 = GET_NUMBER_ARG(1), num2 = GET_NUMBER_ARG(2);
-
-	if (ceilf(num1) != num1 || ceilf(num2) != num2)
-	{
-		*error = "Satir numaralari tam sayi olmalidir.";
-		RETURN_RESULT;
-	}
-
-	if (num1 < MIN_MATRIX_SIZE || num2 < MIN_MATRIX_SIZE || num1 > matrix->rows || num2 > matrix->rows)
-	{
-		*error = "Satir numaralari matris boyutunu asiyor.";
-		RETURN_RESULT;
-	}
-
-	if (num1 == num2)
-	{
-		*error = "Satir numaralari ayni olamaz.";
-		RETURN_RESULT;
-	}
-
-	printf("r%d <-> r%d\n", (int)num1, (int)num2);
-
-	Operation op = { false, OP_SWITCH, (uint8_t)(num1 - 1), (uint8_t)(num2 - 1), 0.0f };
-	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
-	RETURN_RESULT;
-}
-
-EValue cmd_rowmul(CMD_PARAM_DECL)
-{
-	INIT_RESULT;
-
-	Matrix* matrix = GET_MATRIX_ARG(0);
-	float num1 = GET_NUMBER_ARG(1), num2 = GET_NUMBER_ARG(2);
-
-	if (iszero(num2))
-	{
-		*error = "Satir ile carpilacak katsayi 0 olamaz.";
-		RETURN_RESULT;
-	}
-
-	if (ceilf(num1) != num1)
-	{
-		*error = "Satir numarasi tam sayi olmalidir.";
-		RETURN_RESULT;
-	}
-
-	if (num1 < MIN_MATRIX_SIZE || num1 > matrix->rows)
-	{
-		*error = "Satir numaralari matris boyutunu asiyor.";
-		RETURN_RESULT;
-	}
-
-	printf("r%d -> %gr%d\n", (int)num1, num2, (int)num1);
-
-	Operation op = { false, OP_MULTIPLY, (uint8_t)(num1 - 1), (uint8_t)0, num2 };
-	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
-	RETURN_RESULT;
-}
-
-EValue cmd_rowadd(CMD_PARAM_DECL)
-{
-	INIT_RESULT;
-
-	Matrix* matrix = GET_MATRIX_ARG(0);
-	float num1 = GET_NUMBER_ARG(1), num2 = GET_NUMBER_ARG(2), num3 = GET_NUMBER_ARG(3);
-
-	if (iszero(num3))
-	{
-		*error = "Satir ile carpilacak katsayi 0 olamaz.";
-		RETURN_RESULT;
-	}
-
-	if (ceilf(num1) != num1 || ceilf(num2) != num2)
-	{
-		*error = "Satir numaralari tam sayi olmalidir.";
-		RETURN_RESULT;
-	}
-
-	if (num1 < MIN_MATRIX_SIZE || num2 < MIN_MATRIX_SIZE || num1 > matrix->rows || num2 > matrix->rows)
-	{
-		*error = "Satir numaralari matris boyutunu asiyor.";
-		RETURN_RESULT;
-	}
-
-	if (num1 == num2)
-	{
-		*error = "Satir numaralari ayni olamaz.";
-		RETURN_RESULT;
-	}
-
-	printf("r%d -> r%d%+gr%d\n", (int)num1, (int)num1, num3, (int)num2);
-
-	Operation op = { false, OP_ADD, (uint8_t)(num2 - 1), (uint8_t)(num1 - 1), num3 };
-	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
-	RETURN_RESULT;
-}
+EValue cmd_coladd(CMD_PARAM_DECL) { return common_add(CMD_PARAMS, true); }
 
 EValue cmd_power(CMD_PARAM_DECL)
 {

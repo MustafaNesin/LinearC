@@ -21,7 +21,11 @@
 #pragma endregion
 
 #pragma region Definitions
-#define CMD_COUNT        (uint8_t)69    // Her yeni komut eklendiðinde artýrýlmalýdýr
+#define MENU_COUNT       (uint8_t)3
+#define HOME_MENU        (uint8_t)0
+#define MATRIX_MENU      (uint8_t)1
+#define FILE_MENU        (uint8_t)2
+#define CMD_COUNT        (uint8_t)73    // Her yeni komut eklendiðinde artýrýlmalýdýr
 #define CMD_PARAM_COUNT  (uint8_t)5
 #define CON_BUFFER_SIZE  (uint8_t)200 
 #define MIN_MATRIX_SIZE  (uint8_t)1
@@ -85,6 +89,7 @@ typedef struct Menu        Menu;
 
 #define MENU_PARAM_DECL Memory* memory
 #define CMD_PARAM_DECL  Memory* memory, EValue args[CMD_PARAM_COUNT], char** error
+#define CMD_PARAMS      memory, args, error
 #pragma endregion
 
 #pragma region Structures
@@ -115,7 +120,7 @@ struct Node
 struct Memory
 {
 	Node     *tail;
-	Menu     home;
+	Menu     menus[MENU_COUNT];
 	Function commands[CMD_COUNT];
 	bool     radian;
 };

@@ -13,7 +13,7 @@ int main()
 	if (!memory)
 		return EXIT_FAILURE;
 
-	loop_menu(&memory->home, memory);
+	loop_menu(&memory->menus[HOME_MENU], memory);
 	free_mem(memory);
 
 #if _DEBUG

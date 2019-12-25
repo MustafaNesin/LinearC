@@ -5,40 +5,6 @@
 
 #define EQ_ASSERT(X_COND, X_ERR) if(!(X_COND)) { setcolor(12); printf("Hata: %s", X_ERR); goto end; }
 
-Menu g_matrices_menu = {
-	"Matrisler",
-	{
-		"Geri",
-		"Yeni",
-		"Listele",
-		"Goruntule",
-		"Sil",
-		"Hafizayi Temizle"
-	},
-	{
-		NULL,
-		menu_define,
-		menu_list,
-		menu_show,
-		menu_delete,
-		menu_clear
-	}
-};
-
-Menu g_file_menu = {
-	"Dosya Islemleri",
-	{
-		"Geri",
-		"Yukle",
-		"Kaydet"
-	},
-	{
-		NULL,
-		menu_read,
-		menu_save
-	}
-};
-
 void loop_menu(Menu* menu, Memory* memory)
 {
 	void (*func)(MENU_PARAM_DECL);
@@ -119,7 +85,7 @@ void print_equterm(float value, char name, bool first, bool last)
 
 void menu_matrices(MENU_PARAM_DECL)
 {
-	loop_menu(&g_matrices_menu, memory);
+	loop_menu(&memory->menus[MATRIX_MENU], memory);
 }
 
 void menu_console(MENU_PARAM_DECL)
@@ -415,7 +381,7 @@ void menu_equation(MENU_PARAM_DECL)
 
 void menu_file(MENU_PARAM_DECL)
 {
-	loop_menu(&g_file_menu, memory);
+	loop_menu(&memory->menus[FILE_MENU], memory);
 }
 
 void menu_about(MENU_PARAM_DECL)
@@ -591,8 +557,7 @@ void menu_delete(MENU_PARAM_DECL)
 {
 	printf("Matrisler | Sil\n\n");
 
-	int len;
-	char buffer[CON_BUFFER_SIZE], name;
+	char buffer[CON_BUFFER_SIZE], name, len;
 	Node* node;
 
 	setcolor(8);

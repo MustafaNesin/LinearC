@@ -111,6 +111,11 @@ EValue cmd_rowop(CMD_PARAM_DECL);
 EValue cmd_rowswt(CMD_PARAM_DECL);
 EValue cmd_rowmul(CMD_PARAM_DECL);
 EValue cmd_rowadd(CMD_PARAM_DECL);
+EValue cmd_colop(CMD_PARAM_DECL);
+EValue cmd_colswt(CMD_PARAM_DECL);
+EValue cmd_colmul(CMD_PARAM_DECL);
+EValue cmd_coladd(CMD_PARAM_DECL);
+EValue cmd_power(CMD_PARAM_DECL);
 EValue cmd_power(CMD_PARAM_DECL);
 #pragma endregion
 
