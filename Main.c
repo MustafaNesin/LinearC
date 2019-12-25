@@ -1,11 +1,13 @@
 #include <stdio.h>
-#include <Windows.h>
 #include "Memory.h"
 #include "Menu.h"
 
 int main()
 {
+	#ifdef _WIN32
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+	#endif
+
 	Memory* memory = init_mem();
 
 	if (!memory)
