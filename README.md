@@ -22,6 +22,10 @@ rowop(M); Sıradaki Satır İşlemi
 rowswt(M, R1, R2);		R1 <-> R2  
 rowmul(M, R1, S);		R1 -> S*R1  
 rowadd(M, R1, R2, S);	R1 -> R1 + S*R2  
+colop(M); Sıradaki Sütun İşlemi  
+colswt(M, C1, C2);		C1 <-> C2  
+colmul(M, C1, S);		C1 -> S*C1  
+coladd(M, C1, C2, S);	C1 -> C1 + S*C2  
 pow(S, P); Üs  
 pow(M, P); Üs  
 abs; Mutlak Değer
