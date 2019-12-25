@@ -59,3 +59,5 @@ Matrix*   mx2_inverse    (Matrix* matrix);
 bool      mx_inverse     (Matrix* matrix);
 Matrix*   mx2_adjoint    (Matrix* matrix);
 bool      mx_adjoint     (Matrix* matrix);
+
+bool      check_system   (Matrix* coeffs, Matrix* cons);

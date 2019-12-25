@@ -31,6 +31,28 @@ void clear(void)
 #endif
 }
 
+int readl(char buf[], int n)
+{
+	int c, i = 0;
+	bool b = false;
+
+	n--;
+	while ((c = getchar()) != EOF && c != '\n' && i < n)
+	{
+		if (c > 127 || !isprint(c))
+			b = true;
+
+		if (!b)
+			buf[i++] = c;
+	}
+
+	if (c != '\n')
+		get_char();
+
+	buf[i] = '\0';
+	return i;
+}
+
 void scanl(char const* const format, ...)
 {
 	va_list args;
@@ -55,7 +77,7 @@ float froundf(float value)
 	float integer = roundf(value);
 	if (fabsf(value - integer) < 0.001)
 	{
-		if (integer == -0.0f)
+		if (iszero(integer))
 			return 0;
 		return integer;
 	}
@@ -70,4 +92,9 @@ float deg2rad(float degree)
 float rad2deg(float radian)
 {
 	return radian / MATH_PI * 180.0f;
+}
+
+bool iszero(float value)
+{
+	return value == 0.0f || value == -0.0f;
 }

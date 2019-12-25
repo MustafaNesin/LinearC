@@ -2,18 +2,15 @@
 #include "Matrix.h"
 #include "Utils.h"
 
-#ifndef CMD_SYNTAX
-#define CMD_SYNTAX
-
 #define ASSERT__FAIL(X_COND) if (!(X_COND)) goto fail;
-#define IS_SPACE (*in < -1 || isspace(*in))
+#define IS_SPACE isspace(*in)
 #define EAT_SPACE if (IS_SPACE) { in++; continue; }
 #define _EAT_SPACE while (*in) { EAT_SPACE; break; }
 
-#define IS_NUMBER (*in > -1 && isdigit(*in))
-#define IS_MATRIX (*in > -1 && isupper(*in))
-#define IS_NAME (*in > -1 && islower(*in))
-#define IS_FUNCTION (*in > -1 && islower(*in))
+#define IS_NUMBER isdigit(*in)
+#define IS_MATRIX isupper(*in)
+#define IS_NAME islower(*in)
+#define IS_FUNCTION islower(*in)
 #define IS_ASSIGNMENT (result->assignment = *in++ == '=')
 #define IS_PARENTHESIS (*in == '(')
 #define IS_PARAMETER (*in == ',')
@@ -51,13 +48,8 @@
 #define FPS_SPACE (uint8_t)2
 #define FPS_EMPTY_PARAM (uint8_t)3
 #define FPS_PARAMETER (uint8_t)4
-#endif
-
-#ifndef CMD_SEMANTICS
-#define CMD_SEMANTICS
 
 #define ASSERT__ERROR(X_COND, X_ERR) if (!(X_COND)) return X_ERR;
-#endif
 
 PExpression* parse_formula(Memory* memory, char* in, char** out)
 {
@@ -358,6 +350,7 @@ bool run_command(Memory* memory, PExpression* input, bool* newline)
 		}
 	}
 
+	printf("\n");
 	return true;
 }
 
@@ -802,7 +795,7 @@ EValue cmd_adjoint(CMD_PARAM_DECL)
 	INIT_RESULT;
 
 	Matrix* matrix = GET_MATRIX_ARG(0);
-	if (matrix->rows != matrix->cols)
+	if (matrix->rows == matrix->cols)
 	{
 		result.number = false;
 		result.value.matrix = mx2_adjoint(matrix);
@@ -912,7 +905,7 @@ EValue cmd_rowswt(CMD_PARAM_DECL)
 
 	printf("r%d <-> r%d\n", (int)num1, (int)num2);
 
-	Operation op = { (bool)0, OP_SWITCH, (uint8_t)(num1 - 1), (uint8_t)(num2 - 1), 0.0f };
+	Operation op = { false, OP_SWITCH, (uint8_t)(num1 - 1), (uint8_t)(num2 - 1), 0.0f };
 	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
 	RETURN_RESULT;
 }
@@ -924,7 +917,7 @@ EValue cmd_rowmul(CMD_PARAM_DECL)
 	Matrix* matrix = GET_MATRIX_ARG(0);
 	float num1 = GET_NUMBER_ARG(1), num2 = GET_NUMBER_ARG(2);
 
-	if (num2 == 0.0f || num2 == -0.0f)
+	if (iszero(num2))
 	{
 		*error = "Satir ile carpilacak katsayi 0 olamaz.";
 		RETURN_RESULT;
@@ -950,7 +943,7 @@ EValue cmd_rowmul(CMD_PARAM_DECL)
 
 	printf("r%d -> %gr%d\n", (int)num1, num2, (int)num1);
 
-	Operation op = { (bool)0, OP_MULTIPLY, (uint8_t)(num1 - 1), (uint8_t)0, num2 };
+	Operation op = { false, OP_MULTIPLY, (uint8_t)(num1 - 1), (uint8_t)0, num2 };
 	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
 	RETURN_RESULT;
 }
@@ -962,7 +955,7 @@ EValue cmd_rowadd(CMD_PARAM_DECL)
 	Matrix* matrix = GET_MATRIX_ARG(0);
 	float num1 = GET_NUMBER_ARG(1), num2 = GET_NUMBER_ARG(2), num3 = GET_NUMBER_ARG(3);
 
-	if (num3 == 0.0f || num3 == -0.0f)
+	if (iszero(num3))
 	{
 		*error = "Satir ile carpilacak katsayi 0 olamaz.";
 		RETURN_RESULT;
@@ -994,7 +987,7 @@ EValue cmd_rowadd(CMD_PARAM_DECL)
 
 	printf("r%d -> r%d%+gr%d\n", (int)num1, (int)num1, num3, (int)num2);
 
-	Operation op = { (bool)0, OP_ADD, (uint8_t)(num2 - 1), (uint8_t)(num1 - 1), num3 };
+	Operation op = { false, OP_ADD, (uint8_t)(num2 - 1), (uint8_t)(num1 - 1), num3 };
 	SET_MATRIX_RESULT(mx2_apply_op(matrix, op));
 	RETURN_RESULT;
 }

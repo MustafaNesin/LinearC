@@ -16,6 +16,9 @@ Matrix* mx_new(uint8_t rows, uint8_t cols, float* data)
 
 void mx_free(Matrix* matrix)
 {
+	if (!matrix)
+		return;
+
 	free(matrix->data);
 	free(matrix);
 }
@@ -31,9 +34,11 @@ void mx_print(Matrix* matrix)
 			printf("%10g ", (float)froundf(*(matrix->data + i)));
 
 		printf("  | ");
+
 		if (row == matrix->rows - 1)
 			printf("%dx%d", matrix->rows, matrix->cols);
-		printf("\n");
+		else
+			printf("\n");
 	}
 }
 
@@ -595,5 +600,36 @@ bool mx_adjoint(Matrix* matrix)
 	matrix->cols = adjoint->cols;
 	matrix->data = adjoint->data;
 	free(adjoint);
+	return true;
+}
+
+bool check_system(Matrix* coeffs, Matrix* cons)
+{
+	int rows = coeffs->rows, cols = coeffs->cols, row, col, _row;
+	float pivot;
+	Operation op;
+
+	while ((op = mx_next_op(coeffs, false, true)).type)
+	{
+		mx_apply_op(coeffs, op);
+		mx_apply_op(cons, op);
+	}
+
+	for (row = cols; row < rows; row++)
+		if (!iszero(*mx_get(cons, row, 0)))
+			return false;
+
+	for (row = 0, col = 0; col < cols; col++)
+	{
+		while (iszero(pivot = *mx_get(coeffs, row, col)))
+			if (++col == cols)
+				for (_row = row; _row < rows; _row++)
+					if (!iszero(*mx_get(cons, _row, 0)))
+						return false;
+
+		if (++row == rows)
+			return;
+	}
+
 	return true;
 }
