@@ -94,12 +94,19 @@ void free_function(PFunction* function);
 EValue cmd_clear(CMD_PARAM_DECL);
 
 #pragma region Matrix
+EValue cmd_list(CMD_PARAM_DECL);
+EValue cmd_get(CMD_PARAM_DECL);
+EValue cmd_set(CMD_PARAM_DECL);
 EValue cmd_transpose(CMD_PARAM_DECL);
 EValue cmd_inverse(CMD_PARAM_DECL);
 EValue cmd_determinant(CMD_PARAM_DECL);
 EValue cmd_adjoint(CMD_PARAM_DECL);
 EValue cmd_rank(CMD_PARAM_DECL);
 EValue cmd_id(CMD_PARAM_DECL);
+EValue cmd_diag(CMD_PARAM_DECL);
+EValue cmd_low(CMD_PARAM_DECL);
+EValue cmd_up(CMD_PARAM_DECL);
+EValue cmd_all(CMD_PARAM_DECL);
 EValue cmd_rowop(CMD_PARAM_DECL);
 EValue cmd_rowswt(CMD_PARAM_DECL);
 EValue cmd_rowmul(CMD_PARAM_DECL);
@@ -108,13 +115,14 @@ EValue cmd_power(CMD_PARAM_DECL);
 #pragma endregion
 
 #pragma region Math
-EValue cmd_deg(CMD_PARAM_DECL);
-EValue cmd_rad(CMD_PARAM_DECL);
+EValue cmd_abs(CMD_PARAM_DECL);
 EValue cmd_pi(CMD_PARAM_DECL);
 EValue cmd_e(CMD_PARAM_DECL);
 EValue cmd_sqrt(CMD_PARAM_DECL);
 EValue cmd_ln(CMD_PARAM_DECL);
 EValue cmd_log(CMD_PARAM_DECL);
+EValue cmd_deg(CMD_PARAM_DECL);
+EValue cmd_rad(CMD_PARAM_DECL);
 EValue cmd_sin(CMD_PARAM_DECL);
 EValue cmd_cos(CMD_PARAM_DECL);
 EValue cmd_tan(CMD_PARAM_DECL);

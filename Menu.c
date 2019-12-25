@@ -214,7 +214,7 @@ void menu_equation(MENU_PARAM_DECL)
 	//                                                                                            col
 	// 31 30 29 28 27 26 25 24 23 22 21 20 19 18 27 16 15 14 13 12 11 10 9  8  7  6  5  4  3  2  1  0
 	//                   z  y  x  w  v  u  t  s  r  q  p  o  n  m  l  k  j  i  h  g  f  e  d  c  b  a
-	uint32_t flags = 0, _flags;
+	uint32_t flags = 0;
 	char buffer[CON_BUFFER_SIZE], var[MAX_MATRIX_SIZE], b;
 	int i = -1, state = 0, rows = 0, row, col, len, cols = 0, _ = 0;
 	Matrix *matrix1 = NULL, *matrix2 = NULL;

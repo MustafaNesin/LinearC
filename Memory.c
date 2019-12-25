@@ -39,12 +39,65 @@ Memory* init_mem(void)
 		CMD_INIT("clear", cmd_clear);
 
 		#pragma region Matrix
+		CMD_INIT("list", cmd_list);
+		BEGIN_CMD_INIT; /* get */ {
+			memory->commands[c].name = "get";
+			memory->commands[c].function = cmd_get;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 3;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* set */ {
+			memory->commands[c].name = "set";
+			memory->commands[c].function = cmd_set;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 4;
+			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[3] = CMD_NUMBER_PARAM;
+		}
 		CMD_INIT_M("t", cmd_transpose);
 		CMD_INIT_M("inv", cmd_inverse);
 		CMD_INIT_M("det", cmd_determinant);
 		CMD_INIT_M("adj", cmd_adjoint);
 		CMD_INIT_M2("r", "rank", cmd_rank);
 		CMD_INIT_S("id", cmd_id);
+		BEGIN_CMD_INIT; /* diag */ {
+			memory->commands[c].name = "diag";
+			memory->commands[c].function = cmd_diag;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 2;
+			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* low */ {
+			memory->commands[c].name = "low";
+			memory->commands[c].function = cmd_low;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 2;
+			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* up */ {
+			memory->commands[c].name = "up";
+			memory->commands[c].function = cmd_up;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 2;
+			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+		}
+		BEGIN_CMD_INIT; /* all */ {
+			memory->commands[c].name = "all";
+			memory->commands[c].function = cmd_all;
+			memory->commands[c].returns = true;
+			memory->commands[c].paramcount = 3;
+			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
+			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
+		}
 		BEGIN_CMD_INIT; /* rowop */ {
 			memory->commands[c].name = "rowop";
 			memory->commands[c].function = cmd_rowop;
@@ -52,8 +105,7 @@ Memory* init_mem(void)
 			memory->commands[c].paramcount = 1;
 			memory->commands[c].params[0] = CMD_MATRIX_PARAM;
 		}
-		BEGIN_CMD_INIT; /* rowswt */
-		{
+		BEGIN_CMD_INIT; /* rowswt */ {
 			memory->commands[c].name = "rowswt";
 			memory->commands[c].function = cmd_rowswt;
 			memory->commands[c].returns = true;
@@ -62,8 +114,7 @@ Memory* init_mem(void)
 			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
 			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
 		}
-		BEGIN_CMD_INIT; /* rowmul */
-		{
+		BEGIN_CMD_INIT; /* rowmul */ {
 			memory->commands[c].name = "rowmul";
 			memory->commands[c].function = cmd_rowmul;
 			memory->commands[c].returns = true;
@@ -72,8 +123,7 @@ Memory* init_mem(void)
 			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
 			memory->commands[c].params[2] = CMD_NUMBER_PARAM;
 		}
-		BEGIN_CMD_INIT; /* rowadd */
-		{
+		BEGIN_CMD_INIT; /* rowadd */ {
 			memory->commands[c].name = "rowadd";
 			memory->commands[c].function = cmd_rowadd;
 			memory->commands[c].returns = true;
@@ -102,8 +152,7 @@ Memory* init_mem(void)
 		#pragma endregion
 
 		#pragma region Math
-		CMD_INIT2("deg", "degree", cmd_deg);
-		CMD_INIT2("rad", "radian", cmd_rad);
+		CMD_INIT_S("abs", cmd_abs);
 		CMD_INIT_0("pi", cmd_pi);
 		CMD_INIT_0("e", cmd_e);
 		CMD_INIT_S("sqrt", cmd_sqrt);
@@ -117,6 +166,8 @@ Memory* init_mem(void)
 			memory->commands[c].params[0] = CMD_NUMBER_PARAM;
 			memory->commands[c].params[1] = CMD_NUMBER_PARAM;
 		}
+		CMD_INIT2("deg", "degree", cmd_deg);
+		CMD_INIT2("rad", "radian", cmd_rad); 
 		CMD_INIT_S("sin", cmd_sin);
 		CMD_INIT_S("cos", cmd_cos);
 		CMD_INIT_S("tan", cmd_tan);

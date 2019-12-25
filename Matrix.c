@@ -628,7 +628,7 @@ bool check_system(Matrix* coeffs, Matrix* cons)
 						return false;
 
 		if (++row == rows)
-			return;
+			return true;
 	}
 
 	return true;

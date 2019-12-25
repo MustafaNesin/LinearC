@@ -21,7 +21,7 @@
 #pragma endregion
 
 #pragma region Definitions
-#define CMD_COUNT        (uint8_t)61    // Her yeni komut eklendiğinde artırılmalıdır
+#define CMD_COUNT        (uint8_t)70    // Her yeni komut eklendiğinde artırılmalıdır
 #define CMD_PARAM_COUNT  (uint8_t)5
 #define CON_BUFFER_SIZE  (uint8_t)200 
 #define MIN_MATRIX_SIZE  (uint8_t)1
@@ -41,7 +41,7 @@
 	CMD_INIT(CMD_NAME1, CMD_FUNCTION) \
 	CMD_INIT(CMD_NAME2, CMD_FUNCTION)
 
-#define CMD_INIT_0(CMD_NAME, CMD_FUNCTION, CMD_PARAM) \
+#define CMD_INIT_0(CMD_NAME, CMD_FUNCTION) \
 	CMD_INIT(CMD_NAME, CMD_FUNCTION) \
 	memory->commands[c].returns = true;
 

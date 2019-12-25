@@ -328,6 +328,8 @@ bool run_command(Memory* memory, PExpression* input, bool* newline)
 			
 			if (!strcmp(func->name, "clear"))
 				*newline = false;
+			else
+				printf("\n");
 
 			return true;
 		}
@@ -745,6 +747,78 @@ EValue cmd_clear(CMD_PARAM_DECL)
 }
 
 #pragma region Matrix
+EValue cmd_list(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+
+	int count = 0;
+	Node* tail = memory->tail;
+
+	while (tail)
+	{
+		if (!count++)
+			printf("\tAd\tBoyut\n");
+
+		printf("\t%c\t%dx%d\n", tail->name, tail->matrix->rows, tail->matrix->cols);
+
+		tail = tail->prev;
+	}
+
+	if (count)
+		printf("\n");
+
+	printf("\t%d sonuc bulundu.", count);
+
+	RETURN_RESULT;
+}
+
+EValue cmd_get(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+
+	Matrix* matrix = GET_MATRIX_ARG(0);
+	float row = GET_NUMBER_ARG(1), col = GET_NUMBER_ARG(2);
+
+	if (ceilf(row) != row || ceilf(col) != col)
+	{
+		*error = "Satir ve sutun numaralari tam sayi olmalidir.";
+		RETURN_RESULT;
+	}
+
+	if (row < MIN_MATRIX_SIZE || row > matrix->rows || col < MIN_MATRIX_SIZE || col > matrix->cols)
+	{
+		*error = "Satir ve sutun numaralari matris boyutunu asiyor.";
+		RETURN_RESULT;
+	}
+
+	SET_NUMBER_RESULT(*mx_get(matrix, (uint8_t)(row - 1), (uint8_t)(col - 1)));
+	RETURN_RESULT;
+}
+
+EValue cmd_set(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+
+	Matrix* matrix = GET_MATRIX_ARG(0);
+	float value = GET_NUMBER_ARG(1), row = GET_NUMBER_ARG(2), col = GET_NUMBER_ARG(3);
+	
+	if (ceilf(row) != row || ceilf(col) != col)
+	{
+		*error = "Satir ve sutun numaralari tam sayi olmalidir.";
+		RETURN_RESULT;
+	}
+
+	if (row < MIN_MATRIX_SIZE || row > matrix->rows || col < MIN_MATRIX_SIZE || col > matrix->cols)
+	{
+		*error = "Satir ve sutun numaralari matris boyutunu asiyor.";
+		RETURN_RESULT;
+	}
+
+	mx_set(matrix, (uint8_t)(row - 1), (uint8_t)(col - 1), value);
+	SET_NUMBER_RESULT(*mx_get(matrix, (uint8_t)(row - 1), (uint8_t)(col - 1)));
+	RETURN_RESULT;
+}
+
 EValue cmd_transpose(CMD_PARAM_DECL)
 {
 	INIT_RESULT;
@@ -824,13 +898,74 @@ EValue cmd_id(CMD_PARAM_DECL)
 	INIT_RESULT;
 	float size = GET_NUMBER_ARG(0);
 
-	if (roundf(size) != size || size < MIN_MATRIX_SIZE || size > MAX_MATRIX_SIZE)
+	if (ceilf(size) != size || size < MIN_MATRIX_SIZE || size > MAX_MATRIX_SIZE)
 	{
 		*error = "Gecersiz matris boyutu.";
 		RETURN_RESULT;
 	}
 
-	SET_MATRIX_RESULT(mx_create_diag(size, 1));
+	SET_MATRIX_RESULT(mx_create_diag((uint8_t)size, 1));
+	RETURN_RESULT;
+}
+
+EValue cmd_diag(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+	float value = GET_NUMBER_ARG(0), size = GET_NUMBER_ARG(1);
+
+	if (ceilf(size) != size || size < MIN_MATRIX_SIZE || size > MAX_MATRIX_SIZE)
+	{
+		*error = "Gecersiz matris boyutu.";
+		RETURN_RESULT;
+	}
+
+	SET_MATRIX_RESULT(mx_create_diag((uint8_t)size, value));
+	RETURN_RESULT;
+}
+
+EValue cmd_low(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+	float value = GET_NUMBER_ARG(0), size = GET_NUMBER_ARG(1);
+
+	if (ceilf(size) != size || size < MIN_MATRIX_SIZE || size > MAX_MATRIX_SIZE)
+	{
+		*error = "Gecersiz matris boyutu.";
+		RETURN_RESULT;
+	}
+
+	SET_MATRIX_RESULT(mx_create_low((uint8_t)size, value));
+	RETURN_RESULT;
+}
+
+EValue cmd_up(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+	float value = GET_NUMBER_ARG(0), size = GET_NUMBER_ARG(1);
+
+	if (ceilf(size) != size || size < MIN_MATRIX_SIZE || size > MAX_MATRIX_SIZE)
+	{
+		*error = "Gecersiz matris boyutu.";
+		RETURN_RESULT;
+	}
+
+	SET_MATRIX_RESULT(mx_create_up((uint8_t)size, value));
+	RETURN_RESULT;
+}
+
+EValue cmd_all(CMD_PARAM_DECL)
+{
+	INIT_RESULT;
+	float value = GET_NUMBER_ARG(0), rows = GET_NUMBER_ARG(1), cols = GET_NUMBER_ARG(2);
+
+	if (ceilf(rows) != rows || rows < MIN_MATRIX_SIZE || rows > MAX_MATRIX_SIZE ||
+		ceilf(cols) != cols || cols < MIN_MATRIX_SIZE || cols > MAX_MATRIX_SIZE)
+	{
+		*error = "Gecersiz matris boyutu.";
+		RETURN_RESULT;
+	}
+
+	SET_MATRIX_RESULT(mx_create_all((uint8_t)rows, (uint8_t)cols, value));
 	RETURN_RESULT;
 }
 
@@ -885,13 +1020,7 @@ EValue cmd_rowswt(CMD_PARAM_DECL)
 		RETURN_RESULT;
 	}
 
-	if (num1 < MIN_MATRIX_SIZE || num2 < MIN_MATRIX_SIZE)
-	{
-		*error = "Satir numaralari 0'dan buyuk olmalidir.";
-		RETURN_RESULT;
-	}
-
-	if (num1 > matrix->rows || num2 > matrix->rows)
+	if (num1 < MIN_MATRIX_SIZE || num2 < MIN_MATRIX_SIZE || num1 > matrix->rows || num2 > matrix->rows)
 	{
 		*error = "Satir numaralari matris boyutunu asiyor.";
 		RETURN_RESULT;
@@ -929,15 +1058,9 @@ EValue cmd_rowmul(CMD_PARAM_DECL)
 		RETURN_RESULT;
 	}
 
-	if (num1 < MIN_MATRIX_SIZE)
+	if (num1 < MIN_MATRIX_SIZE || num1 > matrix->rows)
 	{
-		*error = "Satir numarasi 0'dan buyuk olmalidir.";
-		RETURN_RESULT;
-	}
-
-	if (num1 > matrix->rows)
-	{
-		*error = "Satir numarasi matris boyutunu asiyor.";
+		*error = "Satir numaralari matris boyutunu asiyor.";
 		RETURN_RESULT;
 	}
 
@@ -967,13 +1090,7 @@ EValue cmd_rowadd(CMD_PARAM_DECL)
 		RETURN_RESULT;
 	}
 
-	if (num1 < MIN_MATRIX_SIZE || num2 < MIN_MATRIX_SIZE)
-	{
-		*error = "Satir numaralari 0'dan buyuk olmalidir.";
-		RETURN_RESULT;
-	}
-
-	if (num1 > matrix->rows || num2 > matrix->rows)
+	if (num1 < MIN_MATRIX_SIZE || num2 < MIN_MATRIX_SIZE || num1 > matrix->rows || num2 > matrix->rows)
 	{
 		*error = "Satir numaralari matris boyutunu asiyor.";
 		RETURN_RESULT;
@@ -1040,6 +1157,8 @@ EValue cmd_power(CMD_PARAM_DECL)
 #pragma endregion
 
 #pragma region Math
+EValue cmd_abs(CMD_PARAM_DECL) { RETURN_NUMBER_RESULT(fabsf(GET_NUMBER_ARG(0))); }
+
 EValue cmd_pi(CMD_PARAM_DECL) { RETURN_NUMBER_RESULT( MATH_PI ); }
 
 EValue cmd_e(CMD_PARAM_DECL) { RETURN_NUMBER_RESULT( MATH_E ); }
