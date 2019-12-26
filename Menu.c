@@ -145,7 +145,7 @@ void menu_equation(MENU_PARAM_DECL)
 
 	setcolor(8);
 	printf("Denklem sisteminde bulunan degisken isimlerini boslukla ayirarak giriniz.\n");
-	printf("Degisken isimleri kucuk harf olmalidir. (e haric ve maks. %d degisken)\n\n", MAX_MATRIX_SIZE);
+	printf("Degisken isimleri kucuk harf olmalidir. (maks. %d degisken)\n\n", MAX_MATRIX_SIZE);
 
 	setcolor(7);
 	printf("> ");
@@ -158,7 +158,7 @@ void menu_equation(MENU_PARAM_DECL)
 		if (isspace(b))
 			continue;
 
-		EQ_ASSERT(islower(b) && b != 'e', "Degisken isimleri kucuk harf olmalidir. (e haric)");
+		EQ_ASSERT(islower(b), "Degisken isimleri kucuk harf olmalidir.");
 
 		flags |= 1 << (b - 'a');
 	}
@@ -242,7 +242,7 @@ void menu_equation(MENU_PARAM_DECL)
 					state = 1;
 					break;
 				case 3: //sayý
-					if (sscanf(buffer + i, "%f%n", &number, &_) <= 0)
+					if (!(_ = sscan_ufloat(buffer + i, &number)))
 					{
 						setcolor(12);
 						printf("Hata: Sayi bekleniyordu.");
@@ -304,13 +304,28 @@ void menu_equation(MENU_PARAM_DECL)
 					i++;
 					state = 7;
 					break;
-				case 7: //sabit
-					if (sscanf(buffer + i, "%f%n", &con[rows], &_) <= 0)
+				case 7: //sabit: opsiyonel iþaret
+					negative = false;
+
+					if (b == '-' || b == '+')
+					{
+						negative = b == '-';
+						i++;
+					}
+
+					state = 8;
+					break;
+				case 8: 
+					if (!(_ = sscan_ufloat(buffer + i, &con[rows])))
 					{
 						setcolor(12);
 						printf("Hata: Sayi bekleniyordu.");
 						goto end;
 					}
+
+					if (negative)
+						con[rows] *= -1;
+
 					i += _;
 					state = -1;
 					break;

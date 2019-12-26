@@ -63,6 +63,61 @@ void scanl(char const* const format, ...)
 	(void)get_char();
 }
 
+int sscan_ufloat(char* buffer, float* value)
+{
+	char* _buffer = buffer;
+	int state = 1, b, magnitude = 0, fraction = 0, f = 0;
+
+	if (!(b = *buffer))
+		return 0;
+
+	do switch (state)
+	{
+		case 1: // 0-9
+			if (b < '0' || b > '9')
+				return 0;
+
+			magnitude = b - '0';
+			state++;
+			break;
+		case 2: // 0-9 | .
+			if ((b < '0' || b > '9') && b != '.')
+				goto success;
+
+			if (b == '.')
+				state++;
+			else
+			{
+				magnitude *= 10;
+				magnitude += b - '0';
+			}
+			break;
+		case 3: // fraction: 0-9
+			if (b < '0' || b > '9')
+				return 0;
+
+			f++;
+			fraction = b - '0';
+			state++;
+			break;
+		case 4: // 0-9
+			if (b < '0' || b > '9')
+				goto success;
+
+			f++;
+			fraction *= 10;
+			fraction += b - '0';
+			break;
+	} while (b = *++_buffer);
+
+	if (state % 2)
+		return 0;
+
+	success:
+	*value = magnitude + fraction / powf(10, f);
+	return _buffer - buffer;
+}
+
 int get_char(void)
 {
 	int c = -1, _ = -1;

@@ -39,15 +39,15 @@ Memory* init_mem(void)
 
 			matrix->options[0] = "Geri";
 			matrix->options[1] = "Yeni";
-			matrix->options[2] = "Listele";
-			matrix->options[3] = "Goruntule";
+			matrix->options[2] = "Goruntule";
+			matrix->options[3] = "Listele";
 			matrix->options[4] = "Sil";
 			matrix->options[5] = "Hafizayi Temizle";
 
 			matrix->functions[0] = NULL;
 			matrix->functions[1] = menu_define;
-			matrix->functions[2] = menu_list;
-			matrix->functions[3] = menu_show;
+			matrix->functions[2] = menu_show;
+			matrix->functions[3] = menu_list;
 			matrix->functions[4] = menu_delete;
 			matrix->functions[5] = menu_clear;
 		}
