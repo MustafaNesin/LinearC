@@ -114,7 +114,7 @@ int sscan_ufloat(char* buffer, float* value)
 		return 0;
 
 	success:
-	*value = magnitude + fraction / powf(10, f);
+	*value = magnitude + fraction / powf(10.0, f);
 	return _buffer - buffer;
 }
 
