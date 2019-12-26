@@ -72,7 +72,6 @@
 
 #pragma region Type Definitions
 typedef struct Function    Function;
-typedef struct Parameter   Parameter;
 typedef struct PExpression PExpression;
 typedef struct PTerm       PTerm;
 typedef struct PFactor     PFactor;
