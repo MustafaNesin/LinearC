@@ -242,7 +242,7 @@ void menu_equation(MENU_PARAM_DECL)
 					state = 1;
 					break;
 				case 3: //sayý
-					if (!sscanf(buffer + i, "%f%n", &number, &_))
+					if (sscanf(buffer + i, "%f%n", &number, &_) <= 0)
 					{
 						setcolor(12);
 						printf("Hata: Sayi bekleniyordu.");
@@ -305,7 +305,7 @@ void menu_equation(MENU_PARAM_DECL)
 					state = 7;
 					break;
 				case 7: //sabit
-					if (!sscanf(buffer + i, "%f%n", &con[rows], &_))
+					if (sscanf(buffer + i, "%f%n", &con[rows], &_) <= 0)
 					{
 						setcolor(12);
 						printf("Hata: Sayi bekleniyordu.");

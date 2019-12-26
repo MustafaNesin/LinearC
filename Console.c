@@ -309,7 +309,7 @@ PFactor* parse_term(Memory* memory, char* in, char** out)
 			tail->type = FACTOR_NUMBER;
 
 			ASSERT__FAIL(tail->value = malloc(sizeof(float)));
-			ASSERT__FAIL(sscanf(in, "%f%n", (float*)tail->value, &length));
+			ASSERT__FAIL(sscanf(in, "%f%n", (float*)tail->value, &length) > 0);
 
 			in += length;
 		}
