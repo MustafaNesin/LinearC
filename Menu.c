@@ -680,7 +680,7 @@ void menu_read(MENU_PARAM_DECL)
 	else
 	{
 		setcolor(12);
-		printf("Kayit dosyasi bozuk, matrislerin tamami okunamadi.");
+		printf("Kayit dosyasi yok veya bozuk, matrislerin tamami okunamadi.");
 	}
 
 	get_char();

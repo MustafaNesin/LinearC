@@ -39,7 +39,8 @@
 	else \
 		tail = result = calloc(1, sizeof(PFactor)); \
 	ASSERT__FAIL(tail); \
-	tail->divisor = divisor;
+	tail->divisor = divisor; \
+	divisor = false;
 
 #define CURRENT_PARAMTYPE result->argtypes[result->argcount]
 #define CURRENT_PARAMETER result->args[result->argcount]
