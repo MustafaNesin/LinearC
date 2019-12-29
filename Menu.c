@@ -75,7 +75,9 @@ void print_equterm(float value, char name, bool first, bool last)
 	{
 		printf(value > 0 ? " + " : " - ");
 
-		if (value == -1 || value == 1)
+		if (last)
+			printf("%g", fabsf(value));
+		else if (value == -1 || value == 1)
 			printf("%c", name);
 		else
 			printf("%g%c", fabsf(value), name);
