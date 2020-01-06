@@ -162,18 +162,15 @@ void menu_equation(MENU_PARAM_DECL)
 
 		EQ_ASSERT(islower(b), "Degisken isimleri kucuk harf olmalidir.");
 
-		flags |= 1 << (b - 'a');
+		if (!(flags & 1 << (b - 'a')))
+		{
+			var[cols++] = b;
+			EQ_ASSERT(cols < MAX_MATRIX_SIZE, "Maksimum degisken sayisi asildi.");
+			flags |= 1 << (b - 'a');
+		}
 	}
 
 	EQ_ASSERT(flags, "Hicbir degisken belirtilmedi.");
-
-	do
-	{
-		EQ_ASSERT(cols < MAX_MATRIX_SIZE, "Maksimum degisken sayisi asildi.");
-		if (flags & 1)
-			var[cols++] = _ + 'a';
-		_++;
-	} while (flags >>= 1);
 
 	setcolor(8);
 	printf("\nHer satira bir esitlik yazin. En fazla %d esitlik yazilabilir.\n", MAX_MATRIX_SIZE);
